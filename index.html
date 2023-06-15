@@ -2,6 +2,7 @@
  
 <html>
  
+
 <head>
  
     <title>Paytm-FacePay: Take or select photo(s) and upload to Pay</title>
@@ -113,13 +114,17 @@
 </head>
  
 <body>
+<img src="paytm.png" alt="Trulli" width="200" height="200">
+
+  <h2> FacePay : pay using faceID </h2>
  
   <form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
  
     <div>
  
-      <label for="fileToUpload">Take or select photo(s)</label><br />
- 
+      <label for="fileToUpload">Take or Select photo(s)</label><br />
+ <br> <br>
+
       <input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();" accept="image/*" capture="camera" />
  
     </div>
@@ -127,8 +132,10 @@
     <div id="details"></div>
  
     <div>
- 
-      <input type="button" onclick="uploadFile()" value="Upload" />
+  <br> <br>
+ <br> <br>
+
+      <input type="button" onclick="uploadFile()" value="UploadToPay" />
  
     </div>
  
