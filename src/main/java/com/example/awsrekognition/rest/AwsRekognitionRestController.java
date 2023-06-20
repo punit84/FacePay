@@ -23,7 +23,12 @@ public class AwsRekognitionRestController {
 
 	@PostMapping("/facepay")
 	public Object facepay(@RequestParam MultipartFile myFile) throws IOException {
-		return ResponseEntity.ok(awsRekognitionService.detectLabels(myFile));
+		String respString= awsRekognitionService.detectLabels(myFile);
+	
+		
+		String objectag = "upi://pay?pa="+respString+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
+		
+		return ResponseEntity.ok(objectag);
 	}
 
 	@PostMapping("/facepayImage")
