@@ -22,12 +22,15 @@ import software.amazon.awssdk.services.rekognition.model.RekognitionException;
 @Service
 public class AwsRekognitionService {
 
-	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
+//	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
+
+  String modelversion ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
 
 	public String detectLabels(MultipartFile imageToCheck) throws IOException {
 
 		Image souImage = getImage(imageToCheck);
 		getRekClient();		
+		
 		return detectLabels(souImage);
 	}
 
@@ -98,7 +101,7 @@ public class AwsRekognitionService {
 	}
 
 	public String detectLabels( Image souImage) {
-		String customLable = "9911078929@paytm";
+		String customLable = "punit@paytm";
 
 		DetectCustomLabelsRequest detectCustomLabelsRequest = DetectCustomLabelsRequest.builder()
 				.image(souImage)
@@ -119,9 +122,14 @@ public class AwsRekognitionService {
 				System.out.println("no matching label found");
 			}else {
 				CustomLabel customLabel1=customLabels.get(0);
-				customLable = customLabel1.name()+"@paytm";
-				System.out.println("Detected labels for the given photo: " +customLabel1.name());
+				customLable = customLabel1.name();
+				System.out.println("Detected labels for the given photo: " +customLable);
 
+				if (!customLable.contains("paytm")) {
+					customLable = customLabel1 + "@paytm";
+					System.out.println("Detected labels for the given photo: " +customLable);
+
+				}
 			}
 		} catch (RekognitionException e) {
 			System.out.println(e.getMessage());

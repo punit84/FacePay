@@ -22,8 +22,8 @@ public class AwsRekognitionRestController {
 	}
 
 	@PostMapping("/facepay")
-	public Object facepay(@RequestParam MultipartFile image) throws IOException {
-		return ResponseEntity.ok(awsRekognitionService.detectLabels(image));
+	public Object facepay(@RequestParam MultipartFile myFile) throws IOException {
+		return ResponseEntity.ok(awsRekognitionService.detectLabels(myFile));
 	}
 
 	@PostMapping("/facepayImage")
