@@ -22,15 +22,15 @@ import software.amazon.awssdk.services.rekognition.model.RekognitionException;
 @Service
 public class AwsRekognitionService {
 
-//	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
+	//	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
 
-  String modelversion ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
+	String modelversion ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
 
 	public String detectLabels(MultipartFile imageToCheck) throws IOException {
 
 		Image souImage = getImage(imageToCheck);
 		getRekClient();		
-		
+
 		return detectLabels(souImage);
 	}
 
@@ -71,7 +71,7 @@ public class AwsRekognitionService {
 		//		.withImage(new Image().withBytes(ByteBuffer.wrap(imageToCheck.getBytes())));
 
 		// Create an Image object from the loaded image bytes
-	
+
 		Image souImage = Image.builder()
 				.bytes(SdkBytes.fromByteArray(imageToCheck.getBytes()))
 				.build();
@@ -101,7 +101,8 @@ public class AwsRekognitionService {
 	}
 
 	public String detectLabels( Image souImage) {
-		String customLable = "punit@paytm";
+		String customLable = null;
+
 
 		DetectCustomLabelsRequest detectCustomLabelsRequest = DetectCustomLabelsRequest.builder()
 				.image(souImage)
@@ -122,6 +123,13 @@ public class AwsRekognitionService {
 				System.out.println("no matching label found");
 			}else {
 				CustomLabel customLabel1=customLabels.get(0);
+
+				if (customLabel1.confidence() <80) {
+
+					System.out.println("confidence score is low " +customLabel1.confidence());
+					return "low confidence <kindly take another image> : " + customLabel1.confidence();
+				}
+
 				customLable = customLabel1.name();
 				System.out.println("Detected labels for the given photo: " +customLable);
 
@@ -130,6 +138,8 @@ public class AwsRekognitionService {
 					System.out.println("Detected labels for the given photo: " +customLable);
 
 				}
+				customLable = "upi://pay?pa="+customLable+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
+
 			}
 		} catch (RekognitionException e) {
 			System.out.println(e.getMessage());
