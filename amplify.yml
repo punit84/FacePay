@@ -1,8 +1,10 @@
-build:
-  commands:
-    - mvn package
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - mvn clean install
 
 artifacts:
-    baseDirectory: target
-    files:
-      - '**/*'
+  files:
+    - target/*.jar
