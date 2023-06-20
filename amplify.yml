@@ -1,3 +1,8 @@
 build:
   commands:
     - mvn package
+
+artifacts:
+    baseDirectory: target
+    files:
+      - '**/*'
