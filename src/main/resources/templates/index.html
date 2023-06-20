@@ -39,7 +39,8 @@
       }
  
       function uploadFile() {
- 
+		var url = 'http://localhost:8080/api/facepay';
+		var method = 'POST';
         var fd = new FormData();
  
               var count = document.getElementById('fileToUpload').files.length;
@@ -64,8 +65,8 @@
  
         xhr.addEventListener("abort", uploadCanceled, false);
  
-        xhr.open("POST", "savetofile.php");
- 
+        xhr.open(method, url, false); // true for asynchronous request
+
         xhr.send(fd);
  
       }
