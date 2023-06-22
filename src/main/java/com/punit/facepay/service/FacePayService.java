@@ -9,7 +9,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
@@ -54,7 +54,7 @@ public class FacePayService {
 
 		RekognitionClient client = RekognitionClient.builder()
 				.region(region)
-				.credentialsProvider(ProfileCredentialsProvider.create())
+				.credentialsProvider(DefaultCredentialsProvider.create())
 				.build();
 		return client;
 	}
