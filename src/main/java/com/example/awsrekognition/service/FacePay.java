@@ -42,8 +42,7 @@ public class FacePay {
 		//SearchFaceMatchingIdCollection.searchFacebyId(rekClient, collectionId, sourceImage);
 		detectImageCustomLabels(rekClient, modelversion,  sourceImage);
 		
-		
-		
+
 		
 //		aws rekognition detect-custom-labels \
 //		  --project-version-arn "arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992" \
