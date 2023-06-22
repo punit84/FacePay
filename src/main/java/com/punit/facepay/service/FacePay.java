@@ -1,4 +1,4 @@
-package com.example.awsrekognition.service;
+package com.punit.facepay.service;
 
 
 

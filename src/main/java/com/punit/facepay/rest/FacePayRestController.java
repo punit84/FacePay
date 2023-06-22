@@ -1,4 +1,6 @@
-package com.example.awsrekognition.rest;
+package com.punit.facepay.rest;
+
+import java.io.IOException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,30 +9,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.awsrekognition.service.AwsRekognitionService;
-
-import java.io.IOException;
+import com.punit.facepay.service.FacePayService;
 
 @RestController
 @RequestMapping("/api")
-public class AwsRekognitionRestController {
+public class FacePayRestController {
 
-	private AwsRekognitionService awsRekognitionService;
+	private FacePayService facepayService;
 
-	public AwsRekognitionRestController(AwsRekognitionService awsRekognitionService) {
-		this.awsRekognitionService = awsRekognitionService;
+	public FacePayRestController(FacePayService awsRekognitionService) {
+		this.facepayService = awsRekognitionService;
 	}
 
 	@PostMapping("/facepay")
 	public Object facepay(@RequestParam MultipartFile myFile) throws IOException {
-		String respString= awsRekognitionService.detectLabels(myFile);
+		String respString= facepayService.detectLabels(myFile);
 	
 		return ResponseEntity.ok(respString);
 	}
 
 	@PostMapping("/facepayImage")
 	public Object facepayImage(@RequestParam String image) throws IOException {
-		return ResponseEntity.ok(awsRekognitionService.detectLabelsImage(image));
+		return ResponseEntity.ok(facepayService.detectLabelsImage(image));
 
 	}
 }

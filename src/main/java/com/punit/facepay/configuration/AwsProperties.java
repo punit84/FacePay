@@ -1,4 +1,4 @@
-package com.example.awsrekognition.configuration;
+package com.punit.facepay.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
