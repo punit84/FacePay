@@ -14,7 +14,6 @@ import com.punit.facepay.service.helper.ListFacesInCollection;
 import com.punit.facepay.service.helper.SearchFaceMatchingImageCollection;
 
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
@@ -160,15 +159,15 @@ public class FacePayService {
 
 	public String searchImage(MultipartFile imageToSearch) throws IOException {
 
-		RekognitionClient client= getRekClient();		
+		RekognitionClient rekClient= getRekClient();		
 
 		System.out.println("************CreateCollectionResponse********\n\n\n\n\n\n");
 
 
 		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
 
-		//ListCollections.listAllCollections(rekClient);
-		//ListFacesInCollection.listFacesCollection(rekClient, collectionId);
+		ListCollections.listAllCollections(rekClient);
+		ListFacesInCollection.listFacesCollection(rekClient, collectionId);
 
 		System.out.println("********************\n\n\n\n\n\n");
 		System.out.println("************indexImagesInFolder********\n\n\n\n\n\n");
@@ -178,7 +177,7 @@ public class FacePayService {
 
 		System.out.println("************searchFaceInCollection********\n\n\n\n\n\n");
 
-		String  responseSTR = SearchFaceMatchingImageCollection.searchFaceInCollection(client, collectionId, "/Users/jainpuni/pkj.jpg");
+		String  responseSTR = SearchFaceMatchingImageCollection.searchFaceInCollection(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
 
 
 		if(responseSTR ==null) {
