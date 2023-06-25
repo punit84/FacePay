@@ -159,7 +159,9 @@ public class FacePayService {
 
 	public String searchImage(MultipartFile imageToSearch) throws IOException {
 
-		RekognitionClient rekClient= getRekClient();		
+		RekognitionClient rekClient= getRekClient();
+		Image souImage = getImage(imageToSearch);
+
 
 		System.out.println("************CreateCollectionResponse********\n\n\n\n\n\n");
 
@@ -177,7 +179,7 @@ public class FacePayService {
 
 		System.out.println("************searchFaceInCollection********\n\n\n\n\n\n");
 
-		String  responseSTR = fiUtil.searchFaceInCollection(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
+		String  responseSTR = fiUtil.searchFaceInCollection(rekClient, collectionId, souImage);
 
 
 		if(responseSTR ==null) {
@@ -221,9 +223,14 @@ public class FacePayService {
 		return null;
 	}
 
-	public String addImage(MultipartFile myFile) {
-		// TODO Auto-generated method stub
-		return null;
+	public String addImage(MultipartFile myFile) throws IOException {
+		
+		
+		RekognitionClient rekClient= getRekClient();	
+		Image souImage = getImage(myFile);
+
+		boolean  responseSTR = fiUtil.addToCollection(rekClient, collectionId, souImage);
+		return "update: "+responseSTR;
 	}
 
 }

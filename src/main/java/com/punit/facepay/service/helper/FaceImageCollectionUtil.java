@@ -1,12 +1,3 @@
-// snippet-sourcedescription:[SearchFaceMatchingImageCollection.java demonstrates how to search for matching faces in an Amazon Rekognition collection.]
-//snippet-keyword:[AWS SDK for Java v2]
-// snippet-service:[Amazon Rekognition]
-
-/*
-   Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-   SPDX-License-Identifier: Apache-2.0
- */
-
 package com.punit.facepay.service.helper;
 
 import java.io.File;
@@ -38,49 +29,43 @@ import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageReque
 import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
 import software.amazon.awssdk.services.rekognition.model.UnindexedFace;
 
-/**
- * Before running this Java V2 code example, set up your development environment, including your credentials.
- *
- * For more information, see the following documentation topic:
- *
- * https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/get-started.html
- */
 public class FaceImageCollectionUtil {
 
-	public String searchFaceInCollection(RekognitionClient rekClient,String collectionId, String sourceImage) {
+	public String searchFaceInCollection(RekognitionClient rekClient,String collectionId,Image souImage) {
 
-		try {
-			InputStream sourceStream = new FileInputStream(new File(sourceImage));
-			SdkBytes sourceBytes = SdkBytes.fromInputStream(sourceStream);
-			Image souImage = Image.builder()
-					.bytes(sourceBytes)
-					.build();
+		SearchFacesByImageRequest facesByImageRequest = SearchFacesByImageRequest.builder()
+				.image(souImage)
+				.maxFaces(10)
+				.faceMatchThreshold(40F)
+				.collectionId(collectionId)
+				.build();
 
-			SearchFacesByImageRequest facesByImageRequest = SearchFacesByImageRequest.builder()
-					.image(souImage)
-					.maxFaces(10)
-					.faceMatchThreshold(40F)
-					.collectionId(collectionId)
-					.build();
-
-			SearchFacesByImageResponse imageResponse = rekClient.searchFacesByImage(facesByImageRequest) ;
-			System.out.println("Faces matching in the collection");
-			List<FaceMatch> faceImageMatches = imageResponse.faceMatches();
-			String foundFaceName = null;
-			for (FaceMatch face: faceImageMatches) {
-				System.out.println("The similarity level is  "+face.similarity());
-				System.out.println();
-				if (face.similarity() >70) {
-					foundFaceName= face.toString();
-				}
+		SearchFacesByImageResponse imageResponse = rekClient.searchFacesByImage(facesByImageRequest) ;
+		System.out.println("Faces matching in the collection");
+		List<FaceMatch> faceImageMatches = imageResponse.faceMatches();
+		String foundFaceName = null;
+		for (FaceMatch face: faceImageMatches) {
+			System.out.println("The similarity level is  "+face.similarity());
+			System.out.println();
+			if (face.similarity() >70) {
+				foundFaceName= face.toString();
 			}
-
-			return foundFaceName;
-
-		} catch (RekognitionException | FileNotFoundException e) {
-			System.out.println(e.getMessage());
 		}
-		return null;
+
+		return foundFaceName;
+
+	}
+
+	public String searchFaceInCollection(RekognitionClient rekClient,String collectionId, String sourceImage) throws FileNotFoundException {
+
+		InputStream sourceStream = new FileInputStream(new File(sourceImage));
+		SdkBytes sourceBytes = SdkBytes.fromInputStream(sourceStream);
+		Image souImage = Image.builder()
+				.bytes(sourceBytes)
+				.build();
+
+		return searchFaceInCollection(rekClient, collectionId, souImage);
+
 	}
 
 	public boolean addToCollection(RekognitionClient rekClient, String collectionId, Image sourceImage) {
@@ -161,7 +146,7 @@ public class FaceImageCollectionUtil {
 			System.exit(1);
 		}
 	}
-	
+
 	public void listFacesCollection(RekognitionClient rekClient, String collectionId ) {
 		try {
 			ListFacesRequest facesRequest = ListFacesRequest.builder()

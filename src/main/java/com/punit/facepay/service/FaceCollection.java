@@ -1,5 +1,6 @@
 package com.punit.facepay.service;
 
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,7 +20,7 @@ public class FaceCollection {
 
 	private FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 
 		String collectionId = "faceCollection";
 		String imageFolder = "/Users/jainpuni/accounts/genAI/images";
