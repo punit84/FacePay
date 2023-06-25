@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import com.punit.facepay.service.helper.ListCollections;
+import com.punit.facepay.service.helper.FaceImageCollectionUtil;
 
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
@@ -29,6 +29,7 @@ public class FacePay {
 
 		String collectionId = "facepay";
 		String sourceImage = "/Users/jainpuni/pkj.jpg";
+		FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
 
 		Region region = Region.AP_SOUTH_1;
 		RekognitionClient rekClient = RekognitionClient.builder()
@@ -41,7 +42,7 @@ public class FacePay {
 
 		String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
 
-		ListCollections.listAllCollections(rekClient);
+		fiUtil.listAllCollections(rekClient);
 		//ListFacesInCollection.listFacesCollection(rekClient, collectionId);
 		//DetectLabels.detectImageLabels(rekClient, sourceImage);
 

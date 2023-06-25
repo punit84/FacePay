@@ -1,39 +1,29 @@
 package com.punit.facepay.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
-import com.punit.facepay.service.helper.ListCollections;
-import com.punit.facepay.service.helper.ListFacesInCollection;
-import com.punit.facepay.service.helper.RekoUtil;
-import com.punit.facepay.service.helper.SearchFaceMatchingIdCollection;
-import com.punit.facepay.service.helper.SearchFaceMatchingImageCollection;
+import com.punit.facepay.service.helper.FaceImageCollectionUtil;
 
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
-import software.amazon.awssdk.services.rekognition.model.CreateCollectionResponse;
-import software.amazon.awssdk.services.rekognition.model.FaceMatch;
 import software.amazon.awssdk.services.rekognition.model.Image;
-import software.amazon.awssdk.services.rekognition.model.IndexFacesResponse;
-import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageRequest;
-import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
 
 public class FaceCollection {
 
-	private static RekoUtil reko= new RekoUtil();
+
+	//private RekoUtil reko= new RekoUtil();
+
+	private FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
 
 	public static void main(String[] args) {
 
 		String collectionId = "faceCollection";
 		String imageFolder = "/Users/jainpuni/accounts/genAI/images";
-		
+
 
 		Region region = Region.AP_SOUTH_1;
 		RekognitionClient rekClient = RekognitionClient.builder()
@@ -44,23 +34,24 @@ public class FaceCollection {
 
 
 		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
+		FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
 
-		ListCollections.listAllCollections(rekClient);
-		ListFacesInCollection.listFacesCollection(rekClient, collectionId);
-		
+		fiUtil.listAllCollections(rekClient);
+		fiUtil.listFacesCollection(rekClient, collectionId);
+
 		System.out.println("********************\n\n\n\n\n\n");
 		System.out.println("************indexImagesInFolder********\n\n\n\n\n\n");
-		
+
 		//indexImagesInFolder(imageFolder, collectionId, rekClient);
 		System.out.println("********************\n\n\n\n\n\n");
-		
+
 		System.out.println("************SearchFaceMatchingIdCollection********\n\n\n\n\n\n");
-		
-		SearchFaceMatchingImageCollection.searchFaceInCollection(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
 
-	
+		fiUtil.searchFaceInCollection(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
 
-//		reko.addToCollection(rekClient, collectionId, sourceImage)
+
+
+		//		reko.addToCollection(rekClient, collectionId, sourceImage)
 		//CelebrityInfo.getCelebrityInfo(rekClient, collectionId);
 
 
@@ -70,14 +61,10 @@ public class FaceCollection {
 		//		  --image '{"S3Object": {"Bucket": "MY_BUCKET","Name": "PATH_TO_MY_IMAGE"}}' \
 		//		  --region ap-south-1
 
-
-
-
-
 	}
 
 
-	private static void indexImagesInFolder(String folderPath, String collectionId, RekognitionClient rekognitionClient) {
+	private void indexImagesInFolder(String folderPath, String collectionId, RekognitionClient rekognitionClient) {
 		try {
 			Files.walk(Paths.get(folderPath))
 			.filter(Files::isRegularFile)
@@ -94,18 +81,18 @@ public class FaceCollection {
 	}
 
 
-    private static void indexImage(Path imageFile, String collectionId, RekognitionClient rekognitionClient) {
-        try {
-            byte[] imageData = Files.readAllBytes(imageFile);
-            SdkBytes imageBytes= SdkBytes.fromByteArray(imageData);
-            Image image = Image.builder().bytes(imageBytes).build();
-            IndexFacesResponse indexFacesResponse =  reko.addToCollection(rekognitionClient, collectionId,image );
+	private void indexImage(Path imageFile, String collectionId, RekognitionClient rekognitionClient) {
+		try {
+			byte[] imageData = Files.readAllBytes(imageFile);
+			SdkBytes imageBytes= SdkBytes.fromByteArray(imageData);
+			Image image = Image.builder().bytes(imageBytes).build();
+			boolean response =  fiUtil.addToCollection(rekognitionClient, collectionId,image );
 
-            System.out.println("Image indexed: " + imageFile.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-	
-	
+			System.out.println("Image indexed: " + imageFile.toString() + " status: "+response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
 }

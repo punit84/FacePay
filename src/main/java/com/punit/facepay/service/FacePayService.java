@@ -9,9 +9,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.punit.facepay.service.helper.ListCollections;
-import com.punit.facepay.service.helper.ListFacesInCollection;
-import com.punit.facepay.service.helper.SearchFaceMatchingImageCollection;
+import com.punit.facepay.service.helper.FaceImageCollectionUtil;
+import com.punit.facepay.service.helper.RekoUtil;
 
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
@@ -29,8 +28,9 @@ public class FacePayService {
 	//	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
 
 	String modelversion ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
-	String collectionId = "faceCollection";
-	//String imageFolder = "/Users/jainpuni/accounts/genAI/images";
+	private FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
+	private RekoUtil reko= new RekoUtil();
+	private String collectionId = "faceCollection";
 
 
 	public String detectLabels(MultipartFile imageToCheck) throws IOException {
@@ -166,8 +166,8 @@ public class FacePayService {
 
 		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
 
-		ListCollections.listAllCollections(rekClient);
-		ListFacesInCollection.listFacesCollection(rekClient, collectionId);
+		fiUtil.listAllCollections(rekClient);
+		fiUtil.listFacesCollection(rekClient, collectionId);
 
 		System.out.println("********************\n\n\n\n\n\n");
 		System.out.println("************indexImagesInFolder********\n\n\n\n\n\n");
@@ -177,7 +177,7 @@ public class FacePayService {
 
 		System.out.println("************searchFaceInCollection********\n\n\n\n\n\n");
 
-		String  responseSTR = SearchFaceMatchingImageCollection.searchFaceInCollection(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
+		String  responseSTR = fiUtil.searchFaceInCollection(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
 
 
 		if(responseSTR ==null) {
@@ -210,7 +210,19 @@ public class FacePayService {
 
 	private String addImage(Image souImage) {
 
+		RekognitionClient rekClient= getRekClient();		
 
+		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
+
+		fiUtil.listAllCollections(rekClient);
+		fiUtil.listFacesCollection(rekClient, collectionId);
+		//indexImagesInFolder(imageFolder, collectionId, rekClient);
+
+		return null;
+	}
+
+	public String addImage(MultipartFile myFile) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
