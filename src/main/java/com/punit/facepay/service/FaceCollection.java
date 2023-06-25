@@ -48,7 +48,7 @@ public class FaceCollection {
 		
 		System.out.println("************SearchFaceMatchingIdCollection********\n\n\n\n\n\n");
 		
-		SearchFaceMatchingIdCollection.archFacebyId(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
+		SearchFaceMatchingIdCollection.searchFacebyId(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
 
 		
 
