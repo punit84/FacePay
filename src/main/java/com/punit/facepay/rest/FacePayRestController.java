@@ -23,10 +23,18 @@ public class FacePayRestController {
 
 	@PostMapping("/facepay")
 	public Object facepay(@RequestParam MultipartFile myFile) throws IOException {
+		String respString= facepayService.searchImage(myFile);
+	
+		return ResponseEntity.ok(respString);
+	}
+	
+	@PostMapping("/detectLabel")
+	public Object detectLabel(@RequestParam MultipartFile myFile) throws IOException {
 		String respString= facepayService.detectLabels(myFile);
 	
 		return ResponseEntity.ok(respString);
 	}
+
 
 	@PostMapping("/facepayImage")
 	public Object facepayImage(@RequestParam String image) throws IOException {

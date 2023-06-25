@@ -1,21 +1,29 @@
 package com.punit.facepay.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import com.punit.facepay.service.helper.ListCollections;
 import com.punit.facepay.service.helper.ListFacesInCollection;
 import com.punit.facepay.service.helper.RekoUtil;
 import com.punit.facepay.service.helper.SearchFaceMatchingIdCollection;
+import com.punit.facepay.service.helper.SearchFaceMatchingImageCollection;
 
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.CreateCollectionResponse;
+import software.amazon.awssdk.services.rekognition.model.FaceMatch;
 import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.IndexFacesResponse;
+import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageRequest;
+import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
 
 public class FaceCollection {
 
@@ -35,7 +43,7 @@ public class FaceCollection {
 		System.out.println("************CreateCollectionResponse********\n\n\n\n\n\n");
 
 
-		CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
+		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
 
 		ListCollections.listAllCollections(rekClient);
 		ListFacesInCollection.listFacesCollection(rekClient, collectionId);
@@ -43,14 +51,14 @@ public class FaceCollection {
 		System.out.println("********************\n\n\n\n\n\n");
 		System.out.println("************indexImagesInFolder********\n\n\n\n\n\n");
 		
-		indexImagesInFolder(imageFolder, collectionId, rekClient);
+		//indexImagesInFolder(imageFolder, collectionId, rekClient);
 		System.out.println("********************\n\n\n\n\n\n");
 		
 		System.out.println("************SearchFaceMatchingIdCollection********\n\n\n\n\n\n");
 		
-		SearchFaceMatchingIdCollection.searchFacebyId(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
+		SearchFaceMatchingImageCollection.searchFaceInCollection(rekClient, collectionId, "/Users/jainpuni/pkj.jpg");
 
-		
+	
 
 //		reko.addToCollection(rekClient, collectionId, sourceImage)
 		//CelebrityInfo.getCelebrityInfo(rekClient, collectionId);

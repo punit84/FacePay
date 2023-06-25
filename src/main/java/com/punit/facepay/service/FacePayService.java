@@ -9,7 +9,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.punit.facepay.service.helper.ListCollections;
+import com.punit.facepay.service.helper.ListFacesInCollection;
+import com.punit.facepay.service.helper.SearchFaceMatchingImageCollection;
+
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
@@ -25,6 +30,9 @@ public class FacePayService {
 	//	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
 
 	String modelversion ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
+	String collectionId = "faceCollection";
+	//String imageFolder = "/Users/jainpuni/accounts/genAI/images";
+
 
 	public String detectLabels(MultipartFile imageToCheck) throws IOException {
 
@@ -150,5 +158,61 @@ public class FacePayService {
 		return customLable;
 	}
 
+	public String searchImage(MultipartFile imageToSearch) throws IOException {
+
+		RekognitionClient client= getRekClient();		
+
+		System.out.println("************CreateCollectionResponse********\n\n\n\n\n\n");
+
+
+		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
+
+		//ListCollections.listAllCollections(rekClient);
+		//ListFacesInCollection.listFacesCollection(rekClient, collectionId);
+
+		System.out.println("********************\n\n\n\n\n\n");
+		System.out.println("************indexImagesInFolder********\n\n\n\n\n\n");
+
+		//indexImagesInFolder(imageFolder, collectionId, rekClient);
+		System.out.println("********************\n\n\n\n\n\n");
+
+		System.out.println("************searchFaceInCollection********\n\n\n\n\n\n");
+
+		String  responseSTR = SearchFaceMatchingImageCollection.searchFaceInCollection(client, collectionId, "/Users/jainpuni/pkj.jpg");
+
+
+		if(responseSTR ==null) {
+
+			responseSTR= "No Match found";
+			System.out.println("no matching label found");
+
+		}else {
+
+			responseSTR = "upi://pay?pa="+responseSTR+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
+
+		}
+
+		//		reko.addToCollection(rekClient, collectionId, sourceImage)
+		//CelebrityInfo.getCelebrityInfo(rekClient, collectionId);
+
+
+
+		//		aws rekognition detect-custom-labels \
+		//		  --project-version-arn "arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992" \
+		//		  --image '{"S3Object": {"Bucket": "MY_BUCKET","Name": "PATH_TO_MY_IMAGE"}}' \
+		//		  --region ap-south-1
+
+
+
+		return responseSTR;
+	}
+
+
+
+	private String addImage(Image souImage) {
+
+
+		return null;
+	}
 
 }

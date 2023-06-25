@@ -63,7 +63,7 @@ public class SearchFaceMatchingImageCollection {
     }
 
     // snippet-start:[rekognition.java2.search_faces_collection.main]
-    public static void searchFaceInCollection(RekognitionClient rekClient,String collectionId, String sourceImage) {
+    public static String searchFaceInCollection(RekognitionClient rekClient,String collectionId, String sourceImage) {
 
         try {
             InputStream sourceStream = new FileInputStream(new File(sourceImage));
@@ -82,15 +82,21 @@ public class SearchFaceMatchingImageCollection {
             SearchFacesByImageResponse imageResponse = rekClient.searchFacesByImage(facesByImageRequest) ;
             System.out.println("Faces matching in the collection");
             List<FaceMatch> faceImageMatches = imageResponse.faceMatches();
+            String foundFaceName = null;
             for (FaceMatch face: faceImageMatches) {
                 System.out.println("The similarity level is  "+face.similarity());
                 System.out.println();
+                if (face.similarity() >80) {
+                	foundFaceName= face.toString();
+                }
             }
+            
+            return foundFaceName;
 
         } catch (RekognitionException | FileNotFoundException e) {
             System.out.println(e.getMessage());
-            System.exit(1);
         }
+        return null;
     }
     // snippet-end:[rekognition.java2.search_faces_collection.main]
 }

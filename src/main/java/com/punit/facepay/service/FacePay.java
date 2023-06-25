@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
+import com.punit.facepay.service.helper.ListCollections;
+
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
@@ -39,7 +41,7 @@ public class FacePay {
 
 		String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
 
-		//ListCollections.listAllCollections(rekClient);
+		ListCollections.listAllCollections(rekClient);
 		//ListFacesInCollection.listFacesCollection(rekClient, collectionId);
 		//DetectLabels.detectImageLabels(rekClient, sourceImage);
 
