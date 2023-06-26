@@ -1,35 +1,29 @@
-<configuration debug="true" scan="true" scanPeriod="10 minutes">
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<Pattern>%date %level [%thread] %logger %msg%n</Pattern>
-		</encoder>
-	</appender>
+<configuration>
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>logs/facepay-service.log</File>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>
-				logs/facepay-service-%d.%i.log.gz
-			</FileNamePattern>
-			<MaxHistory>10</MaxHistory>
-			<TimeBasedFileNamingAndTriggeringPolicy
-				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<MaxFileSize>64MB</MaxFileSize>
-			</TimeBasedFileNamingAndTriggeringPolicy>
-		</rollingPolicy>
+		<file>logs/logfile.log</file>
 		<encoder>
-			<Pattern>%date %level [%thread] %logger %msg%n</Pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} -
+				%msg%n</pattern>
+		</encoder>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/logfile.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+	</appender>
+	<appender name="CONSOLE"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} -
+				%msg%n</pattern>
 		</encoder>
 	</appender>
-	<logger name="javax.net" level="info" />
-	<logger name="javax.management" level="info" />
-	<logger name="org.springframework" level="info" />
-	<logger name="com.punit" level="info" />
-	<logger name="org.apache.tomcat" level="info" />
 
-	<root level="info">
-		<appender-ref ref="CONSOLE" />
+	<root level="INFO">
 		<appender-ref ref="FILE" />
-	</root>
+		<appender-ref ref="CONSOLE" />
 
+	</root>
 </configuration>
+
