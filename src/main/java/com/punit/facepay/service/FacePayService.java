@@ -177,7 +177,7 @@ public class FacePayService {
 		}else {
 			
 			String faceid = dbUtil.getFaceID(responseSTR);
-			System.out.println("face id in map is "+faceid);
+			System.out.println("face id in DB is "+faceid);
 			
 			responseSTR = "upi://pay?pa="+faceid+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
 
@@ -221,7 +221,7 @@ public class FacePayService {
 
 		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
 		
-		dbUtil.putFaceID(imageID, faceID);
+		dbUtil.putFaceID(faceID,imageID);
 
 		return "uploaded image with id: "+imageID;
 
