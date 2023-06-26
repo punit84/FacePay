@@ -111,40 +111,7 @@ public class FaceImageCollectionUtil {
 		return null;
 	}
 
-	public void listAllCollections(RekognitionClient rekClient) {
-		try {
-			ListCollectionsRequest listCollectionsRequest = ListCollectionsRequest.builder()
-					.maxResults(10)
-					.build();
 
-			ListCollectionsResponse response = rekClient.listCollections(listCollectionsRequest);
-			List<String> collectionIds = response.collectionIds();
-			for (String resultId : collectionIds) {
-				System.out.println(resultId);
-			}
-
-		} catch (RekognitionException e) {
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-	}
-
-	public void describeColl(RekognitionClient rekClient, String collectionName) {
-
-		try {
-			DescribeCollectionRequest describeCollectionRequest = DescribeCollectionRequest.builder()
-					.collectionId(collectionName)
-					.build();
-
-			DescribeCollectionResponse describeCollectionResponse = rekClient.describeCollection(describeCollectionRequest);
-			System.out.println("Collection Arn : " + describeCollectionResponse.collectionARN());
-			System.out.println("Created : " + describeCollectionResponse.creationTimestamp().toString());
-
-		} catch(RekognitionException e) {
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-	}
 
 	public void listFacesCollection(RekognitionClient rekClient, String collectionId ) {
 		try {

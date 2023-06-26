@@ -1,4 +1,4 @@
-package com.punit.facepay.service;
+package com.punit.test;
 
 
 
@@ -7,7 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import com.punit.facepay.service.helper.FaceImageCollectionUtil;
+import com.punit.facepay.service.Configs;
+import com.punit.facepay.service.helper.RekoUtil;
 
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
@@ -27,34 +28,34 @@ import software.amazon.awssdk.services.rekognition.model.RekognitionException;
 public class FacePay {
 	public static void main(String[] args) {
 
-	    String collectionId = "Punit-faceCollection";
-
-		String sourceImage = "/Users/jainpuni/pkj.jpg";
-		FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
-
-		Region region = Region.AP_SOUTH_1;
+		RekoUtil rekoUtil = new RekoUtil();
+		Region region = Configs.REGION;
+		
+		
 		RekognitionClient rekClient = RekognitionClient.builder()
 				.region(region)
 				.credentialsProvider(ProfileCredentialsProvider.create())
 				.build();
 
-		fiUtil.createMyCollection(rekClient, collectionId);
+		rekoUtil.deleteAllMyCollection(rekClient);
 		
-		System.exit(0);
+		rekoUtil.createMyCollection(rekClient, Configs.COLLECTION_ID);
 
-		
+      
+
 		System.out.println("Listing collections");
 		//        String modelversion ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
 
-		String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
+		//String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
 
-		fiUtil.listAllCollections(rekClient);
+		rekoUtil.listAllCollections(rekClient);
+
 		//ListFacesInCollection.listFacesCollection(rekClient, collectionId);
 		//DetectLabels.detectImageLabels(rekClient, sourceImage);
 
 		//CelebrityInfo.getCelebrityInfo(rekClient, collectionId);
 		//SearchFaceMatchingIdCollection.searchFacebyId(rekClient, collectionId, sourceImage);
-		detectImageCustomLabels(rekClient, modelversion,  sourceImage);
+		//detectImageCustomLabels(rekClient, modelversion,  sourceImage);
 
 
 		//		aws rekognition detect-custom-labels \

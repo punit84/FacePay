@@ -4,12 +4,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.punit.facepay.service.helper.DynamoDBUtil;
 import com.punit.facepay.service.helper.FaceImageCollectionUtil;
 import com.punit.facepay.service.helper.RekoUtil;
 
@@ -28,12 +28,12 @@ public class FacePayService {
 
 	//	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
 
-	String modelversion ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
 	private FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
 	private RekoUtil reko= new RekoUtil();
-	private String collectionId = "Punit-faceCollection";
+	DynamoDBUtil dbUtil = new DynamoDBUtil();
 
-	private static HashMap< String, String> faceStore = new HashMap<>();
+
+	//private static HashMap< String, String> faceStore = new HashMap<>();
 
 	public String detectLabels(MultipartFile imageToCheck) throws IOException {
 
@@ -59,10 +59,9 @@ public class FacePayService {
 
 
 	private RekognitionClient getRekClient() {
-		Region region = Region.AP_SOUTH_1;
 
 		RekognitionClient client = RekognitionClient.builder()
-				.region(region)
+				.region(Configs.REGION)
 				.credentialsProvider(DefaultCredentialsProvider.create())
 				.build();
 		return client;
@@ -115,7 +114,7 @@ public class FacePayService {
 
 		DetectCustomLabelsRequest detectCustomLabelsRequest = DetectCustomLabelsRequest.builder()
 				.image(souImage)
-				.projectVersionArn(modelversion)
+				.projectVersionArn(Configs.MODEL_VERSION)
 				.build();
 		try {
 
@@ -159,29 +158,15 @@ public class FacePayService {
 		return customLable;
 	}
 
-	public String searchImage(MultipartFile imageToSearch) throws IOException {
+	public String searchImage(MultipartFile imageToSearch ) throws IOException {
 
 		RekognitionClient rekClient= getRekClient();
 		Image souImage = getImage(imageToSearch);
 
 
-		System.out.println("************CreateCollectionResponse********\n\n\n\n\n\n");
+		System.out.println("************ searchFaceInCollection ********");
 
-
-		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
-
-		fiUtil.listAllCollections(rekClient);
-		fiUtil.listFacesCollection(rekClient, collectionId);
-
-		System.out.println("********************\n\n\n\n\n\n");
-		System.out.println("************indexImagesInFolder********\n\n\n\n\n\n");
-
-		//indexImagesInFolder(imageFolder, collectionId, rekClient);
-		System.out.println("********************\n\n\n\n\n\n");
-
-		System.out.println("************searchFaceInCollection********\n\n\n\n\n\n");
-
-		String  responseSTR = fiUtil.searchFaceInCollection(rekClient, collectionId, souImage);
+		String  responseSTR = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
 
 
 		if(responseSTR ==null) {
@@ -190,9 +175,9 @@ public class FacePayService {
 			System.out.println("no matching label found");
 
 		}else {
-			String faceid = faceStore.get(responseSTR);
+			
+			String faceid = dbUtil.getFaceID(responseSTR);
 			System.out.println("face id in map is "+faceid);
-			System.out.println("face id in map is "+faceStore.toString());
 			
 			responseSTR = "upi://pay?pa="+faceid+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
 
@@ -215,30 +200,28 @@ public class FacePayService {
 
 
 
-	private String addImage(Image souImage) {
-
-		RekognitionClient rekClient= getRekClient();		
-
-		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
-
-		fiUtil.listAllCollections(rekClient);
-		fiUtil.listFacesCollection(rekClient, collectionId);
-		//indexImagesInFolder(imageFolder, collectionId, rekClient);
-
-		return null;
-	}
+//	private String addImage(Image souImage) {
+//
+//		RekognitionClient rekClient= getRekClient();		
+//
+//		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
+//
+//		fiUtil.listAllCollections(rekClient);
+//		fiUtil.listFacesCollection(rekClient, Configs.COLLECTION_ID);
+//		//indexImagesInFolder(imageFolder, collectionId, rekClient);
+//
+//		return null;
+//	}
 
 	public String addImage(MultipartFile myFile, String imageID) throws IOException {
 
 		RekognitionClient rekClient= getRekClient();	
+		
 		Image souImage = getImage(myFile);
 
-		String  faceID = fiUtil.addToCollection(rekClient, collectionId, souImage);
-		if (faceStore.containsKey(faceID)) {
-			faceStore.put(imageID, faceID);
-			return "face already exist with id"+imageID+", replacing same";
-		}
-		faceStore.put(faceID, imageID);
+		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
+		
+		dbUtil.putFaceID(imageID, faceID);
 
 		return "uploaded image with id: "+imageID;
 
