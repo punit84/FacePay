@@ -27,7 +27,8 @@ import software.amazon.awssdk.services.rekognition.model.RekognitionException;
 public class FacePay {
 	public static void main(String[] args) {
 
-		String collectionId = "facepay";
+	    String collectionId = "Punit-faceCollection";
+
 		String sourceImage = "/Users/jainpuni/pkj.jpg";
 		FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
 
@@ -37,6 +38,11 @@ public class FacePay {
 				.credentialsProvider(ProfileCredentialsProvider.create())
 				.build();
 
+		fiUtil.createMyCollection(rekClient, collectionId);
+		
+		System.exit(0);
+
+		
 		System.out.println("Listing collections");
 		//        String modelversion ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
 

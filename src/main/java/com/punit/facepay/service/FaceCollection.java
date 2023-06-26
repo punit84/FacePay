@@ -87,7 +87,7 @@ public class FaceCollection {
 			byte[] imageData = Files.readAllBytes(imageFile);
 			SdkBytes imageBytes= SdkBytes.fromByteArray(imageData);
 			Image image = Image.builder().bytes(imageBytes).build();
-			boolean response =  fiUtil.addToCollection(rekognitionClient, collectionId,image );
+			String response =  fiUtil.addToCollection(rekognitionClient, collectionId, image );
 
 			System.out.println("Image indexed: " + imageFile.toString() + " status: "+response);
 		} catch (Exception e) {

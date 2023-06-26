@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -30,8 +31,9 @@ public class FacePayService {
 	String modelversion ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
 	private FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
 	private RekoUtil reko= new RekoUtil();
-	private String collectionId = "faceCollection";
+	private String collectionId = "Punit-faceCollection";
 
+	private static HashMap< String, String> faceStore = new HashMap<>();
 
 	public String detectLabels(MultipartFile imageToCheck) throws IOException {
 
@@ -188,8 +190,11 @@ public class FacePayService {
 			System.out.println("no matching label found");
 
 		}else {
-
-			responseSTR = "upi://pay?pa="+responseSTR+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
+			String faceid = faceStore.get(responseSTR);
+			System.out.println("face id in map is "+faceid);
+			System.out.println("face id in map is "+faceStore.toString());
+			
+			responseSTR = "upi://pay?pa="+faceid+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
 
 		}
 
@@ -223,14 +228,20 @@ public class FacePayService {
 		return null;
 	}
 
-	public String addImage(MultipartFile myFile) throws IOException {
-		
-		
+	public String addImage(MultipartFile myFile, String imageID) throws IOException {
+
 		RekognitionClient rekClient= getRekClient();	
 		Image souImage = getImage(myFile);
 
-		boolean  responseSTR = fiUtil.addToCollection(rekClient, collectionId, souImage);
-		return "update: "+responseSTR;
-	}
+		String  faceID = fiUtil.addToCollection(rekClient, collectionId, souImage);
+		if (faceStore.containsKey(faceID)) {
+			faceStore.put(imageID, faceID);
+			return "face already exist with id"+imageID+", replacing same";
+		}
+		faceStore.put(faceID, imageID);
 
+		return "uploaded image with id: "+imageID;
+
+
+	}
 }

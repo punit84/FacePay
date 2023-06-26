@@ -10,6 +10,8 @@ import java.util.List;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.Attribute;
+import software.amazon.awssdk.services.rekognition.model.CreateCollectionRequest;
+import software.amazon.awssdk.services.rekognition.model.CreateCollectionResponse;
 import software.amazon.awssdk.services.rekognition.model.DescribeCollectionRequest;
 import software.amazon.awssdk.services.rekognition.model.DescribeCollectionResponse;
 import software.amazon.awssdk.services.rekognition.model.Face;
@@ -35,8 +37,8 @@ public class FaceImageCollectionUtil {
 
 		SearchFacesByImageRequest facesByImageRequest = SearchFacesByImageRequest.builder()
 				.image(souImage)
-				.maxFaces(10)
-				.faceMatchThreshold(40F)
+				.maxFaces(1)
+				.faceMatchThreshold(60F)
 				.collectionId(collectionId)
 				.build();
 
@@ -47,11 +49,13 @@ public class FaceImageCollectionUtil {
 		for (FaceMatch face: faceImageMatches) {
 			System.out.println("The similarity level is  "+face.similarity());
 			System.out.println();
-			if (face.similarity() >70) {
-				foundFaceName= face.toString();
+			if (face.similarity() >80) {
+				System.out.println("search file details are  " +face.toString() );
+
+				foundFaceName= face.face().faceId();
+				System.out.println("fileid  is " +foundFaceName );
 			}
 		}
-
 		return foundFaceName;
 
 	}
@@ -68,15 +72,10 @@ public class FaceImageCollectionUtil {
 
 	}
 
-	public boolean addToCollection(RekognitionClient rekClient, String collectionId, Image sourceImage) {
+	public String addToCollection(RekognitionClient rekClient, String collectionId, Image sourceImage) {
 
 		try {
-			//			InputStream sourceStream = new FileInputStream(sourceImage);
-			//			SdkBytes sourceBytes = SdkBytes.fromInputStream(sourceStream);
-			//			Image souImage = Image.builder()
-			//					.bytes(sourceBytes)
-			//					.build();
-
+			
 			IndexFacesRequest facesRequest = IndexFacesRequest.builder()
 					.collectionId(collectionId)
 					.image(sourceImage)
@@ -93,7 +92,7 @@ public class FaceImageCollectionUtil {
 			for (FaceRecord faceRecord : faceRecords) {
 				System.out.println("  Face ID: " + faceRecord.face().faceId());
 				System.out.println("  Location:" + faceRecord.faceDetail().boundingBox().toString());
-				return true;
+				return faceRecord.face().faceId();
 			}
 
 			List<UnindexedFace> unindexedFaces = facesResponse.unindexedFaces();
@@ -109,7 +108,7 @@ public class FaceImageCollectionUtil {
 		} catch (RekognitionException e) {
 			System.out.println(e.getMessage());
 		}
-		return false;
+		return null;
 	}
 
 	public void listAllCollections(RekognitionClient rekClient) {
@@ -166,4 +165,21 @@ public class FaceImageCollectionUtil {
 			System.exit(1);
 		}
 	}
+	
+    public void createMyCollection(RekognitionClient rekClient,String collectionId ) {
+
+        try {
+            CreateCollectionRequest collectionRequest = CreateCollectionRequest.builder()
+                .collectionId(collectionId)
+                .build();
+
+            CreateCollectionResponse collectionResponse = rekClient.createCollection(collectionRequest);
+            System.out.println("CollectionArn: " + collectionResponse.collectionArn());
+            System.out.println("Status code: " + collectionResponse.statusCode().toString());
+
+        } catch(RekognitionException e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
+        }
+    }
 }

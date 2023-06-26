@@ -44,14 +44,18 @@
         var fd = new FormData();
  
               var count = document.getElementById('fileToUpload').files.length;
- 
+              var imageID = document.getElementById('imageID');
+					
+              var imageIDValue = imageID.value;
+
               for (var index = 0; index < count; index ++)
  
               {
  
                      var file = document.getElementById('fileToUpload').files[index];
  
-                     fd.append('myFile', file);
+                     fd.append('myFile', file );
+                     fd.append('imageID', imageIDValue)
  
               }
  
@@ -164,8 +168,8 @@
     <div>
 	<br> <br>
  	<br> <br>
-
-      <input type="button" onclick="uploadFile()" value="UploadToPay" />
+      <input type="text" id="imageID" name="imageID">
+      <input type="button" onclick="addImage()" value="indexImage" />
  
     </div>
  	<br> <br>
@@ -173,9 +177,9 @@
  
  
  	<br> <br>
+      <input type="button" onclick="uploadFile()" value="SearchAndPay" />
 
      <div>
-      <input type="button" onclick="addImage()" value="addImage" />
     </div>
     <div id="progress"></div>
  
