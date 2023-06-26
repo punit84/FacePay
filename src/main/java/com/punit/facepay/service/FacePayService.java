@@ -179,7 +179,13 @@ public class FacePayService {
 			String faceid = dbUtil.getFaceID(responseSTR);
 			System.out.println("face id in DB is "+faceid);
 			
-			responseSTR = "upi://pay?pa="+faceid+"@paytm&pn=PaytmUser&cu=INR";
+			if (faceid.contains("@")) {
+				responseSTR = "upi://pay?pa="+faceid+"&pn=PaytmUser&cu=INR";
+			}else {
+				responseSTR = "upi://pay?pa="+faceid+"@paytm&pn=PaytmUser&cu=INR";
+			}
+			
+			System.out.println("url is : " + responseSTR);
 
 		}
 
