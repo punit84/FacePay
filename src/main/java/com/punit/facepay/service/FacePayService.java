@@ -179,7 +179,7 @@ public class FacePayService {
 			String faceid = dbUtil.getFaceID(responseSTR);
 			System.out.println("face id in DB is "+faceid);
 			
-			responseSTR = "upi://pay?pa="+faceid+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
+			responseSTR = "upi://pay?pa="+faceid+"@paytm&pn=PaytmUser&cu=INR";
 
 		}
 
