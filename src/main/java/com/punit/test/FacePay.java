@@ -37,9 +37,9 @@ public class FacePay {
 				.credentialsProvider(ProfileCredentialsProvider.create())
 				.build();
 
-		rekoUtil.deleteAllMyCollection(rekClient);
+		//rekoUtil.deleteAllMyCollection(rekClient);
 		
-		rekoUtil.createMyCollection(rekClient, Configs.COLLECTION_ID);
+		//rekoUtil.createMyCollection(rekClient, Configs.COLLECTION_ID);
 
       
 

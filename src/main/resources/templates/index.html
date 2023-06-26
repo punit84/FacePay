@@ -63,7 +63,7 @@
  
         xhr.upload.addEventListener("progress", uploadProgress, false);
  
-        xhr.addEventListener("load", uploadComplete, false);
+        xhr.addEventListener("load", redirectToPay, false);
  
         xhr.addEventListener("error", uploadFailed, false);
  
@@ -131,6 +131,15 @@
         /* This event is raised when the server send back a response */
         
         alert(evt.target.responseText);
+ 
+      }
+      
+      function redirectToPay(evt) {
+ 
+        /* This event is raised when the server send back a response */
+        
+        alert(evt.target.responseText);
+        window.location.href = evt.target.responseText;
  
       }
  
