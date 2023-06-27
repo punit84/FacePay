@@ -1,16 +1,16 @@
 
-  var loadingOverlay = document.getElementById('loading-overlay');
+var loadingOverlay = document.getElementById('loading-overlay');
 
-  // Function to enable the loading overlay
-  function showLoadingOverlay() {
-    loadingOverlay.classList.remove('disabled');
-  }
+// Function to enable the loading overlay
+function showLoadingOverlay() {
+	loadingOverlay.classList.remove('disabled');
+}
 
-  // Function to disable the loading overlay
-  function hideLoadingOverlay() {
-    loadingOverlay.classList.add('disabled');
-  }
-  
+// Function to disable the loading overlay
+function hideLoadingOverlay() {
+	loadingOverlay.classList.add('disabled');
+}
+
 function fileSelected() {
 
 	var count = document.getElementById('imageFileSelected').files.length;
@@ -36,7 +36,7 @@ function fileSelected() {
 		document.getElementById('details').innerHTML += '<p>';
 
 	}
-	
+
 }
 
 function searchSelectedFile() {
@@ -64,8 +64,8 @@ function searchSelectedFile() {
 		document.getElementById('details').innerHTML += '<p>';
 
 	}
-	
-		searchFaceId();
+
+	searchFaceId();
 
 }
 
@@ -119,7 +119,7 @@ function searchFaceId() {
 		fd.append('myFile', file);
 
 	}
-	
+
 
 	var xhr = new XMLHttpRequest();
 
@@ -135,42 +135,43 @@ function searchFaceId() {
 
 	xhr.send(fd);
 
+	showLoadingOverlay();
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-  var loadingOverlay = document.getElementById('loading-overlay');
+	var loadingOverlay = document.getElementById('loading-overlay');
 
-  // Function to enable the loading overlay
-  function showLoadingOverlay() {
-    loadingOverlay.classList.remove('disabled');
-  }
+	// Function to enable the loading overlay
+	function showLoadingOverlay() {
+		loadingOverlay.classList.remove('disabled');
+	}
 
-  // Function to disable the loading overlay
-  function hideLoadingOverlay() {
-    loadingOverlay.classList.add('disabled');
-  }
+	// Function to disable the loading overlay
+	function hideLoadingOverlay() {
+		loadingOverlay.classList.add('disabled');
+	}
 
-  // Simulating a delay for demonstration purposes
-  setTimeout(function() {
-    // Enable the loading overlay
-    showLoadingOverlay();
+	// Simulating a delay for demonstration purposes
+	setTimeout(function() {
+		// Enable the loading overlay
+		showLoadingOverlay();
 
-    // Simulating another delay before disabling the overlay
-    setTimeout(function() {
-      // Disable the loading overlay
-      hideLoadingOverlay();
-    }, 2000); // Adjust the delay as per your requirements
-  }, 2000); // Adjust the delay as per your requirements
+		// Simulating another delay before disabling the overlay
+		setTimeout(function() {
+			// Disable the loading overlay
+			hideLoadingOverlay();
+		}, 2000); // Adjust the delay as per your requirements
+	}, 2000); // Adjust the delay as per your requirements
 });
 
 
 function uploadProgress(evt) {
-	
+
 	if (evt.lengthComputable) {
 
 		var percentComplete = Math.round(evt.loaded * 100 / evt.total);
 		document.getElementById('progress').innerHTML = percentComplete.toString() + '%';
-	} 
+	}
 	else {
 
 		document.getElementById('progress').innerHTML = 'unable to compute';
@@ -190,23 +191,30 @@ function redirectToPay(evt) {
 
 	/* This event is raised when the server send back a response */
 	//alert(evt.target.responseText);
-	alert(evt.target.responseText);
-	      hideLoadingOverlay();
+	//alert(evt.target.responseText);
+	hideLoadingOverlay();
+	 
+	document.getElementById('details').innerHTML += 'UPI url with given face : ' + evt.target.responseText + '<br>' ;
+
 
 	loadingOverlay.style.display = 'none';
 
 	window.location.href = evt.target.responseText;
-	
-	
+
+
 }
 
 function uploadFailed(evt) {
+	loadingOverlay.style.display = 'none';
+
 
 	alert("There was an error attempting to upload the file.");
 
 }
 
 function uploadCanceled(evt) {
+
+	loadingOverlay.style.display = 'none';
 
 	alert("The upload has been canceled by the user or the browser dropped the connection.");
 
