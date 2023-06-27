@@ -16,7 +16,7 @@ public class WebController {
 		return "admin";
 	}
 
-	@RequestMapping(value = "/error")
+	@RequestMapping(value = "/e")
 	public String error() {
 		return "error";
 	}
