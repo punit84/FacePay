@@ -121,7 +121,8 @@ function uploadComplete(evt) {
 function redirectToPay(evt) {
 
 	/* This event is raised when the server send back a response */
-	alert(evt.target.responseText);
+	//alert(evt.target.responseText);
+
 	window.location.href = evt.target.responseText;
 }
 

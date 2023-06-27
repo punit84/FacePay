@@ -8,32 +8,41 @@
 </head>
 
 <body>
+
+
 	<div class="container">
 		<img src="paytm.png" alt="Logo" width="200" height="200">
 		<h2>MuhPe: Pay using faceID</h2>
 		<h4>#Muh Dikhai Karo</h2>
 
-
-			<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
-				<div>
-					<br>
-					<br>
-
-					<input type="file" name="imageFileSelected" id="imageFileSelected" onchange="fileSelected();"
-						accept="image/*" capture="camera" />
+			<div class="section-container">
+				<div class="imgBx">
+				    <img src="muhPay.jpg" alt="Logo" width="250" height="400">
 				</div>
-				<br><br>
 
-				<div id="details"></div>
+				<div class="mb-5">
+					<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
+						<div>
+							<input type="file" name="imageFileSelected" id="imageFileSelected"
+								onchange="fileSelected();" accept="image/*" capture="camera" />
+						</div>
+						<br>
 
-				<div>
-					<input type="button" onclick="searchFaceId()" value="Search and Pay">
-				</div><br>
-				<br>
-				<div id="progress"></div>
+						<div id="details"></div>
 
+						<div>
+							<input type="button" onclick="searchFaceId()" value="Search and Pay">
+						</div>
+						<br>
 				</div>
-			</form>
+				</form>
+
+			</div>
+	</div>
+
+
+
+
 	</div>
 
 	<script src="script.js"></script>
