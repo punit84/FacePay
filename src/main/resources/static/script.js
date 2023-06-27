@@ -1,3 +1,16 @@
+
+  var loadingOverlay = document.getElementById('loading-overlay');
+
+  // Function to enable the loading overlay
+  function showLoadingOverlay() {
+    loadingOverlay.classList.remove('disabled');
+  }
+
+  // Function to disable the loading overlay
+  function hideLoadingOverlay() {
+    loadingOverlay.classList.add('disabled');
+  }
+  
 function fileSelected() {
 
 	var count = document.getElementById('imageFileSelected').files.length;
@@ -23,8 +36,39 @@ function fileSelected() {
 		document.getElementById('details').innerHTML += '<p>';
 
 	}
+	
+}
+
+function searchSelectedFile() {
+
+	var count = document.getElementById('imageFileSelected').files.length;
+
+	document.getElementById('details').innerHTML = "";
+
+	for (var index = 0; index < count; index++) {
+
+		var file = document.getElementById('imageFileSelected').files[index];
+
+		var fileSize = 0;
+
+		if (file.size > 1024 * 1024)
+
+			fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+
+		else
+
+			fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+
+		document.getElementById('details').innerHTML += 'Name: ' + file.name + '<br>Size: ' + fileSize + '<br>Type: ' + file.type;
+
+		document.getElementById('details').innerHTML += '<p>';
+
+	}
+	
+		searchFaceId();
 
 }
+
 
 function addImage() {
 	var url = '/api/addImage';
@@ -75,6 +119,7 @@ function searchFaceId() {
 		fd.append('myFile', file);
 
 	}
+	
 
 	var xhr = new XMLHttpRequest();
 
@@ -86,28 +131,51 @@ function searchFaceId() {
 
 	xhr.addEventListener("abort", uploadCanceled, false);
 
-	xhr.open(method, url, false); // true for asynchronous request
+	xhr.open(method, url, true); // true for asynchronous request
 
 	xhr.send(fd);
 
 }
 
-function uploadProgress(evt) {
+window.addEventListener('DOMContentLoaded', function() {
+  var loadingOverlay = document.getElementById('loading-overlay');
 
+  // Function to enable the loading overlay
+  function showLoadingOverlay() {
+    loadingOverlay.classList.remove('disabled');
+  }
+
+  // Function to disable the loading overlay
+  function hideLoadingOverlay() {
+    loadingOverlay.classList.add('disabled');
+  }
+
+  // Simulating a delay for demonstration purposes
+  setTimeout(function() {
+    // Enable the loading overlay
+    showLoadingOverlay();
+
+    // Simulating another delay before disabling the overlay
+    setTimeout(function() {
+      // Disable the loading overlay
+      hideLoadingOverlay();
+    }, 2000); // Adjust the delay as per your requirements
+  }, 2000); // Adjust the delay as per your requirements
+});
+
+
+function uploadProgress(evt) {
+	
 	if (evt.lengthComputable) {
 
 		var percentComplete = Math.round(evt.loaded * 100 / evt.total);
-
 		document.getElementById('progress').innerHTML = percentComplete.toString() + '%';
-
-	}
-
+	} 
 	else {
 
 		document.getElementById('progress').innerHTML = 'unable to compute';
 
 	}
-
 }
 
 function uploadComplete(evt) {
@@ -122,8 +190,14 @@ function redirectToPay(evt) {
 
 	/* This event is raised when the server send back a response */
 	//alert(evt.target.responseText);
+	alert(evt.target.responseText);
+	      hideLoadingOverlay();
+
+	loadingOverlay.style.display = 'none';
 
 	window.location.href = evt.target.responseText;
+	
+	
 }
 
 function uploadFailed(evt) {

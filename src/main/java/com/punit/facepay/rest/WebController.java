@@ -15,6 +15,11 @@ public class WebController {
 	public String admin() {
 		return "admin";
 	}
+	
+	@RequestMapping(value = "/1")
+	public String index2() {
+		return "1.html";
+	}
 
 	@RequestMapping(value = "/e")
 	public String error() {
