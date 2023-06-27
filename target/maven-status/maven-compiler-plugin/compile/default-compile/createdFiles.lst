@@ -1,6 +1,0 @@
-com/example/awsrekognition/service/FacePay.class
-com/example/awsrekognition/configuration/AwsProperties.class
-com/example/awsrekognition/AwsRekognitionApplication.class
-com/example/awsrekognition/service/AwsRekognitionService.class
-com/example/awsrekognition/rest/AwsRekognitionRestController.class
-com/example/awsrekognition/service/WebController.class
