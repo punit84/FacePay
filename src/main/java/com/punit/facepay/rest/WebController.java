@@ -18,7 +18,7 @@ public class WebController {
 	
 	@RequestMapping(value = "/1")
 	public String index2() {
-		return "1.html";
+		return "1";
 	}
 
 	@RequestMapping(value = "/e")
