@@ -193,13 +193,21 @@ function redirectToPay(evt) {
 	//alert(evt.target.responseText);
 	//alert(evt.target.responseText);
 	hideLoadingOverlay();
-	 
-	document.getElementById('details').innerHTML += 'UPI url with given face : ' + evt.target.responseText + '<br>' ;
 
+	if ("NOT FOUND" === "evt.target.responseText") {
 
+	document.getElementById('details').innerHTML += 'Register this face first : ' + evt.target.responseText + '<br>';
 	loadingOverlay.style.display = 'none';
+ 	alert("Given face is not registered. please contact admin ");
 
-	window.location.href = evt.target.responseText;
+
+	} else {
+
+	document.getElementById('details').innerHTML += 'UPI url with given face : ' + evt.target.responseText + '<br>';
+	loadingOverlay.style.display = 'none';
+	//window.location.href = evt.target.responseText;
+
+	}
 
 
 }

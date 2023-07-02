@@ -25,4 +25,9 @@ public class WebController {
 	public String error() {
 		return "error";
 	}
+	
+	@RequestMapping(value = "/NOTFOUND")
+	public String NOTFOUND() {
+		return "NOTFOUND";
+	}
 }
