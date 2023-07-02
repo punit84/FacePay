@@ -6,16 +6,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.punit.facepay.service.helper.DynamoDBUtil;
 import com.punit.facepay.service.helper.FaceImageCollectionUtil;
 import com.punit.facepay.service.helper.RekoUtil;
+import com.punit.facepay.service.helper.UPILinkUtil;
+import com.punit.facepay.service.helper.s3Util;
 
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.CustomLabel;
 import software.amazon.awssdk.services.rekognition.model.DetectCustomLabelsRequest;
@@ -28,16 +30,23 @@ public class FacePayService {
 
 	//	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
 
-	private FaceImageCollectionUtil fiUtil= new FaceImageCollectionUtil();
-	private RekoUtil reko= new RekoUtil();
-	DynamoDBUtil dbUtil = new DynamoDBUtil();
+	@Autowired
+	private FaceImageCollectionUtil fiUtil;
+	@Autowired
+	private RekoUtil reko;
+	
+	@Autowired
+	private s3Util s3Util;
+
+	@Autowired
+	DynamoDBUtil dbUtil;
 
 
 	//private static HashMap< String, String> faceStore = new HashMap<>();
 
 	public String detectLabels(MultipartFile imageToCheck) throws IOException {
 
-		Image souImage = getImage(imageToCheck);
+		Image souImage = getImage(imageToCheck.getBytes());
 		getRekClient();		
 
 		return detectLabels(souImage);
@@ -67,9 +76,10 @@ public class FacePayService {
 		return client;
 	}
 
-	private Image getImage(MultipartFile imageToCheck) throws IOException {
+	private Image getImage(byte[] imageToCheck) throws IOException {
+		
 		Image souImage = Image.builder()
-				.bytes(SdkBytes.fromByteArray(imageToCheck.getBytes()))
+				.bytes(SdkBytes.fromByteArray(imageToCheck))
 				.build();
 		return souImage;
 	}
@@ -161,34 +171,33 @@ public class FacePayService {
 	public String searchImage(MultipartFile imageToSearch ) throws IOException {
 
 		RekognitionClient rekClient= getRekClient();
-		Image souImage = getImage(imageToSearch);
-
+		
+		byte[] imagebytes= imageToSearch.getBytes();
+		Image souImage = getImage(imagebytes);
 
 		System.out.println("************ searchFaceInCollection ********");
 
 		String  responseSTR = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
-
+		String filename =  System.currentTimeMillis() +"";
 
 		if(responseSTR ==null) {
-
-			responseSTR= "No Match found";
 			System.out.println("no matching label found");
+			
+			s3Util.storeImageAsync("failed" , filename, imagebytes);
+			
+			return null; 
 
 		}else {
 			
 			String faceid = dbUtil.getFaceID(responseSTR);
 			System.out.println("face id in DB is "+faceid);
 			
-			if (faceid.contains("@")) {
-				responseSTR = "upi://pay?pa="+faceid+"&pn=PaytmUser&cu=INR";
-			}else {
-				responseSTR = "upi://pay?pa="+faceid+"@paytm&pn=PaytmUser&cu=INR";
-			}
-			
+			responseSTR = UPILinkUtil.getUrl(faceid);
+			s3Util.storeImageAsync(responseSTR+"/" , filename, imagebytes);
 			System.out.println("url is : " + responseSTR);
 
 		}
-
+		
 		//		reko.addToCollection(rekClient, collectionId, sourceImage)
 		//CelebrityInfo.getCelebrityInfo(rekClient, collectionId);
 
@@ -203,6 +212,8 @@ public class FacePayService {
 
 		return responseSTR;
 	}
+
+
 
 
 
@@ -223,8 +234,10 @@ public class FacePayService {
 
 		RekognitionClient rekClient= getRekClient();	
 		
-		Image souImage = getImage(myFile);
+		Image souImage = getImage(myFile.getBytes());
 
+		
+		
 		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
 		
 		dbUtil.putFaceID(faceID,imageID);

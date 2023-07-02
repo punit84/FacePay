@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.List;
 // snippet-end:[rekognition.java2.search_faces_collection.import]
 
+import org.springframework.stereotype.Component;
+
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.Attribute;
@@ -31,6 +33,7 @@ import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageReque
 import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
 import software.amazon.awssdk.services.rekognition.model.UnindexedFace;
 
+@Component
 public class FaceImageCollectionUtil {
 
 	public String searchFaceInCollection(RekognitionClient rekClient,String collectionId,Image souImage) {

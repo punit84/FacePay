@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.punit.facepay.service.Configs;
 
 import software.amazon.awssdk.core.SdkBytes;
@@ -27,6 +29,7 @@ import software.amazon.awssdk.services.rekognition.model.Reason;
 import software.amazon.awssdk.services.rekognition.model.RekognitionException;
 import software.amazon.awssdk.services.rekognition.model.UnindexedFace;
 
+@Component
 public class RekoUtil {
 
 	public CreateCollectionResponse createMyCollection(RekognitionClient rekClient,String collectionId ) {

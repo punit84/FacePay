@@ -2,6 +2,8 @@ package com.punit.facepay.service.helper;
 
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 import com.punit.facepay.service.Configs;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -13,6 +15,7 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
+@Component
 public class DynamoDBUtil {
     DynamoDbClient client = DynamoDbClient.builder()
             .region(Configs.REGION)

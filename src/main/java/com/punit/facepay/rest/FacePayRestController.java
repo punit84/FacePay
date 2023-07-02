@@ -10,13 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.punit.facepay.service.Configs;
 import com.punit.facepay.service.FacePayService;
 
 @RestController
 @RequestMapping("/api")
 public class FacePayRestController {
 
-	private FacePayService facepayService;
+	private static FacePayService facepayService;
 
 	public FacePayRestController(FacePayService awsRekognitionService) {
 		this.facepayService = awsRekognitionService;
@@ -25,7 +26,12 @@ public class FacePayRestController {
 	@PostMapping("/facepay")
 	public Object facepay(@RequestParam MultipartFile myFile ) throws IOException {
 		String respString= facepayService.searchImage(myFile);
-	
+		
+		if (respString == null) {
+			return ResponseEntity.ok(Configs.FACE_NOTFOUND);
+
+		}
+		
 		return ResponseEntity.ok(respString);
 	}
 	
