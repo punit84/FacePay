@@ -1,7 +1,6 @@
 package com.punit.facepay.rest;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +31,7 @@ public class FacePayRestController {
 
 		}
 		
-		return ResponseEntity.ok(respString);
+		return ResponseEntity.ok(  );
 	}
 	
 	@PostMapping("/addImage")
@@ -59,4 +58,10 @@ public class FacePayRestController {
 		return ResponseEntity.ok(facepayService.detectLabelsImage(image));
 
 	}
+	
+	@PostMapping("/profile")
+	public Object profile(@RequestParam MultipartFile myFile) throws IOException {
+		return ResponseEntity.ok(facepayService.profile(myFile));
+	}
+
 }

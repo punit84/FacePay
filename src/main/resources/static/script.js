@@ -187,6 +187,15 @@ function uploadComplete(evt) {
 
 }
 
+function profileDisplay(evt) {
+
+	/* This event is raised when the server send back a response */
+	hideLoadingOverlay();
+
+	document.getElementById('details').innerHTML += 'faceDetails are : ' + evt.target.responseText + '<br>';
+
+}
+
 function redirectToPay(evt) {
 
 	/* This event is raised when the server send back a response */
@@ -196,20 +205,52 @@ function redirectToPay(evt) {
 
 	if ("NOT FOUND" === "evt.target.responseText") {
 
-	document.getElementById('details').innerHTML += 'Register this face first : ' + evt.target.responseText + '<br>';
-	loadingOverlay.style.display = 'none';
- 	alert("Given face is not registered. please contact admin ");
+		document.getElementById('details').innerHTML += 'Register this face first : ' + evt.target.responseText + '<br>';
+		loadingOverlay.style.display = 'none';
+		alert("Given face is not registered. please contact admin ");
 
 
 	} else {
 
-	document.getElementById('details').innerHTML += 'UPI url with given face : ' + evt.target.responseText + '<br>';
-	loadingOverlay.style.display = 'none';
-	//window.location.href = evt.target.responseText;
+		document.getElementById('details').innerHTML += 'UPI url with given face : ' + evt.target.responseText + '<br>';
+		loadingOverlay.style.display = 'none';
 
 	}
 
 
+}
+
+function profile() {
+	var url = '/api/profile';
+	var method = 'POST';
+	var fd = new FormData();
+
+	var count = document.getElementById('imageFileSelected').files.length;
+
+	for (var index = 0; index < count; index++) {
+
+		var file = document.getElementById('imageFileSelected').files[index];
+
+		fd.append('myFile', file);
+
+	}
+
+
+	var xhr = new XMLHttpRequest();
+
+	xhr.upload.addEventListener("progress", uploadProgress, false);
+
+	xhr.addEventListener("load", profileDisplay, false);
+
+	xhr.addEventListener("error", uploadFailed, false);
+
+	xhr.addEventListener("abort", uploadCanceled, false);
+
+	xhr.open(method, url, true); // true for asynchronous request
+
+	xhr.send(fd);
+
+	showLoadingOverlay();
 }
 
 function uploadFailed(evt) {

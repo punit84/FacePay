@@ -30,4 +30,12 @@ public class WebController {
 	public String NOTFOUND() {
 		return "NOTFOUND";
 	}
+	
+	
+	@RequestMapping(value = "/p")
+	public String profile() {
+		return "profile";
+	}
+	
+	
 }
