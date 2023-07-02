@@ -1,7 +1,10 @@
 package com.punit.facepay.service;
 
+import org.springframework.stereotype.Component;
+
 import software.amazon.awssdk.regions.Region;
 
+@Component
 public class Configs {
 	
 	
@@ -9,9 +12,14 @@ public class Configs {
 	public static final String COLLECTION_ID = "FacePayCollection";
 	public static final Region REGION = Region.AP_SOUTH_1;
 	public static final String FACE_ID = "faceid";
+	public static final String S3_PATH = "muhpe.com";
+	//public static final String S3_PATH = "s3://muhpe.com/images/";
 	public static int MAX_MATCHES = 1;
 
 	public static final String FACE_TABLE = "FaceTable";
+	public static final String FACE_NOTFOUND = "Face Not Found";
+	
+	
 
 
 }
