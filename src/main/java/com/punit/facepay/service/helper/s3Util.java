@@ -85,14 +85,14 @@ public class s3Util {
 	public String storeinS3(MultipartFile imageToSearch, byte[] imagebytes, String responseSTR, String similarity) {
 		String fileName = StringUtils.cleanPath(System.currentTimeMillis()+"_"+imageToSearch.getOriginalFilename()  );
 
-		fileName = fileName.replaceAll("\\W", "");
+		fileName = fileName.replaceAll("\\s", "");
 		if(responseSTR ==null) {
 
 			fileName =  "images/failed/"+fileName;
 
 		}else {
 
-			fileName =  "images/"+similarity+"_"+responseSTR+"/"+fileName;
+			fileName =  "images/"+responseSTR+"/"+similarity+"_"+fileName;
 		}
 		storeImageAsync( fileName, imagebytes);
 		System.out.println("url is : " + responseSTR);
