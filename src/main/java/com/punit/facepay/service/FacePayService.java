@@ -206,7 +206,7 @@ public class FacePayService {
 		if(face ==null) {
 			System.out.println("no matching label found");
 
-			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "");
+			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "100%");
 
 		}else {
 			responseSTR = face.face().faceId();
