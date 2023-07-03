@@ -23,6 +23,8 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.AgeRange;
 import software.amazon.awssdk.services.rekognition.model.Attribute;
+import software.amazon.awssdk.services.rekognition.model.Beard;
+import software.amazon.awssdk.services.rekognition.model.BoundingBox;
 import software.amazon.awssdk.services.rekognition.model.CustomLabel;
 import software.amazon.awssdk.services.rekognition.model.DetectCustomLabelsRequest;
 import software.amazon.awssdk.services.rekognition.model.DetectCustomLabelsResponse;
@@ -31,6 +33,7 @@ import software.amazon.awssdk.services.rekognition.model.DetectFacesResponse;
 import software.amazon.awssdk.services.rekognition.model.FaceDetail;
 import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.RekognitionException;
+import org.springframework.util.StringUtils;
 
 @Service
 public class FacePayService {
@@ -47,6 +50,9 @@ public class FacePayService {
 
 	@Autowired
 	DynamoDBUtil dbUtil;
+
+    @Autowired
+    private AsyncService asyncService;
 
 
 	//private static HashMap< String, String> faceStore = new HashMap<>();
@@ -175,35 +181,44 @@ public class FacePayService {
 		return customLable;
 	}
 
-	public String searchImage(MultipartFile imageToSearch ) throws IOException {
+	public String searchImage(MultipartFile imageToSearch ) {
 
 		RekognitionClient rekClient= getRekClient();
 
-		byte[] imagebytes= imageToSearch.getBytes();
-		Image souImage = getImage(imagebytes);
+		byte[] imagebytes = null;
+		Image souImage = null;
+		try {
+			imagebytes = imageToSearch.getBytes();
+			souImage = getImage(imagebytes);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		System.out.println("************ searchFaceInCollection ********");
 
 		String  responseSTR = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
-		String filename =  System.currentTimeMillis() +"";
+	//	String filename =  System.currentTimeMillis() +"";
 
+		
+        
 		if(responseSTR ==null) {
 			System.out.println("no matching label found");
-
-			s3Util.storeImageAsync("failed" , filename, imagebytes);
-
-			return null; 
-
+	        asyncService.performAsyncTask(imageToSearch, imagebytes, responseSTR);
+			
 		}else {
-
-			String faceid = dbUtil.getFaceID(responseSTR);
+	        String faceid = dbUtil.getFaceID(responseSTR);
 			System.out.println("face id in DB is "+faceid);
+	        asyncService.performAsyncTask(imageToSearch, imagebytes, new String (responseSTR));
 
 			responseSTR = UPILinkUtil.getUrl(faceid);
-			s3Util.storeImageAsync(responseSTR+"/" , filename, imagebytes);
-			System.out.println("url is : " + responseSTR);
+			
 
 		}
+		
+
+        
 
 		//		reko.addToCollection(rekClient, collectionId, sourceImage)
 		//CelebrityInfo.getCelebrityInfo(rekClient, collectionId);
@@ -219,8 +234,6 @@ public class FacePayService {
 
 		return responseSTR;
 	}
-
-
 
 
 
@@ -291,6 +304,41 @@ public class FacePayService {
 		System.out.println("************ detectFaceInCollection ********");
 
 
+		return faceDetails.toString();
+	}
+	
+	private String facejson(List<FaceDetail> faceDetails) {
+		// Create a sample DetectFacesResponse with all available parameters
+		DetectFacesResponse response = DetectFacesResponse.builder()
+				.faceDetails(
+						FaceDetail.builder()
+						.ageRange(AgeRange.builder().low(20).high(30).build())
+						.beard(Beard.builder().value(true).confidence(0.95f).build())
+						.boundingBox(BoundingBox.builder().width(0.3f).height(0.4f).left(0.2f).top(0.1f).build())
+						// Add more parameters as needed
+						.build(),
+						FaceDetail.builder()
+						.ageRange(AgeRange.builder().low(25).high(35).build())
+						.beard(Beard.builder().value(false).confidence(0.85f).build())
+						.boundingBox(BoundingBox.builder().width(0.2f).height(0.5f).left(0.1f).top(0.3f).build())
+						// Add more parameters as needed
+						.build()
+						)
+				.build();
+
+		faceDetails.addAll(response.faceDetails());
+
+		// Create an instance of ObjectMapper
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		try {
+			// Convert the List<FaceDetail> to JSON string
+			String json = objectMapper.writeValueAsString(faceDetails);
+			System.out.println(json);
+			return json;
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 		return faceDetails.toString();
 	}
 }
