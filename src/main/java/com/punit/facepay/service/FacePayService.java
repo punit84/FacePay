@@ -206,16 +206,16 @@ public class FacePayService {
 		if(face ==null) {
 			System.out.println("no matching label found");
 
-			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR);
+			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "");
 
 		}else {
 			responseSTR = face.face().faceId();
 			String faceid = dbUtil.getFaceID(responseSTR);
-			System.out.println("face id in DB is "+faceid);
-			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR+"_"+face.similarity());
+			System.out.println("face id in DB is "+faceid + " similarity is " +face.similarity() );
+			
+			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR,face.similarity().toString()  );
 
 			responseSTR = UPILinkUtil.getUrl(faceid);
-
 
 		}
 
