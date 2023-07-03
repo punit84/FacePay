@@ -22,8 +22,7 @@ public class AsyncService {
 
 		// Simulating a delay of 5 seconds
 		try {
-			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR);
-
+			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "100%");
 
 		} catch (Exception e) {
 			e.printStackTrace();
