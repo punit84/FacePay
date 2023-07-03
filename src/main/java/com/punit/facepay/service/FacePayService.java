@@ -31,9 +31,9 @@ import software.amazon.awssdk.services.rekognition.model.DetectCustomLabelsRespo
 import software.amazon.awssdk.services.rekognition.model.DetectFacesRequest;
 import software.amazon.awssdk.services.rekognition.model.DetectFacesResponse;
 import software.amazon.awssdk.services.rekognition.model.FaceDetail;
+import software.amazon.awssdk.services.rekognition.model.FaceMatch;
 import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.RekognitionException;
-import org.springframework.util.StringUtils;
 
 @Service
 public class FacePayService {
@@ -51,8 +51,8 @@ public class FacePayService {
 	@Autowired
 	DynamoDBUtil dbUtil;
 
-    @Autowired
-    private AsyncService asyncService;
+	@Autowired
+	private AsyncService asyncService;
 
 
 	//private static HashMap< String, String> faceStore = new HashMap<>();
@@ -198,23 +198,27 @@ public class FacePayService {
 
 		System.out.println("************ searchFaceInCollection ********");
 
-		String  responseSTR = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
-        
-		if(responseSTR ==null) {
+
+
+		FaceMatch face = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
+
+		String  responseSTR = null;
+		if(face ==null) {
 			System.out.println("no matching label found");
-			
+
 			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR);
-			
+
 		}else {
-	        String faceid = dbUtil.getFaceID(responseSTR);
+			responseSTR = face.face().faceId();
+			String faceid = dbUtil.getFaceID(responseSTR);
 			System.out.println("face id in DB is "+faceid);
-			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR);
+			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR+"_"+face.similarity());
 
 			responseSTR = UPILinkUtil.getUrl(faceid);
-			
+
 
 		}
-	
+
 		return responseSTR;
 	}
 
@@ -272,24 +276,24 @@ public class FacePayService {
 			System.out.println("There is a smile : "+face.smile().value().toString());
 		}
 
-		 // Create an instance of ObjectMapper
-        ObjectMapper objectMapper = new ObjectMapper();
+		// Create an instance of ObjectMapper
+		ObjectMapper objectMapper = new ObjectMapper();
 
-        try {
-            // Convert the list to JSON string
-            String json = objectMapper.writeValueAsString(faceDetails);
-            System.out.println(json);
-            return json;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-		
+		try {
+			// Convert the list to JSON string
+			String json = objectMapper.writeValueAsString(faceDetails);
+			System.out.println(json);
+			return json;
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+
 		System.out.println("************ detectFaceInCollection ********");
 
 
 		return faceDetails.toString();
 	}
-	
+
 	private String facejson(List<FaceDetail> faceDetails) {
 		// Create a sample DetectFacesResponse with all available parameters
 		DetectFacesResponse response = DetectFacesResponse.builder()

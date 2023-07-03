@@ -36,12 +36,12 @@ import software.amazon.awssdk.services.rekognition.model.UnindexedFace;
 @Component
 public class FaceImageCollectionUtil {
 
-	public String searchFaceInCollection(RekognitionClient rekClient,String collectionId,Image souImage) {
+	public FaceMatch searchFaceInCollection(RekognitionClient rekClient,String collectionId,Image souImage) {
 
 		SearchFacesByImageRequest facesByImageRequest = SearchFacesByImageRequest.builder()
 				.image(souImage)
 				.maxFaces(1)
-				.faceMatchThreshold(60F)
+				.faceMatchThreshold(70F)
 				.collectionId(collectionId)
 				.build();
 
@@ -49,21 +49,24 @@ public class FaceImageCollectionUtil {
 		System.out.println("Faces matching in the collection");
 		List<FaceMatch> faceImageMatches = imageResponse.faceMatches();
 		String foundFaceName = null;
+		FaceMatch matchingface = null;
+		
 		for (FaceMatch face: faceImageMatches) {
+			matchingface = face;
+
 			System.out.println("The similarity level is  "+face.similarity());
 			System.out.println();
-			if (face.similarity() >80) {
+			if (face.similarity() >70) {
 				System.out.println("search file details are  " +face.toString() );
-
-				foundFaceName= face.face().faceId();
+				foundFaceName=matchingface.face().faceId();
 				System.out.println("fileid  is " +foundFaceName );
 			}
 		}
-		return foundFaceName;
+		return matchingface;
 
 	}
 
-	public String searchFaceInCollection(RekognitionClient rekClient,String collectionId, String sourceImage) throws FileNotFoundException {
+	public FaceMatch searchFaceInCollection(RekognitionClient rekClient,String collectionId, String sourceImage) throws FileNotFoundException {
 
 		InputStream sourceStream = new FileInputStream(new File(sourceImage));
 		SdkBytes sourceBytes = SdkBytes.fromInputStream(sourceStream);
