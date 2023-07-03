@@ -22,7 +22,7 @@ public class FacePayRestController {
 		this.facepayService = awsRekognitionService;
 	}
 
-	@PostMapping("/facepay")
+	@PostMapping("/facepay" )
 	public Object facepay(@RequestParam MultipartFile myFile ) throws IOException {
 		String respString= facepayService.searchImage(myFile);
 		
@@ -31,7 +31,7 @@ public class FacePayRestController {
 
 		}
 		
-		return ResponseEntity.ok(  );
+		return ResponseEntity.ok( respString );
 	}
 	
 	@PostMapping("/addImage")

@@ -199,39 +199,22 @@ public class FacePayService {
 		System.out.println("************ searchFaceInCollection ********");
 
 		String  responseSTR = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
-	//	String filename =  System.currentTimeMillis() +"";
-
-		
         
 		if(responseSTR ==null) {
 			System.out.println("no matching label found");
-	        asyncService.performAsyncTask(imageToSearch, imagebytes, responseSTR);
+			
+			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR);
 			
 		}else {
 	        String faceid = dbUtil.getFaceID(responseSTR);
 			System.out.println("face id in DB is "+faceid);
-	        asyncService.performAsyncTask(imageToSearch, imagebytes, new String (responseSTR));
+			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR);
 
 			responseSTR = UPILinkUtil.getUrl(faceid);
 			
 
 		}
-		
-
-        
-
-		//		reko.addToCollection(rekClient, collectionId, sourceImage)
-		//CelebrityInfo.getCelebrityInfo(rekClient, collectionId);
-
-
-
-		//		aws rekognition detect-custom-labels \
-		//		  --project-version-arn "arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992" \
-		//		  --image '{"S3Object": {"Bucket": "MY_BUCKET","Name": "PATH_TO_MY_IMAGE"}}' \
-		//		  --region ap-south-1
-
-
-
+	
 		return responseSTR;
 	}
 
