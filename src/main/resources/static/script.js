@@ -204,7 +204,7 @@ function redirectToPay(evt) {
 	hideLoadingOverlay();
 
 	var text = evt.target.responseText;
-	if (text != "NOT FOUND") {
+	if (text != 'NOT FOUND') {
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		loadingOverlay.style.display = 'none';
 		window.location.href = text;
