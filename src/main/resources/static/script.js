@@ -214,6 +214,7 @@ function redirectToPay(evt) {
 
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + evt.target.responseText + '<br>';
 		loadingOverlay.style.display = 'none';
+		window.location.href = evt.target.responseText;
 
 	}
 
