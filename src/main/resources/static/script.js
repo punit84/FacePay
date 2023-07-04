@@ -203,7 +203,7 @@ function redirectToPay(evt) {
 	//alert(evt.target.responseText);
 	hideLoadingOverlay();
 
-	if ("NOT FOUND" === "evt.target.responseText") {
+	if ("NOT FOUND" === evt.target.responseText) {
 
 		document.getElementById('details').innerHTML += 'Register this face first : ' + evt.target.responseText + '<br>';
 		loadingOverlay.style.display = 'none';
