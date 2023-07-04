@@ -203,18 +203,18 @@ function redirectToPay(evt) {
 	//alert(evt.target.responseText);
 	hideLoadingOverlay();
 
-	if ("NOT FOUND" === evt.target.responseText) {
-
-		document.getElementById('details').innerHTML += 'Register this face first : ' + evt.target.responseText + '<br>';
+	var text = evt.target.responseText;
+	if (text != "NOT FOUND") {
+		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		loadingOverlay.style.display = 'none';
-		alert("Given face is not registered. please contact admin ");
-
+		window.location.href = text;
 
 	} else {
 
-		document.getElementById('details').innerHTML += 'UPI url with given face : ' + evt.target.responseText + '<br>';
+		document.getElementById('details').innerHTML += 'Register this face first : ' + text + '<br>';
 		loadingOverlay.style.display = 'none';
-		window.location.href = evt.target.responseText;
+		alert("Given face is not registered. please contact admin ");
+
 
 	}
 
