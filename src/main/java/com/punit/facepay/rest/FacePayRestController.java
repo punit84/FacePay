@@ -28,7 +28,7 @@ public class FacePayRestController {
 
 	@PostMapping("/facepay" )
 	public Object facepay(@RequestParam MultipartFile myFile, @RequestHeader(value = "User-Agent") String userAgent ) throws IOException {
-		DEVICE_TYPE type= DEVICE_TYPE.ANDROID;
+		DEVICE_TYPE type= DEVICE_TYPE.IPHONE;
 
 		if (userAgent.toLowerCase().contains("apple")) {
 			type =DEVICE_TYPE.IPHONE;
