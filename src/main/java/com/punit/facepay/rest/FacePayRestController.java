@@ -2,6 +2,8 @@ package com.punit.facepay.rest;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,21 +24,23 @@ public class FacePayRestController {
 
 	private static FacePayService facepayService;
 
+	final static Logger logger= LoggerFactory.getLogger(FacePayRestController.class);
+
 	public FacePayRestController(FacePayService awsRekognitionService) {
 		this.facepayService = awsRekognitionService;
 	}
 
 	@PostMapping("/facepay" )
 	public Object facepay(@RequestParam MultipartFile myFile, @RequestHeader(value = "User-Agent") String userAgent ) throws IOException {
-		DEVICE_TYPE type= DEVICE_TYPE.IPHONE;
+		DEVICE_TYPE type= DEVICE_TYPE.ANDROID;
 
 		if (userAgent.toLowerCase().contains("apple")) {
 			type =DEVICE_TYPE.IPHONE;
-			System.out.println("reqeust received from iphone");
-			System.out.println(userAgent);
+			logger.info("reqeust received from iphone");
+			logger.info(userAgent);
         } else {
         	
-			System.out.println(userAgent);
+			logger.info(userAgent);
         }
 		
 		String respString= facepayService.searchImage(myFile, type);
@@ -54,9 +58,9 @@ public class FacePayRestController {
 	
 	@PostMapping("/addImage")
 	public Object addImage(@RequestParam MultipartFile myFile, @RequestParam String imageID) throws IOException {
-		System.out.println("***********");
+		logger.info("***********");
 
-		System.out.println("File name is : "+imageID);
+		logger.info("File name is : "+imageID);
 
 		String respString= facepayService.addImage(myFile, imageID);
 	

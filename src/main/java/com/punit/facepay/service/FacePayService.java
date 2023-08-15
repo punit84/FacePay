@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,6 +56,10 @@ public class FacePayService {
 
 	@Autowired
 	private AsyncService asyncService;
+	
+	
+	final static Logger logger= LoggerFactory.getLogger(FacePayService.class);
+
 
 
 	//private static HashMap< String, String> faceStore = new HashMap<>();
@@ -148,33 +154,33 @@ public class FacePayService {
 			List<CustomLabel> customLabels = customLabelsResponse.customLabels();
 
 			for (CustomLabel customLabel: customLabels) {
-				System.out.println(customLabel.name() + ": " + customLabel.confidence().toString());
+				logger.info(customLabel.name() + ": " + customLabel.confidence().toString());
 			}
 
 			if(customLabels.size()==0) {
-				System.out.println("no matching label found");
+				logger.info("no matching label found");
 			}else {
 				CustomLabel customLabel1=customLabels.get(0);
 
 				if (customLabel1.confidence() <80) {
 
-					System.out.println("confidence score is low " +customLabel1.confidence());
+					logger.info("confidence score is low " +customLabel1.confidence());
 					return "low confidence <kindly take another image> : " + customLabel1.confidence();
 				}
 
 				customLable = customLabel1.name();
-				System.out.println("Detected labels for the given photo: " +customLable);
+				logger.info("Detected labels for the given photo: " +customLable);
 
 				if (!customLable.contains("paytm")) {
 					customLable = customLabel1 + "@paytm";
-					System.out.println("Detected labels for the given photo: " +customLable);
+					logger.info("Detected labels for the given photo: " +customLable);
 
 				}
 				customLable = "upi://pay?pa="+customLable+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
 
 			}
 		} catch (RekognitionException e) {
-			System.out.println(e.getMessage());
+			logger.info(e.getMessage());
 			System.exit(1);
 
 
@@ -197,7 +203,7 @@ public class FacePayService {
 			e.printStackTrace();
 		}
 
-		System.out.println("************ searchFaceInCollection ********");
+		logger.info("************ searchFaceInCollection ********");
 
 
 
@@ -205,14 +211,14 @@ public class FacePayService {
 
 		String  responseSTR = null;
 		if(face ==null) {
-			System.out.println("no matching label found");
+			logger.info("no matching label found");
 
 			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "100%");
 
 		}else {
 			responseSTR = face.face().faceId();
 			String faceid = dbUtil.getFaceID(responseSTR);
-			System.out.println("face id in DB is "+faceid + " similarity is " +face.similarity() );
+			logger.info("face id in DB is "+faceid + " similarity is " +face.similarity() );
 			
 			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR,face.similarity().toString()  );
 
@@ -271,10 +277,10 @@ public class FacePayService {
 		List<FaceDetail> faceDetails = facesResponse.faceDetails();
 		for (FaceDetail face : faceDetails) {
 			AgeRange ageRange = face.ageRange();
-			System.out.println("The detected face is estimated to be between "
+			logger.info("The detected face is estimated to be between "
 					+ ageRange.low().toString() + " and " + ageRange.high().toString()
 					+ " years old.");
-			System.out.println("There is a smile : "+face.smile().value().toString());
+			logger.info("There is a smile : "+face.smile().value().toString());
 		}
 
 		// Create an instance of ObjectMapper
@@ -283,13 +289,13 @@ public class FacePayService {
 		try {
 			// Convert the list to JSON string
 			String json = objectMapper.writeValueAsString(faceDetails);
-			System.out.println(json);
+			logger.info(json);
 			return json;
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
 
-		System.out.println("************ detectFaceInCollection ********");
+		logger.info("************ detectFaceInCollection ********");
 
 
 		return faceDetails.toString();
@@ -322,7 +328,7 @@ public class FacePayService {
 		try {
 			// Convert the List<FaceDetail> to JSON string
 			String json = objectMapper.writeValueAsString(faceDetails);
-			System.out.println(json);
+			logger.info(json);
 			return json;
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
