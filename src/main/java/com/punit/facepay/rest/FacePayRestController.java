@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.punit.facepay.service.Configs;
 import com.punit.facepay.service.FacePayService;
+import com.punit.facepay.service.helper.UPILinkUtil.DEVICE_TYPE;
+
+import software.amazon.awssdk.services.braket.model.DeviceType;
 
 @RestController
 @RequestMapping("/api")
@@ -23,13 +27,27 @@ public class FacePayRestController {
 	}
 
 	@PostMapping("/facepay" )
-	public Object facepay(@RequestParam MultipartFile myFile ) throws IOException {
-		String respString= facepayService.searchImage(myFile);
+	public Object facepay(@RequestParam MultipartFile myFile, @RequestHeader(value = "User-Agent") String userAgent ) throws IOException {
+		DEVICE_TYPE type= DEVICE_TYPE.ANDROID;
+
+		if (userAgent.contains("iPhone")) {
+			type =DEVICE_TYPE.IPHONE;
+			System.out.println("reqeust received from iphone");
+			System.out.println(userAgent);
+        } else {
+        	
+			System.out.println(userAgent);
+        }
+		
+		String respString= facepayService.searchImage(myFile, type);
+
 		
 		if (respString == null) {
 			return ResponseEntity.ok(Configs.FACE_NOTFOUND);
 
 		}
+		
+
 		
 		return ResponseEntity.ok( respString );
 	}

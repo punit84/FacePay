@@ -16,6 +16,7 @@ import com.punit.facepay.service.helper.DynamoDBUtil;
 import com.punit.facepay.service.helper.FaceImageCollectionUtil;
 import com.punit.facepay.service.helper.RekoUtil;
 import com.punit.facepay.service.helper.UPILinkUtil;
+import com.punit.facepay.service.helper.UPILinkUtil.DEVICE_TYPE;
 import com.punit.facepay.service.helper.s3Util;
 
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -181,7 +182,7 @@ public class FacePayService {
 		return customLable;
 	}
 
-	public String searchImage(MultipartFile imageToSearch ) {
+	public String searchImage(MultipartFile imageToSearch, DEVICE_TYPE type ) {
 
 		RekognitionClient rekClient= getRekClient();
 
@@ -215,7 +216,7 @@ public class FacePayService {
 			
 			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR,face.similarity().toString()  );
 
-			responseSTR = UPILinkUtil.getUrl(faceid);
+			responseSTR = UPILinkUtil.getUrl(faceid, type);
 
 		}
 
