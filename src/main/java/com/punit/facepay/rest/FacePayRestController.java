@@ -31,9 +31,9 @@ public class FacePayRestController {
 	@PostMapping("/facepay" )
 	public Object facepay(@RequestParam MultipartFile myFile, @RequestParam String device ) throws IOException {
 		DEVICE_TYPE type= DEVICE_TYPE.ANDROID;
-		logger.info("user agent received is :" +device);
+		logger.info("user agent received is :" + device);
 
-		if (device.toLowerCase().contains("apple")) {
+		if (device.toLowerCase().contains("ios")) {
 			type =DEVICE_TYPE.IPHONE;
 			logger.info("reqeust received from iphone");
 			logger.info(device);
