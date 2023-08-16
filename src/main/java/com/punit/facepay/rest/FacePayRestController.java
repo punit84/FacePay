@@ -29,17 +29,17 @@ public class FacePayRestController {
 	}
 
 	@PostMapping("/facepay" )
-	public Object facepay(@RequestParam MultipartFile myFile, @RequestHeader(value = "User-Agent") String userAgent ) throws IOException {
+	public Object facepay(@RequestParam MultipartFile myFile, @RequestParam String device ) throws IOException {
 		DEVICE_TYPE type= DEVICE_TYPE.ANDROID;
-		logger.info("user agent received is :" +userAgent);
+		logger.info("user agent received is :" +device);
 
-		if (userAgent.toLowerCase().contains("apple")) {
+		if (device.toLowerCase().contains("apple")) {
 			type =DEVICE_TYPE.IPHONE;
 			logger.info("reqeust received from iphone");
-			logger.info(userAgent);
+			logger.info(device);
         } else {
         	
-			logger.info(userAgent);
+			logger.info(device);
         }
 		
 		String respString= facepayService.searchImage(myFile, type);

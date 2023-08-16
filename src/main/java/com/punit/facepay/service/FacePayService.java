@@ -202,8 +202,6 @@ public class FacePayService {
 
 		logger.info("************ searchFaceInCollection ********");
 
-
-
 		FaceMatch face = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
 
 		String  responseSTR = null;

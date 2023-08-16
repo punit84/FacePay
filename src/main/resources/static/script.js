@@ -11,6 +11,26 @@ function hideLoadingOverlay() {
 	loadingOverlay.classList.add('disabled');
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+    var deviceType = detectDeviceType();
+    var deviceTypeElement = document.getElementById("deviceType");
+    deviceTypeElement.textContent = deviceType;
+});
+
+function detectDeviceType() {
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        return "iOS";
+    } else if (/Android/i.test(navigator.userAgent)) {
+        return "Android";
+    }
+    else if (/Macintosh/i.test(navigator.userAgent)) {
+        return "Macintosh";
+    }
+    else {
+        return navigator.userAgent;
+    }
+}
+
 function fileSelected() {
 
 	var count = document.getElementById('imageFileSelected').files.length;
@@ -109,6 +129,7 @@ function searchFaceId() {
 	var url = '/api/facepay';
 	var method = 'POST';
 	var fd = new FormData();
+	var device = detectDeviceType();
 
 	var count = document.getElementById('imageFileSelected').files.length;
 
@@ -117,6 +138,7 @@ function searchFaceId() {
 		var file = document.getElementById('imageFileSelected').files[index];
 
 		fd.append('myFile', file);
+		fd.append('device',device )
 
 	}
 
