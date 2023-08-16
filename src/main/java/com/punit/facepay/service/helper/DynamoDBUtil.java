@@ -2,6 +2,8 @@ package com.punit.facepay.service.helper;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.punit.facepay.service.Configs;
@@ -17,6 +19,9 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
 @Component
 public class DynamoDBUtil {
+	
+	final static Logger logger= LoggerFactory.getLogger(DynamoDBUtil.class);
+
     DynamoDbClient client = DynamoDbClient.builder()
             .region(Configs.REGION)
             .build();
@@ -45,13 +50,13 @@ public class DynamoDBUtil {
 
 		try {
 			PutItemResponse response = client.putItem(request);
-			System.out.println(Configs.FACE_TABLE +" was successfully updated. The request id is "+response.responseMetadata().requestId());
+			logger.info(Configs.FACE_TABLE +" was successfully updated. The request id is "+response.responseMetadata().requestId());
 
 		} catch (ResourceNotFoundException e) {
-			System.err.format("Error: The Amazon DynamoDB table \"%s\" can't be found.\n", Configs.FACE_TABLE);
-			System.err.println("Be sure that it exists and that you've typed its name correctly!");
+			logger.error("Error: The Amazon DynamoDB table \"%s\" can't be found.\n", Configs.FACE_TABLE);
+			logger.error("Be sure that it exists and that you've typed its name correctly!");
 		} catch (DynamoDbException e) {
-			System.err.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 

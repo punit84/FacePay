@@ -2,6 +2,8 @@ package com.punit.facepay.service;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ public class AsyncService {
 
 	@Autowired
 	private s3Util s3Util;
+	final static Logger logger= LoggerFactory.getLogger(AsyncService.class);
+
 
 	@Async
 	public CompletableFuture<String> performAsyncTask(MultipartFile imageToSearch, byte[] imagebytes, String responseSTR) {
@@ -22,6 +26,7 @@ public class AsyncService {
 
 		// Simulating a delay of 5 seconds
 		try {
+			logger.info("Storing file in s3");
 			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "100%");
 
 		} catch (Exception e) {

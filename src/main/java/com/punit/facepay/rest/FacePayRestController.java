@@ -16,8 +16,6 @@ import com.punit.facepay.service.Configs;
 import com.punit.facepay.service.FacePayService;
 import com.punit.facepay.service.helper.UPILinkUtil.DEVICE_TYPE;
 
-import software.amazon.awssdk.services.braket.model.DeviceType;
-
 @RestController
 @RequestMapping("/api")
 public class FacePayRestController {

@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.punit.facepay.service.Configs;
@@ -31,6 +33,8 @@ import software.amazon.awssdk.services.rekognition.model.UnindexedFace;
 
 @Component
 public class RekoUtil {
+	final static Logger logger= LoggerFactory.getLogger(RekoUtil.class);
+
 
 	public CreateCollectionResponse createMyCollection(RekognitionClient rekClient,String collectionId ) {
 
@@ -41,14 +45,14 @@ public class RekoUtil {
 					.build();
 
 			collectionResponse = rekClient.createCollection(collectionRequest);
-			System.out.println("CollectionArn: " + collectionResponse.collectionArn());
-			System.out.println("Status code: " + collectionResponse.statusCode().toString());
+			logger.info("CollectionArn: " + collectionResponse.collectionArn());
+			logger.info("Status code: " + collectionResponse.statusCode().toString());
 
 			DynamoDBUtil dbUtil = new DynamoDBUtil();
 			dbUtil.putFaceID("CollectionArn", collectionResponse.collectionArn());
 
 		} catch(RekognitionException e) {
-			System.out.println(e.getMessage());
+			logger.info(e.getMessage());
 		}
 		return collectionResponse;
 	}
@@ -61,10 +65,10 @@ public class RekoUtil {
 					.build();
 
 			DeleteCollectionResponse deleteCollectionResponse = rekClient.deleteCollection(deleteCollectionRequest);
-			System.out.println(collectionId + ": " + deleteCollectionResponse.statusCode().toString());
+			logger.info(collectionId + ": " + deleteCollectionResponse.statusCode().toString());
 
 		} catch(RekognitionException e) {
-			System.out.println(e.getMessage());
+			logger.info(e.getMessage());
 			System.exit(1);
 		}
 	}
@@ -75,18 +79,18 @@ public class RekoUtil {
 
 			List<String> collectionIds = getAllCollections(rekClient);
 			for (String collectionId : collectionIds) {
-				System.out.println(collectionId);
+				logger.info(collectionId);
 				DeleteCollectionRequest deleteCollectionRequest = DeleteCollectionRequest.builder()
 						.collectionId(collectionId)
 						.build();
 
 				DeleteCollectionResponse deleteCollectionResponse = rekClient.deleteCollection(deleteCollectionRequest);
-				System.out.println(collectionId + ": " + deleteCollectionResponse.statusCode().toString());
+				logger.info(collectionId + ": " + deleteCollectionResponse.statusCode().toString());
 
 			}
 
 		} catch(RekognitionException e) {
-			System.out.println(e.getMessage());
+			logger.info(e.getMessage());
 		}
 	}
 
@@ -121,21 +125,21 @@ public class RekoUtil {
 				.build();
 
 		IndexFacesResponse facesResponse = rekClient.indexFaces(facesRequest);
-		System.out.println("Results for the image");
-		System.out.println("\n Faces indexed:");
+		logger.info("Results for the image");
+		logger.info("\n Faces indexed:");
 		List<FaceRecord> faceRecords = facesResponse.faceRecords();
 		for (FaceRecord faceRecord : faceRecords) {
-			System.out.println("  Face ID: " + faceRecord.face().faceId());
-			System.out.println("  Location:" + faceRecord.faceDetail().boundingBox().toString());
+			logger.info("  Face ID: " + faceRecord.face().faceId());
+			logger.info("  Location:" + faceRecord.faceDetail().boundingBox().toString());
 		}
 
 		List<UnindexedFace> unindexedFaces = facesResponse.unindexedFaces();
-		System.out.println("Faces not indexed:");
+		logger.info("Faces not indexed:");
 		for (UnindexedFace unindexedFace : unindexedFaces) {
-			System.out.println("  Location:" + unindexedFace.faceDetail().boundingBox().toString());
-			System.out.println("  Reasons:");
+			logger.info("  Location:" + unindexedFace.faceDetail().boundingBox().toString());
+			logger.info("  Reasons:");
 			for (Reason reason : unindexedFace.reasons()) {
-				System.out.println("Reason:  " + reason);
+				logger.info("Reason:  " + reason);
 			}
 		}
 		return facesResponse;
@@ -145,12 +149,11 @@ public class RekoUtil {
 		try {
 			List<String> collectionIds = getAllCollections(rekClient);
 			for (String resultId : collectionIds) {
-				System.out.println(resultId);
+				logger.info(resultId);
 			}
 
 		} catch (RekognitionException e) {
-			System.out.println(e.getMessage());
-			System.exit(1);
+			logger.info(e.getMessage());
 		}
 	}
 
@@ -172,12 +175,11 @@ public class RekoUtil {
 					.build();
 
 			DescribeCollectionResponse describeCollectionResponse = rekClient.describeCollection(describeCollectionRequest);
-			System.out.println("Collection Arn : " + describeCollectionResponse.collectionARN());
-			System.out.println("Created : " + describeCollectionResponse.creationTimestamp().toString());
+			logger.info("Collection Arn : " + describeCollectionResponse.collectionARN());
+			logger.info("Created : " + describeCollectionResponse.creationTimestamp().toString());
 
 		} catch(RekognitionException e) {
-			System.out.println(e.getMessage());
-			System.exit(1);
+			logger.info(e.getMessage());
 		}
 	}
 

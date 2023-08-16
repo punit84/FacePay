@@ -2,11 +2,10 @@ package com.punit.facepay.service.helper;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.punit.facepay.service.Configs;
@@ -20,6 +19,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 @Component
 public class s3Util {
 
+	final static Logger logger= LoggerFactory.getLogger(s3Util.class);
 
 	//DynamoDbClient dbClient = DynamoDbClient.builder()
 	//		.region(Configs.REGION)
@@ -47,8 +47,8 @@ public class s3Util {
 				.build();
 
 
-		System.out.println(Configs.S3_PATH);
-		System.out.println(filename);
+		logger.info(Configs.S3_PATH);
+		logger.info(filename);
 		// Upload the image file to S3 asynchronously
 
 		try {
@@ -60,13 +60,13 @@ public class s3Util {
 				if (exception != null) {
 					// Handle the exception
 					exception.printStackTrace();
-					System.out.println("file stored in s3 "+ exception.getMessage());
+					logger.info("file stored in s3 "+ exception.getMessage());
 
 				} else {
 					// Get the file URL
 					String fileUrl = s3Client.utilities().getUrl(builder -> builder.bucket(Configs.S3_PATH).key(filename)).toExternalForm();
 
-					System.out.println("file stored in s3 "+ fileUrl);
+					logger.info("file stored in s3 "+ fileUrl);
 				}
 			});
 
@@ -95,7 +95,7 @@ public class s3Util {
 			fileName =  "images/"+responseSTR+"/"+similarity+"_"+fileName;
 		}
 		storeImageAsync( fileName, imagebytes);
-		System.out.println("url is : " + responseSTR);
+		logger.info("url is : " + responseSTR);
 
 
 		return responseSTR;

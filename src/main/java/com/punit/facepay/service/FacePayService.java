@@ -54,8 +54,8 @@ public class FacePayService {
 	@Autowired
 	DynamoDBUtil dbUtil;
 
-	@Autowired
-	private AsyncService asyncService;
+//	@Autowired
+//	private AsyncService asyncService;
 	
 	
 	final static Logger logger= LoggerFactory.getLogger(FacePayService.class);
@@ -181,9 +181,6 @@ public class FacePayService {
 			}
 		} catch (RekognitionException e) {
 			logger.info(e.getMessage());
-			System.exit(1);
-
-
 		}
 		return customLable;
 	}

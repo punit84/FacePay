@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.List;
 // snippet-end:[rekognition.java2.search_faces_collection.import]
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import software.amazon.awssdk.core.SdkBytes;
@@ -14,16 +16,12 @@ import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.Attribute;
 import software.amazon.awssdk.services.rekognition.model.CreateCollectionRequest;
 import software.amazon.awssdk.services.rekognition.model.CreateCollectionResponse;
-import software.amazon.awssdk.services.rekognition.model.DescribeCollectionRequest;
-import software.amazon.awssdk.services.rekognition.model.DescribeCollectionResponse;
 import software.amazon.awssdk.services.rekognition.model.Face;
 import software.amazon.awssdk.services.rekognition.model.FaceMatch;
 import software.amazon.awssdk.services.rekognition.model.FaceRecord;
 import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.IndexFacesRequest;
 import software.amazon.awssdk.services.rekognition.model.IndexFacesResponse;
-import software.amazon.awssdk.services.rekognition.model.ListCollectionsRequest;
-import software.amazon.awssdk.services.rekognition.model.ListCollectionsResponse;
 import software.amazon.awssdk.services.rekognition.model.ListFacesRequest;
 import software.amazon.awssdk.services.rekognition.model.ListFacesResponse;
 import software.amazon.awssdk.services.rekognition.model.QualityFilter;
@@ -35,6 +33,9 @@ import software.amazon.awssdk.services.rekognition.model.UnindexedFace;
 
 @Component
 public class FaceImageCollectionUtil {
+	
+	final static Logger logger= LoggerFactory.getLogger(FaceImageCollectionUtil.class);
+
 
 	public FaceMatch searchFaceInCollection(RekognitionClient rekClient,String collectionId,Image souImage) {
 
@@ -46,7 +47,7 @@ public class FaceImageCollectionUtil {
 				.build();
 
 		SearchFacesByImageResponse imageResponse = rekClient.searchFacesByImage(facesByImageRequest) ;
-		System.out.println("Faces matching in the collection");
+		logger.info("Faces matching in the collection");
 		List<FaceMatch> faceImageMatches = imageResponse.faceMatches();
 		String foundFaceName = null;
 		FaceMatch matchingface = null;
@@ -54,12 +55,11 @@ public class FaceImageCollectionUtil {
 		for (FaceMatch face: faceImageMatches) {
 			matchingface = face;
 
-			System.out.println("The similarity level is  "+face.similarity());
-			System.out.println();
+			logger.info("The similarity level is  "+face.similarity());
 			if (face.similarity() >70) {
-				System.out.println("search file details are  " +face.toString() );
+				logger.info("search file details are  " +face.toString() );
 				foundFaceName=matchingface.face().faceId();
-				System.out.println("fileid  is " +foundFaceName );
+				logger.info("fileid  is " +foundFaceName );
 			}
 		}
 		return matchingface;
@@ -92,27 +92,27 @@ public class FaceImageCollectionUtil {
 
 
 			IndexFacesResponse facesResponse = rekClient.indexFaces(facesRequest);
-			System.out.println("Results for the image");
-			System.out.println("\n Faces indexed:");
+			logger.info("Results for the image");
+			logger.info("\n Faces indexed:");
 			List<FaceRecord> faceRecords = facesResponse.faceRecords();
 			for (FaceRecord faceRecord : faceRecords) {
-				System.out.println("  Face ID: " + faceRecord.face().faceId());
-				System.out.println("  Location:" + faceRecord.faceDetail().boundingBox().toString());
+				logger.info("  Face ID: " + faceRecord.face().faceId());
+				logger.info("  Location:" + faceRecord.faceDetail().boundingBox().toString());
 				return faceRecord.face().faceId();
 			}
 
 			List<UnindexedFace> unindexedFaces = facesResponse.unindexedFaces();
-			System.out.println("Faces not indexed:");
+			logger.info("Faces not indexed:");
 			for (UnindexedFace unindexedFace : unindexedFaces) {
-				System.out.println("  Location:" + unindexedFace.faceDetail().boundingBox().toString());
-				System.out.println("  Reasons:");
+				logger.info("  Location:" + unindexedFace.faceDetail().boundingBox().toString());
+				logger.info("  Reasons:");
 				for (Reason reason : unindexedFace.reasons()) {
-					System.out.println("Reason:  " + reason);
+					logger.info("Reason:  " + reason);
 				}
 			}
 
 		} catch (RekognitionException e) {
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 		return null;
 	}
@@ -129,13 +129,12 @@ public class FaceImageCollectionUtil {
 			ListFacesResponse facesResponse = rekClient.listFaces(facesRequest);
 			List<Face> faces = facesResponse.faces();
 			for (Face face: faces) {
-				System.out.println("Confidence level there is a face: "+face.confidence());
-				System.out.println("The face Id value is "+face.faceId());
+				logger.info("Confidence level there is a face: "+face.confidence());
+				logger.info("The face Id value is "+face.faceId());
 			}
 
 		} catch (RekognitionException e) {
-			System.out.println(e.getMessage());
-			System.exit(1);
+            logger.error(e.getMessage());
 		}
 	}
 	
@@ -147,12 +146,11 @@ public class FaceImageCollectionUtil {
                 .build();
 
             CreateCollectionResponse collectionResponse = rekClient.createCollection(collectionRequest);
-            System.out.println("CollectionArn: " + collectionResponse.collectionArn());
-            System.out.println("Status code: " + collectionResponse.statusCode().toString());
+            logger.info("CollectionArn: " + collectionResponse.collectionArn());
+            logger.info("Status code: " + collectionResponse.statusCode().toString());
 
         } catch(RekognitionException e) {
-            System.out.println(e.getMessage());
-            System.exit(1);
+            logger.error(e.getMessage());
         }
     }
 }
