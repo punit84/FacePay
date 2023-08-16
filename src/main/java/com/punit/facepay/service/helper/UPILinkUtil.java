@@ -13,18 +13,19 @@ public class UPILinkUtil {
 		String prefix="upi";
 		switch (type) {
 		case ANDROID: {
-
 			prefix="upi";
+			break;
 		}
-
 		case IPHONE: {
 
 			prefix="Paytm";
+			break;
+
 		}
 
 		default:
 			prefix="upi";
-
+			break;
 		}
 
 		String responseSTR;
