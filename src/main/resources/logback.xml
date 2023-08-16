@@ -3,8 +3,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>logs/muhpe.log</file>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} -
-				%msg%n</pattern>
+			<Pattern>%date %level [%thread] %logger %msg%n</Pattern>
 		</encoder>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -15,23 +14,18 @@
 	<appender name="CONSOLE"
 		class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} -
-				%msg%n</pattern>
+			<Pattern>%date %level [%thread] %logger %msg%n</Pattern>
 		</encoder>
 	</appender>
+	
+	<logger name="javax.net" level="error" />
+	<logger name="javax.management" level="error" />
+	<logger name="org.springframework" level="error" />
+	<logger name="com.punit" level="debug" />
+	<logger name="org.apache.tomcat" level="error" />
 
 	<root level="INFO">
 		<appender-ref ref="FILE" />
 		<appender-ref ref="CONSOLE" />
-
 	</root>
-	<configuration>
-		<include
-			resource="org/springframework/boot/logging/logback/base.xml" />
-		<logger name="org.springframework.web" level="ERROR" />
-		<logger name="com.punit" level="DEBUG" />
-		<logger name="com.punit" level="ERROR" />
-		
-	</configuration>
 </configuration>
-
