@@ -82,24 +82,24 @@ public class s3Util {
 
 	} 
 
-	public String storeinS3(MultipartFile imageToSearch, byte[] imagebytes, String responseSTR, String similarity) {
+	public String storeinS3(MultipartFile imageToSearch, byte[] imagebytes, String folder, String similarity) {
 		String fileName = StringUtils.cleanPath(System.currentTimeMillis()+"_"+imageToSearch.getOriginalFilename()  );
 
-		logger.info("folder is "+ responseSTR);
+		logger.info("folder is "+ folder);
 		fileName = fileName.replaceAll("\\s", "");
-		if(responseSTR ==null) {
+		if(folder ==null) {
 
 			fileName =  "images/failed/"+fileName;
 
 		}else {
 
-			fileName =  "images/"+responseSTR+"/"+similarity+"_"+fileName;
+			fileName =  "images/"+folder+"/"+similarity+"_"+fileName;
 		}
 		storeImageAsync( fileName, imagebytes);
-		logger.info("url is : " + responseSTR);
+		logger.info("url is : " + fileName);
 
 
-		return responseSTR;
+		return fileName;
 	}
 
 }

@@ -39,7 +39,7 @@ public class FaceObject {
 	}
 
 	public String printValue() {
-		return  "{"+ faceURL +"," +faceURL+","+score +"}";
+		return  "{"+ faceid +"," +faceURL+","+score +"}";
 	}
 
 }
