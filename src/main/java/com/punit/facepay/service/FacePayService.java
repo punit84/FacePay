@@ -50,7 +50,7 @@ public class FacePayService {
 
 	@Autowired
 	private s3Util s3Util;
-
+	
 	@Autowired
 	DynamoDBUtil dbUtil;
 
@@ -202,26 +202,30 @@ public class FacePayService {
 
 		logger.info("************ searchFaceInCollection ********");
 
-		FaceMatch face = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
+		//FaceMatch face = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
 
+		List<FaceObject> faceObjList= fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
+		
 		String  responseSTR = null;
-		if(face ==null) {
-			logger.info("no matching label found");
+		
+		for (FaceObject faceObject : faceObjList) {
+			if(faceObject == null) {
+				logger.info("no matching label found");
 
-			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "100%");
+				s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "0%");
 
-		}else {
-			responseSTR = face.face().faceId();
-			String faceid = dbUtil.getFaceID(responseSTR).trim();
-			logger.info("face id in DB is --"+faceid + "-- similarity is " +face.similarity() );
-			
-			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR,face.similarity().toString()  );
-			if (faceid.contains("://")) {
-				return faceid;
+			}else {
+				
+				s3Util.storeinS3(imageToSearch, imagebytes, faceObject.getFaceid(),""+faceObject.getScore()  );
+				if (faceObject.getFaceURL().contains("://")) {
+					return faceObject.getFaceURL();
+				}
+				responseSTR = UPILinkUtil.getUrl(faceObject.getFaceURL(), type);
+
 			}
-			responseSTR = UPILinkUtil.getUrl(faceid, type);
-
 		}
+		
+		
 
 		return responseSTR;
 	}

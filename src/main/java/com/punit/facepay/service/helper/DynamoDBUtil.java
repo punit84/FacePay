@@ -1,6 +1,7 @@
 package com.punit.facepay.service.helper;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class DynamoDBUtil {
 	public void putFaceID(String faceid, String value){
 		// Create an item to be stored in DynamoDB
 		AttributeValue keyAttribute = AttributeValue.builder().s(faceid).build();
-		AttributeValue valueAttribute = AttributeValue.builder().s(value).build();
+		AttributeValue valueAttribute = AttributeValue.builder().s(value.trim()).build();
 
 		// Create a PutItemRequest to store the item in DynamoDB
 		PutItemRequest request = PutItemRequest.builder()
@@ -77,7 +78,9 @@ public class DynamoDBUtil {
 		
 		AttributeValue valueAttribute = response.item().get("value");
 		if (valueAttribute !=null) {
-			String value = valueAttribute.s();
+			String value = valueAttribute.s().trim();
+			logger.info("found face in db with url:" +value);
+			
 			return value;
 
 		}

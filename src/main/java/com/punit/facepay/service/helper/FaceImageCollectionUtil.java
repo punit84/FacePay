@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 // snippet-end:[rekognition.java2.search_faces_collection.import]
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.punit.facepay.service.FaceObject;
 
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
@@ -35,6 +39,47 @@ import software.amazon.awssdk.services.rekognition.model.UnindexedFace;
 public class FaceImageCollectionUtil {
 	
 	final static Logger logger= LoggerFactory.getLogger(FaceImageCollectionUtil.class);
+	@Autowired
+	DynamoDBUtil dbUtil;
+	
+	public List<FaceObject> searchFace(RekognitionClient rekClient,String collectionId,Image souImage) {
+		
+		List<FaceObject> faceObjectList = new ArrayList<>();
+
+		SearchFacesByImageRequest facesByImageRequest = SearchFacesByImageRequest.builder()
+				.image(souImage)
+				.maxFaces(1)
+				.faceMatchThreshold(70F)
+				.collectionId(collectionId)
+				.build();
+
+		SearchFacesByImageResponse imageResponse = rekClient.searchFacesByImage(facesByImageRequest) ;
+		logger.info("Faces matching in the collection");
+		List<FaceMatch> faceImageMatches = imageResponse.faceMatches();
+		logger.info("No of match found are " + faceImageMatches.size());
+		for (FaceMatch faceMatch: faceImageMatches) {
+
+			logger.info("face details are  " + faceMatch.toString());
+
+			Face face = faceMatch.face();
+			logger.info("The confidence level is  "+face.confidence());
+			logger.info("The similarity level is  "+faceMatch.similarity());
+			
+			if (face.confidence() >98) {
+				String faceURL = dbUtil.getFaceID(face.faceId());
+				faceObjectList.add(new FaceObject(face.faceId(), faceURL, face.confidence()));
+				logger.info("face match found  is " +face.faceId() +  " and Url is " +  faceURL);
+				
+				
+			}else {
+				logger.info("Face confidence is lower than 98  " +face.toString() );
+				logger.info("fileid  is " +face.faceId() );
+			}
+			
+		}
+		return faceObjectList;
+
+	}
 
 
 	public FaceMatch searchFaceInCollection(RekognitionClient rekClient,String collectionId,Image souImage) {
@@ -56,7 +101,7 @@ public class FaceImageCollectionUtil {
 			matchingface = face;
 
 			logger.info("The similarity level is  "+face.similarity());
-			if (face.similarity() >70) {
+			if (face.similarity() >98) {
 				logger.info("search file details are  " +face.toString() );
 				foundFaceName=matchingface.face().faceId();
 				logger.info("fileid  is " +foundFaceName );
@@ -65,6 +110,8 @@ public class FaceImageCollectionUtil {
 		return matchingface;
 
 	}
+	
+	
 
 	public FaceMatch searchFaceInCollection(RekognitionClient rekClient,String collectionId, String sourceImage) throws FileNotFoundException {
 
