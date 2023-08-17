@@ -85,6 +85,7 @@ public class s3Util {
 	public String storeinS3(MultipartFile imageToSearch, byte[] imagebytes, String responseSTR, String similarity) {
 		String fileName = StringUtils.cleanPath(System.currentTimeMillis()+"_"+imageToSearch.getOriginalFilename()  );
 
+		logger.info("folder is "+ responseSTR);
 		fileName = fileName.replaceAll("\\s", "");
 		if(responseSTR ==null) {
 

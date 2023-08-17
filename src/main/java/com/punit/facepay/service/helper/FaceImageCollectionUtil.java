@@ -49,7 +49,7 @@ public class FaceImageCollectionUtil {
 		SearchFacesByImageRequest facesByImageRequest = SearchFacesByImageRequest.builder()
 				.image(souImage)
 				.maxFaces(1)
-				.faceMatchThreshold(70F)
+				.faceMatchThreshold(90F)
 				.collectionId(collectionId)
 				.build();
 
@@ -65,11 +65,11 @@ public class FaceImageCollectionUtil {
 			logger.info("The confidence level is  "+face.confidence());
 			logger.info("The similarity level is  "+faceMatch.similarity());
 			
-			if (face.confidence() >98) {
+			if (face.confidence()>98) {
 				String faceURL = dbUtil.getFaceID(face.faceId());
 				faceObjectList.add(new FaceObject(face.faceId(), faceURL, face.confidence()));
 				logger.info("face match found  is " +face.faceId() +  " and Url is " +  faceURL);
-				
+		
 				
 			}else {
 				logger.info("Face confidence is lower than 98  " +face.toString() );

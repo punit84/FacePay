@@ -216,6 +216,8 @@ public class FacePayService {
 
 			}else {
 				
+				logger.info("Printing face " +  faceObject.printValue());
+				
 				s3Util.storeinS3(imageToSearch, imagebytes, faceObject.getFaceid(),""+faceObject.getScore()  );
 				if (faceObject.getFaceURL().contains("://")) {
 					return faceObject.getFaceURL();
