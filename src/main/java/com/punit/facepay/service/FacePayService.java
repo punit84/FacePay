@@ -222,7 +222,7 @@ public class FacePayService {
 				if (faceObject.getFaceURL().contains("://")) {
 					return faceObject.getFaceURL();
 				}
-				responseSTR = UPILinkUtil.getUrl(faceObject.getFaceURL(), type);
+				return UPILinkUtil.getUrl(faceObject.getFaceURL(), type);
 
 			}
 		}
