@@ -36,9 +36,7 @@ public class FacePayRestController {
 		if (device.toLowerCase().contains("ios")) {
 			type =DEVICE_TYPE.IPHONE;
 			logger.info("reqeust received from iphone");
-			logger.info(device);
         } else {
-        	
 			logger.info(device);
         }
 		

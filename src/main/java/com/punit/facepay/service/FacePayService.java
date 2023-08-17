@@ -212,11 +212,13 @@ public class FacePayService {
 
 		}else {
 			responseSTR = face.face().faceId();
-			String faceid = dbUtil.getFaceID(responseSTR);
-			logger.info("face id in DB is "+faceid + " similarity is " +face.similarity() );
+			String faceid = dbUtil.getFaceID(responseSTR).trim();
+			logger.info("face id in DB is --"+faceid + "-- similarity is " +face.similarity() );
 			
 			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR,face.similarity().toString()  );
-
+			if (faceid.contains("://")) {
+				return faceid;
+			}
 			responseSTR = UPILinkUtil.getUrl(faceid, type);
 
 		}
