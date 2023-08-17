@@ -4,6 +4,7 @@ public class FaceObject {
 	
 	public FaceObject(String faceid, String faceURL, float score) {
 		super();
+		this.faceid = faceid;
 		this.faceURL = faceURL;
 		this.score = score;
 	}
