@@ -48,7 +48,7 @@ public class FaceImageCollectionUtil {
 
 		SearchFacesByImageRequest facesByImageRequest = SearchFacesByImageRequest.builder()
 				.image(souImage)
-				.maxFaces(1)
+				.maxFaces(5)
 				.faceMatchThreshold(90F)
 				.collectionId(collectionId)
 				.build();
