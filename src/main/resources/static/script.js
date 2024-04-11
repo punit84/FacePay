@@ -232,10 +232,10 @@ function redirectToPay(evt) {
 
 	var text = evt.target.responseText;
 	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE'){
-		alert("Given face is not registered. please contact admin ");
+		alert("Given face is not registered. please register using admin page ");
 	}
 	else if (text == 'NO-HUMAN-FACE-FOUND'){
-		alert("Given face is not registered. please contact admin ");
+		alert("Only human faces are supported ");
 	}
 	else{
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
