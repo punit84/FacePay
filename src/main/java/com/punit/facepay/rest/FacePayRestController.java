@@ -64,6 +64,11 @@ public class FacePayRestController {
 		logger.info("File name is : "+imageID);
 
 		String respString= facepayService.addImage(myFile, imageID);
+		
+		if (respString == null) {
+			return ResponseEntity.ok(Configs.FACE_NOHUMAN);
+
+		}
 
 		return ResponseEntity.ok(respString);
 	}

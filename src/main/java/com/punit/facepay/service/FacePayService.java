@@ -256,7 +256,10 @@ public class FacePayService {
 		RekognitionClient rekClient= getRekClient();	
 
 		Image souImage = getImage(myFile.getBytes());
-
+		
+		if ( !detectFace(souImage)) {
+			return null;			 			
+		}
 
 
 		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
