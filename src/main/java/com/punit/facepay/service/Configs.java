@@ -17,9 +17,8 @@ public class Configs {
 	public static int MAX_MATCHES = 1;
 
 	public static final String FACE_TABLE = "FaceTable";
-	public static final String FACE_NOTFOUND = "NOT FOUND";
-	
-	
+	public static final String FACE_NOTFOUND = "User is not registred, Please register";
+	public static final String FACE_NOHUMAN = " Human face Not found";
 
 
 }

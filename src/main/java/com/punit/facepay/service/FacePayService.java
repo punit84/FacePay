@@ -185,7 +185,9 @@ public class FacePayService {
 		return customLable;
 	}
 
-	public String searchImage(MultipartFile imageToSearch, DEVICE_TYPE type ) {
+	
+	
+	public String searchImage(MultipartFile imageToSearch, DEVICE_TYPE type ) throws IOException{
 
 		RekognitionClient rekClient= getRekClient();
 
@@ -227,7 +229,9 @@ public class FacePayService {
 			}
 		}
 		
-		
+		if (responseSTR == null && !detectFace(souImage)) {
+			throw new IOException("No human face found");			 			
+		}
 
 		return responseSTR;
 	}
@@ -263,6 +267,34 @@ public class FacePayService {
 
 
 	}
+	
+	public boolean detectFace(Image souImage) throws IOException {
+
+		RekognitionClient rekClient= getRekClient();
+
+		DetectFacesRequest facesRequest = DetectFacesRequest.builder()
+				.attributes(Attribute.ALL)
+				.image(souImage)
+				.build();
+
+		DetectFacesResponse facesResponse = rekClient.detectFaces(facesRequest);
+		List<FaceDetail> faceDetails = facesResponse.faceDetails();
+		
+		if (null == faceDetails || faceDetails.isEmpty() ) {
+			return false;
+		}
+		for (FaceDetail face : faceDetails) {
+			AgeRange ageRange = face.ageRange();
+			logger.info("The detected face is estimated to be between "
+					+ ageRange.low().toString() + " and " + ageRange.high().toString()
+					+ " years old.");
+			logger.info("There is a smile : "+face.smile().value().toString());
+		}
+	
+		return true;
+
+	}
+
 
 	public String profile(MultipartFile imageToSearch) throws IOException {
 

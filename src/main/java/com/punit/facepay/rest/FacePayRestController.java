@@ -36,23 +36,27 @@ public class FacePayRestController {
 		if (device.toLowerCase().contains("ios")) {
 			type =DEVICE_TYPE.IPHONE;
 			logger.info("reqeust received from iphone");
-        } else {
+		} else {
 			logger.info(device);
-        }
-		
-		String respString= facepayService.searchImage(myFile, type);
-
-		
-		if (respString == null) {
-			return ResponseEntity.ok(Configs.FACE_NOTFOUND);
-
 		}
-		
 
-		
+		String respString = null;
+		try {
+
+			 respString= facepayService.searchImage(myFile, type);
+
+			if (respString == null) {
+				return ResponseEntity.ok(Configs.FACE_NOTFOUND);
+
+			}
+		} catch (Exception e) {
+			return ResponseEntity.ok(Configs.FACE_NOHUMAN);
+		}		
+
+
 		return ResponseEntity.ok( respString );
 	}
-	
+
 	@PostMapping("/addImage")
 	public Object addImage(@RequestParam MultipartFile myFile, @RequestParam String imageID) throws IOException {
 		logger.info("***********");
@@ -60,14 +64,14 @@ public class FacePayRestController {
 		logger.info("File name is : "+imageID);
 
 		String respString= facepayService.addImage(myFile, imageID);
-	
+
 		return ResponseEntity.ok(respString);
 	}
-	
+
 	@PostMapping("/detectLabel")
 	public Object detectLabel(@RequestParam MultipartFile myFile) throws IOException {
 		String respString= facepayService.detectLabels(myFile);
-	
+
 		return ResponseEntity.ok(respString);
 	}
 
@@ -77,7 +81,7 @@ public class FacePayRestController {
 		return ResponseEntity.ok(facepayService.detectLabelsImage(image));
 
 	}
-	
+
 	@PostMapping("/profile")
 	public Object profile(@RequestParam MultipartFile myFile) throws IOException {
 		return ResponseEntity.ok(facepayService.profile(myFile));
