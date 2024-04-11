@@ -210,7 +210,7 @@ public class FacePayService {
 		
 		for (FaceObject faceObject : faceObjList) {
 			if(faceObject == null) {
-				logger.info("no matching label found");
+				logger.info("no matching User found");
 
 				s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "0%");
 
