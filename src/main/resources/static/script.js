@@ -226,20 +226,22 @@ function redirectToPay(evt) {
 	hideLoadingOverlay();
 
 	var text = evt.target.responseText;
-	if (text != 'NOT FOUND') {
+	
+	document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
+	loadingOverlay.style.display = 'none';
+
+	var text = evt.target.responseText;
+	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE'){
+		alert("Given face is not registered. please contact admin ");
+	}
+	else if (text == 'NO-HUMAN-FACE-FOUND'){
+		alert("Given face is not registered. please contact admin ");
+	}
+	else{
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		loadingOverlay.style.display = 'none';
 		window.location.href = text;
-
-	} else {
-
-		document.getElementById('details').innerHTML += 'Register this face first : ' + text + '<br>';
-		loadingOverlay.style.display = 'none';
-		alert("Given face is not registered. please contact admin ");
-
-
 	}
-
 
 }
 
