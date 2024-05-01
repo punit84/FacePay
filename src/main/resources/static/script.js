@@ -227,7 +227,7 @@ function redirectToPay(evt) {
 
 	var text = evt.target.responseText;
 	
-	document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
+	//document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 	loadingOverlay.style.display = 'none';
 
 	var text = evt.target.responseText;
