@@ -37,7 +37,7 @@ import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.RekognitionException;
 
 @Service
-public class FacePayService {
+public class FaceScanService {
 
 	//	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
 
@@ -56,7 +56,7 @@ public class FacePayService {
 //	private AsyncService asyncService;
 	
 	
-	final static Logger logger= LoggerFactory.getLogger(FacePayService.class);
+	final static Logger logger= LoggerFactory.getLogger(FaceScanService.class);
 
 
 
@@ -185,7 +185,7 @@ public class FacePayService {
 
 	
 	
-	public String searchImage(MultipartFile imageToSearch, int type ) throws IOException{
+	public String searchImage(MultipartFile imageToSearch, int type ) throws IOException, FaceNotFoundException{
 
 		RekognitionClient rekClient= getRekClient();
 
@@ -228,7 +228,7 @@ public class FacePayService {
 		}
 		
 		if (responseSTR == null && !detectFace(souImage)) {
-			throw new IOException("No human face found");			 			
+			throw new FaceNotFoundException("No human face found");			 			
 		}
 
 		return responseSTR;

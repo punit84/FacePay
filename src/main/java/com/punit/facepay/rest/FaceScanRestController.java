@@ -12,17 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.punit.facepay.service.Configs;
-import com.punit.facepay.service.FacePayService;
+import com.punit.facepay.service.FaceNotFoundException;
+import com.punit.facepay.service.FaceScanService;
 
 @RestController
 @RequestMapping("/api")
-public class FacePayRestController {
+public class FaceScanRestController {
 
-	private static FacePayService facepayService;
+	private static FaceScanService facepayService;
 
-	final static Logger logger= LoggerFactory.getLogger(FacePayRestController.class);
+	final static Logger logger= LoggerFactory.getLogger(FaceScanRestController.class);
 
-	public FacePayRestController(FacePayService awsRekognitionService) {
+	public FaceScanRestController(FaceScanService awsRekognitionService) {
 		this.facepayService = awsRekognitionService;
 	}
 
@@ -47,8 +48,13 @@ public class FacePayRestController {
 				return ResponseEntity.ok(Configs.FACE_NOTFOUND);
 
 			}
-		} catch (Exception e) {
+		} catch (FaceNotFoundException e) {
 			return ResponseEntity.ok(Configs.FACE_NOHUMAN);
+		}		
+		catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseEntity.ok(Configs.SERVER_ERROR );
+			
 		}		
 
 

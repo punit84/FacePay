@@ -19,6 +19,9 @@ public class Configs {
 	public static final String FACE_TABLE = "FaceTable";
 	public static final String FACE_NOTFOUND = "REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE";
 	public static final String FACE_NOHUMAN = "NO-HUMAN-FACE-FOUND";
+	
+	public static final String SERVER_ERROR = "SERVER_ERROR";
+
 
 	public static final int DEVICE_IOS = 0;
 	public static final int DEVICE_ANDROID = 1;

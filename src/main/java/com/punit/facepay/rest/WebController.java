@@ -10,8 +10,13 @@ public class WebController {
 	public String index() {
 		return "index";
 	}
+	
+	@RequestMapping(value = "/home")
+	public String home() {
+		return "index";
+	}
 
-	@RequestMapping(value = "/a")
+	@RequestMapping(value = "/admin")
 	public String admin() {
 		return "admin";
 	}

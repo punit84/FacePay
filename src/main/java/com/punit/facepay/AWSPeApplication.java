@@ -5,16 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.punit.facepay.rest.FacePayRestController;
-
 @SpringBootApplication
-public class FacePayApplication {
+public class AWSPeApplication {
 	
-	final static Logger logger= LoggerFactory.getLogger(FacePayApplication.class);
+	final static Logger logger= LoggerFactory.getLogger(AWSPeApplication.class);
 
 
     public static void main(String[] args) {
     	logger.info("Starting application FacePayApplication ********** ");
-        SpringApplication.run(FacePayApplication.class, args);
+        SpringApplication.run(AWSPeApplication.class, args);
     }
 }

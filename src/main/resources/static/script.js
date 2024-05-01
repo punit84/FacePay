@@ -237,6 +237,9 @@ function redirectToPay(evt) {
 	else if (text == 'NO-HUMAN-FACE-FOUND'){
 		alert("Only human faces are supported ");
 	}
+	else if (text == 'SERVER_ERROR'){
+		alert("PLEASE TRY AFTER SOMETIME");
+	}
 	else{
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		loadingOverlay.style.display = 'none';

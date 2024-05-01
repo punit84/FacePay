@@ -1,7 +1,7 @@
 <configuration>
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>logs/muhpe.log</file>
+		<file>logs/awspe.log</file>
 		<encoder>
 			<Pattern>%date %level [%thread] %logger %msg%n</Pattern>
 		</encoder>
