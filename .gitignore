@@ -2,3 +2,5 @@
 .setting*
 .class*
 mvnw*
+*target/*
+logs*
