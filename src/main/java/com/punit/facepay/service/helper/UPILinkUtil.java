@@ -2,21 +2,20 @@ package com.punit.facepay.service.helper;
 
 import org.springframework.stereotype.Component;
 
+import com.punit.facepay.service.Configs;
+
 @Component
 public class UPILinkUtil {
 
 
-	public static enum DEVICE_TYPE{ANDROID,IPHONE, WEB};
-
-
-	public static String getUrl(String faceid, DEVICE_TYPE type) {
+	public static String getUrl(String faceid, int type) {
 		String prefix="upi";
 		switch (type) {
-		case ANDROID: {
+		case Configs.DEVICE_ANDROID: {
 			prefix="upi";
 			break;
 		}
-		case IPHONE: {
+		case Configs.DEVICE_IOS: {
 
 			prefix="Paytm";
 			break;

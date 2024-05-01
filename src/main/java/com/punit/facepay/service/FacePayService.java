@@ -18,7 +18,6 @@ import com.punit.facepay.service.helper.DynamoDBUtil;
 import com.punit.facepay.service.helper.FaceImageCollectionUtil;
 import com.punit.facepay.service.helper.RekoUtil;
 import com.punit.facepay.service.helper.UPILinkUtil;
-import com.punit.facepay.service.helper.UPILinkUtil.DEVICE_TYPE;
 import com.punit.facepay.service.helper.s3Util;
 
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -34,7 +33,6 @@ import software.amazon.awssdk.services.rekognition.model.DetectCustomLabelsRespo
 import software.amazon.awssdk.services.rekognition.model.DetectFacesRequest;
 import software.amazon.awssdk.services.rekognition.model.DetectFacesResponse;
 import software.amazon.awssdk.services.rekognition.model.FaceDetail;
-import software.amazon.awssdk.services.rekognition.model.FaceMatch;
 import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.RekognitionException;
 
@@ -187,7 +185,7 @@ public class FacePayService {
 
 	
 	
-	public String searchImage(MultipartFile imageToSearch, DEVICE_TYPE type ) throws IOException{
+	public String searchImage(MultipartFile imageToSearch, int type ) throws IOException{
 
 		RekognitionClient rekClient= getRekClient();
 
