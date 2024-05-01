@@ -1,10 +1,9 @@
-
 .container {
     width: 95%;
     max-width: 2200px;
     margin: 0 auto;
     display: flex;
-    padding: 10px;
+    padding: 5px;
     justify-content: space-between;
     align-items: center;
 }
@@ -37,85 +36,71 @@
     padding: 1px;
 }
 
-
 h2 {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 form {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 input[type="file"] {
-  width: 100%;
-  margin-top: 10px;
+    width: 100%;
+    margin-top: 10px;
 }
 
-#details {
-  margin-top: 10px;
-  font-size: 14px;
-}
-
-#imageID {
-  width: 100%;
-  margin-top: 10px;
-  padding: 5px;
-}
-#imagePhone {
-  width: 100%;
-  margin-top: 10px;
-  padding: 5px;
-}
+#details, 
+#imageID, 
+#imagePhone, 
 #imageEmail {
-  width: 100%;
-  margin-top: 10px;
-  padding: 5px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 5px;
 }
+
 input[type="button"] {
-  margin-top: 10px;
-  padding: 5px 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
 }
 
 #loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #loading-overlay.disabled {
-  display: none;
+    display: none;
 }
 
 .loader {
-  border: 16px solid #f3f3f3;
-  border-top: 16px solid #3498db;
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
-
-
 
 header {
     background-color: #007eb9;
@@ -171,12 +156,11 @@ nav ul li a {
     background-color: #555;
 }
 
-
 footer {
     background-color: #007eb9;
     color: #fff;
     text-align: center;
-    padding: 10px 0;
+    padding: 5px 0;
     width: 100%;
     position: fixed;
     bottom: 0;
@@ -187,4 +171,16 @@ footer p {
     font-size: 14px;
 }
 
-
+/* Responsive styles for screens smaller than 768px */
+@media screen and (max-width: 768px) {
+    .container,
+    .container1 {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .imgBx,
+    .section-container {
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+}

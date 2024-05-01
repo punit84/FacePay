@@ -90,8 +90,8 @@ function searchSelectedFile() {
 }
 
 
-function addImage() {
-	var url = '/api/addImage';
+function registerFace() {
+	var url = '/api/registerImage';
 	var method = 'POST';
 	var fd = new FormData();
 
@@ -99,13 +99,16 @@ function addImage() {
 	var imageID = document.getElementById('imageID');
 
 	var imageIDValue = imageID.value;
+	var imagePhoneValue = imagePhone.value;
+	var imageEmailValue = imageEmail.value;
 
 	for (var index = 0; index < count; index++) {
 
 		var file = document.getElementById('imageFileSelected').files[index];
-
 		fd.append('myFile', file);
-		fd.append('imageID', imageIDValue)
+		fd.append('imageID', imageIDValue);
+		fd.append('imagePhone', imagePhoneValue);
+		fd.append('imageEmail', imageEmailValue);
 
 	}
 

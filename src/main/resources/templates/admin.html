@@ -3,7 +3,7 @@
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="styles1.css">
 	<title>AWSPe - Admin</title>
 </head>
 
@@ -29,14 +29,19 @@
 	        <h1>Welcome to AWS Fintech Demo Portal !!</h1>
 	    </div>
 	</section>
-		<h2>AWSPe Admin Page : Register human face</h2>
 		<div class="container1">
+			<h2>Register human face</h2>
+
+			<img src="face1.png" alt="Logo" width="400" height="400">
 
 			<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
 				<div>
 					<br>
 					<br>
 
+					<label for="imageFileSelected" class="custom-file-upload">
+												                       Scan Face to register associalted URL
+												                   </label>
 					<input type="file" name="imageFileSelected" id="imageFileSelected" onchange="fileSelected();"
 						accept="image/*" capture="camera" />
 				</div>
@@ -45,8 +50,11 @@
 				<div id="details"></div>
 
 				<div>
-					<input type="text" id="imageID" name="imageID" placeholder="Enter UPI ID or Phone No">
-					<input type="button" onclick="addImage()" value="Index Face">
+				<input type="text" id="imageID" name="imageID" placeholder="Enter UPI ID or URL to redirect">
+				<input type="text" id="imageEmail" name="imageEmail" placeholder="Email ID (Optional) ">
+				<input type="text" id="imagePhone" name="imagePhone" placeholder="Phone No (Optional)">
+				<br>
+					<input type="button" onclick="registerFace()" value="Register Face">
 				</div><br>
 				<br>
 

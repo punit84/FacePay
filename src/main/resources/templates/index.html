@@ -3,7 +3,7 @@
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="styles1.css">
 	<title>AWSPe</title>
 </head>
 
@@ -29,17 +29,24 @@
 </section>
 
 <body>
-	<div class="container1">
+	<div class="container2">
+		<div class="imgBx">
+						<img src="face2.png" alt="Logo">
+					</div>
+					
+				
 			<div class="section-container">
-				<div class="imgBx">
-					<img src="awsPe.png" alt="Logo" width="250" height="400">
-				</div>
+
 
 				<div class="mb-5">
 					<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
 						<div>
+							<label for="imageFileSelected" class="custom-file-upload">
+							                       Scan Face to search associalted URL
+							                   </label>
 							<input type="file" name="imageFileSelected" id="imageFileSelected"
 								onchange="searchSelectedFile();" accept="image/*" capture="camera" />
+
 						</div>
 						<br>
 						<div id="details"></div>

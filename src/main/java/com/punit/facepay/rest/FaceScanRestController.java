@@ -61,13 +61,13 @@ public class FaceScanRestController {
 		return ResponseEntity.ok( respString );
 	}
 
-	@PostMapping("/addImage")
-	public Object addImage(@RequestParam MultipartFile myFile, @RequestParam String imageID) throws IOException {
+	@PostMapping("/registerImage")
+	public Object registerImage(@RequestParam MultipartFile myFile, @RequestParam String imageID, @RequestParam(required = false) String imagePhone, @RequestParam(required = false) String imageEmail) throws IOException {
 		logger.info("***********");
 
 		logger.info("File name is : "+imageID);
 
-		String respString= facepayService.addImage(myFile, imageID);
+		String respString= facepayService.registerImage(myFile, imageID, imageEmail, imagePhone);
 		
 		if (respString == null) {
 			return ResponseEntity.ok(Configs.FACE_NOHUMAN);

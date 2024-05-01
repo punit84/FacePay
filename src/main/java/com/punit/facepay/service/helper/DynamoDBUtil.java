@@ -1,7 +1,7 @@
 package com.punit.facepay.service.helper;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,7 @@ import com.punit.facepay.service.Configs;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -20,12 +21,12 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
 @Component
 public class DynamoDBUtil {
-	
+
 	final static Logger logger= LoggerFactory.getLogger(DynamoDBUtil.class);
 
-    DynamoDbClient client = DynamoDbClient.builder()
-            .region(Configs.REGION)
-            .build();
+	DynamoDbClient client = DynamoDbClient.builder()
+			.region(Configs.REGION)
+			.build();
 
 	public static void main(String[] args) {
 		DynamoDBUtil util = new DynamoDBUtil();
@@ -35,6 +36,36 @@ public class DynamoDBUtil {
 
 
 	}
+	public void putNewFaceID(String faceId, String value , String email, String mobile) {
+		Map<String, AttributeValue> itemKey = new HashMap<>();
+		itemKey.put("Id", AttributeValue.builder().s(faceId).build());
+
+		Map<String, AttributeValue> itemValues = new HashMap<>();
+		itemValues.put(":value", AttributeValue.builder().s(value.trim()).build());
+		itemValues.put(":email", AttributeValue.builder().s(email.trim()).build());
+		itemValues.put(":mobile", AttributeValue.builder().s(mobile.trim()).build());
+
+		PutItemRequest request = PutItemRequest.builder()
+				.tableName(Configs.FACE_TABLE)
+				.item(itemKey)
+				.conditionExpression("attribute_not_exists(Id)")
+				.expressionAttributeValues(itemValues)
+				.build();
+
+		try {
+			client.putItem(request);
+			logger.info("Item with FaceID: " + faceId + " was successfully updated.");
+		} catch (ConditionalCheckFailedException e) {
+			logger.error("Error: The item with FaceID: " + faceId + " already exists.");
+		} catch (ResourceNotFoundException e) {
+			logger.error("Error: The Amazon DynamoDB table \"" + Configs.FACE_TABLE + "\" can't be found.");
+			logger.error("Be sure that it exists and that you've typed its name correctly!");
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+		}
+	}
+
+
 
 	public void putFaceID(String faceid, String value){
 		// Create an item to be stored in DynamoDB
@@ -75,12 +106,12 @@ public class DynamoDBUtil {
 		GetItemResponse response = client.getItem(request);
 
 		// Get the value from the retrieved item
-		
+
 		AttributeValue valueAttribute = response.item().get("value");
 		if (valueAttribute !=null) {
 			String value = valueAttribute.s().trim();
 			logger.info("found face in db with url:" +value);
-			
+
 			return value;
 
 		}

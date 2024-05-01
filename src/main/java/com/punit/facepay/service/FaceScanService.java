@@ -249,7 +249,7 @@ public class FaceScanService {
 	//		return null;
 	//	}
 
-	public String addImage(MultipartFile myFile, String imageID) throws IOException {
+	public String registerImage(MultipartFile myFile, String imageID,String email, String phone) throws IOException {
 
 		RekognitionClient rekClient= getRekClient();	
 
@@ -261,10 +261,9 @@ public class FaceScanService {
 
 
 		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
+		dbUtil.putNewFaceID(faceID, imageID, email, phone);
 
-		dbUtil.putFaceID(faceID,imageID);
-
-		return "uploaded image with id: "+imageID;
+		return "uploaded image with id: "+imageID +" email: " + email+ " phone: "+phone;
 
 
 	}
