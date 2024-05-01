@@ -42,8 +42,8 @@ public class DynamoDBUtil {
 
 		Map<String, AttributeValue> itemValues = new HashMap<>();
 		itemValues.put(":value", AttributeValue.builder().s(value.trim()).build());
-		itemValues.put(":email", AttributeValue.builder().s(email.trim()).build());
-		itemValues.put(":mobile", AttributeValue.builder().s(mobile.trim()).build());
+		//itemValues.put(":email", AttributeValue.builder().s(email.trim()).build());
+		//itemValues.put(":mobile", AttributeValue.builder().s(mobile.trim()).build());
 
 		PutItemRequest request = PutItemRequest.builder()
 				.tableName(Configs.FACE_TABLE)
