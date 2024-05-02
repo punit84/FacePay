@@ -31,6 +31,54 @@ public class s3Util {
 			.build();
 
 
+	
+	public void storeAdminImageAsync( String filename,  byte[] imageToSearch)  {
+
+		// Create a temporary file to store the uploaded image
+
+		// Prepare the S3 request
+
+		// Upload the file to Amazon S3 bucket
+
+		PutObjectRequest objectRequest = PutObjectRequest.builder()
+				.bucket(Configs.S3_PATH_ADMIN)
+				.key(filename)
+				.build();
+
+
+		logger.info(Configs.S3_PATH_ADMIN);
+		logger.info(filename);
+		// Upload the image file to S3 asynchronously
+
+		try {
+
+			CompletableFuture<PutObjectResponse> future = s3Client.putObject(objectRequest,AsyncRequestBody.fromBytes(imageToSearch));
+
+			// Handle the completion of the S3 request
+			future.whenComplete((response, exception) -> {
+				if (exception != null) {
+					// Handle the exception
+					exception.printStackTrace();
+					logger.info("file stored in s3 "+ exception.getMessage());
+
+				} else {
+					// Get the file URL
+					String fileUrl = s3Client.utilities().getUrl(builder -> builder.bucket(Configs.S3_PATH).key(filename)).toExternalForm();
+
+					logger.info("file stored in s3 "+ fileUrl);
+				}
+			});
+
+		} catch (Exception e) {
+
+
+		}finally {
+
+		}
+		
+		
+	}
+
 
 	
 	private void storeImageAsync( String filename,  byte[] imageToSearch)  {

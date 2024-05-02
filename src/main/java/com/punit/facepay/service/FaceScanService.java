@@ -251,17 +251,23 @@ public class FaceScanService {
 
 	public String registerImage(MultipartFile myFile, String imageID,String email, String phone) throws IOException {
 
-		RekognitionClient rekClient= getRekClient();	
+		RekognitionClient rekClient= getRekClient();
+		byte[] imagebytes = null;
+		imagebytes= myFile.getBytes();
 
-		Image souImage = getImage(myFile.getBytes());
+		Image souImage = getImage(imagebytes);
 		
 		if ( !detectFace(souImage)) {
 			return null;			 			
 		}
 
+		
 
 		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
 		dbUtil.putNewFaceID(faceID, imageID, email, phone);
+
+		
+		s3Util.storeAdminImageAsync(faceID, imagebytes);
 
 		return "uploaded image with id: "+imageID +" email: " + email+ " phone: "+phone;
 

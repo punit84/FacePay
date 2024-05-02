@@ -29,10 +29,13 @@ public class DynamoDBUtil {
 			.build();
 
 	public static void main(String[] args) {
+//		DynamoDBUtil util = new DynamoDBUtil();
+//		util.putFaceID("test", "123asfasdfasdf", );
+//		System.out.println("\n\n\n\n");
+//		util.getFaceID("test");
+		
 		DynamoDBUtil util = new DynamoDBUtil();
-		util.putFaceID("test", "123asfasdfasdf");
-		System.out.println("\n\n\n\n");
-		util.getFaceID("test");
+		util.putNewFaceID("punit", "jain", "punit.15884", "jasdfasfd"); 
 
 
 	}
