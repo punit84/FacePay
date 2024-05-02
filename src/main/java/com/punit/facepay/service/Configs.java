@@ -12,9 +12,9 @@ public class Configs {
 	public static final String COLLECTION_ID = "FacePayCollection";
 	public static final Region REGION = Region.AP_SOUTH_1;
 	public static final String FACE_ID = "faceid";
-	public static final String S3_PATH = "qart.awspe.com/scan";
+	public static final String S3_PATH = "awspe.com/scan";
 	
-	public static final String S3_PATH_ADMIN = "qart.awspe.com/qart";
+	public static final String S3_PATH_ADMIN = "awspe.com/qart";
 
 	//public static final String S3_PATH = "s3://muhpe.com/images/";
 	public static int MAX_MATCHES = 1;

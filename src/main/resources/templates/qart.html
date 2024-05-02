@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 	<meta charset="utf-8">
@@ -19,6 +19,7 @@
 	<title>AWSPe</title>
 
 </head>
+
 
 <header>
 	<div class="container">
@@ -40,54 +41,44 @@
 </section>
 
 <body>
-	<div class="container2">
-		<div class="imgBx">
-			<img src="face2.png" alt="Logo">
-		</div>
 
-
-		<div class="section-container">
-
-
-			<div class="mb-5">
-				<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
-					<div>
-						<label for="imageFileSelected" class="custom-file-upload">
-							Scan Face to search associalted URL
-						</label>
-						<input type="file" name="imageFileSelected" id="imageFileSelected"
-							onchange="searchSelectedFile();" accept="image/*" capture="camera" />
-
+	<main>
+		<!-- Start DEMO HTML (Use the following code into your project)-->
+		<div id="container">
+			<div id="toggleContainer">
+				<label>Carousel</label>
+				<div id="toggle">
+					<div id="outer3">
+						<div id="slider3"></div>
 					</div>
-					<br>
-					<div id="details"></div>
-
-					<br>
-					<div id="loading-overlay" class="disabled">
-						<div class="loader"></div>
-					</div>
-
-
+					<label>Tiles</label>
+				</div>
 			</div>
-			</form>
-
+			<div id="galleryView">
+				<div id="galleryContainer">
+					<div id="leftView"></div>
+					<button id="navLeft" class="navBtns"><i class="fas fa-arrow-left fa-3x"></i></button>
+					<a id="linkTag">
+						<div id="mainView"></div>
+					</a>
+					<div id="rightView"></div>
+					<button id="navRight" class="navBtns"><i class="fas fa-arrow-right fa-3x"></i></button>
+				</div>
+			</div>
+			<div id="tilesView">
+				<div id="tilesContainer"></div>
+			</div>
 		</div>
-	</div>
+		<!-- END EDMO HTML (Happy Coding!)-->
+	</main>
 
 
-	</div>
-
-	<script src="script.js"></script>
+	<footer>
+	    <div class="mb-5">
+	        <a href="https://aws.amazon.com/what-is-cloud-computing"><img
+	                src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing" class="logo1"></a>
+	    </div>
+	</footer>
 </body>
-<br><br>
-<br><br>
-
-<footer>
-    <div class="mb-5">
-        <a href="https://aws.amazon.com/what-is-cloud-computing"><img
-                src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing" class="logo1"></a>
-    </div>
-</footer>
-
 
 </html>

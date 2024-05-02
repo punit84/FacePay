@@ -21,6 +21,11 @@ public class WebController {
 		return "admin";
 	}
 
+	@RequestMapping(value = "/qart")
+	public String qart() {
+		return "qart";
+	}
+	
 	@RequestMapping(value = "/contact")
 	public String contact() {
 		return "contact";

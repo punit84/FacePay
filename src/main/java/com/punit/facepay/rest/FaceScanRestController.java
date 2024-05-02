@@ -73,6 +73,7 @@ public class FaceScanRestController {
 			return ResponseEntity.ok(Configs.FACE_NOHUMAN);
 
 		}
+		
 
 		return ResponseEntity.ok(respString);
 	}

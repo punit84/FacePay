@@ -73,18 +73,18 @@
 			<version>3.4.1</version>
 		</dependency>
 		<dependency>
-            <groupId>org.openpnp</groupId>
-            <artifactId>opencv</artifactId>
-            <version>4.7.0-0</version>
-        </dependency>
+			<groupId>org.openpnp</groupId>
+			<artifactId>opencv</artifactId>
+			<version>4.7.0-0</version>
+		</dependency>
 	</dependencies>
-	
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-    </repositories>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
@@ -92,6 +92,27 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.13</version>
+				<executions>
+					<execution>
+						<id>default</id>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<repository>your-docker-hub-username/awspe</repository>
+					<tag>latest</tag>
+					<buildArgs>
+						<JAR_FILE>target/awspe.jar</JAR_FILE>
+					</buildArgs>
+					<from>adoptopenjdk/openjdk17:alpine-jre</from>
 				</configuration>
 			</plugin>
 		</plugins>
