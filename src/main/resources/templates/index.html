@@ -8,73 +8,75 @@
 </head>
 
 <header>
-    <div class="container">		
+	<div class="container">
 		<div class="logo">
-		                <h1>AWSPe : Pay using face Scan  </h1>
-		            </div>
-        <nav>
-            <ul>
-                <li><a href="index">Home</a></li>
-                <li><a href="admin">Admin</a></li>
-                <li><a href="contact">Contact Us</a></li>
-            </ul>
-        </nav>
-    </div>
+			<h1>AWSPe </h1>
+		</div>
+		<nav>
+			<ul>
+				<li><a href="index">Home</a></li>
+				<li><a href="admin">Admin</a></li>
+				<li><a href="contact">Contact Us</a></li>
+			</ul>
+		</nav>
+	</div>
 </header>
 
 <section class="home">
-    <div >
-        <h1>Welcome to AWS Fintech Demo Portal !!</h1>
-    </div>
+	<div>
+		<h1>Welcome to AWS Demo Portal !!</h1>
+	</div>
 </section>
 
 <body>
 	<div class="container2">
 		<div class="imgBx">
-						<img src="face2.png" alt="Logo">
+			<img src="face2.png" alt="Logo">
+		</div>
+
+
+		<div class="section-container">
+
+
+			<div class="mb-5">
+				<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
+					<div>
+						<label for="imageFileSelected" class="custom-file-upload">
+							Scan Face to search associalted URL
+						</label>
+						<input type="file" name="imageFileSelected" id="imageFileSelected"
+							onchange="searchSelectedFile();" accept="image/*" capture="camera" />
+
 					</div>
-					
-				
-			<div class="section-container">
+					<br>
+					<div id="details"></div>
 
+					<br>
+					<div id="loading-overlay" class="disabled">
+						<div class="loader"></div>
+					</div>
 
-				<div class="mb-5">
-					<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
-						<div>
-							<label for="imageFileSelected" class="custom-file-upload">
-							                       Scan Face to search associalted URL
-							                   </label>
-							<input type="file" name="imageFileSelected" id="imageFileSelected"
-								onchange="searchSelectedFile();" accept="image/*" capture="camera" />
-
-						</div>
-						<br>
-						<div id="details"></div>
-
-						<br>
-						<div id="loading-overlay" class="disabled">
-							<div class="loader"></div>
-						</div>
-						
-
-				</div>
-				</form>
 
 			</div>
+			</form>
+
+		</div>
 	</div>
-	
+
 
 	</div>
 
 	<script src="script.js"></script>
 </body>
-
+<br><br>
+<br><br>
 
 <footer>
-    <div class="container">
-        <p> 2024 Amazon Web Services. All rights reserved.</p>
-		<a href="https://aws.amazon.com/what-is-cloud-computing"><img src="https://d0.awsstatic.com/logos/powered-by-aws-white.png" alt="Powered by AWS Cloud Computing"></a>
+    <div class="mb-5">
+        <a href="https://aws.amazon.com/what-is-cloud-computing"><img
+                src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing" class="logo1"></a>
     </div>
 </footer>
+
 
 </html>

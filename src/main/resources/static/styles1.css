@@ -2,11 +2,9 @@
 	width: 95%;
 	margin: 0 auto;
 	display: flex;
-	padding: 5px;
 	justify-content: space-between;
 	align-items: center;
 }
-
 
 .container1 {
 	max-width: 600px;
@@ -33,7 +31,7 @@
 
 .imgBx {
 	flex: 1;
-	padding: 20px;
+	padding: 10px;
 }
 
 .imgBx img {
@@ -47,7 +45,7 @@
 }
 
 h2 {
-	margin-top: 10px;
+	margin-top: 2px;
 }
 
 form {
@@ -168,9 +166,9 @@ nav ul li a {
 }
 
 footer {
-	background-color: #007eb9;
+	background-color: #fff;
 	color: #fff;
-	text-align: center;
+	text-align: right;
 	padding: 5px 0;
 	width: 100%;
 	position: fixed;
@@ -179,9 +177,14 @@ footer {
 
 footer p {
 	margin: 0;
-	font-size: 14px;
+	font-size: 8px;
 }
 
+.logo1 {
+    margin-right: 20px; /* Adjust margin as needed */
+    width: 120px; /* Adjust width as needed */
+
+}
 /* Responsive styles for screens smaller than 768px */
 @media screen and (max-width: 768px) {
 
