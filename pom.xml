@@ -94,7 +94,7 @@
 				<configuration>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<version>1.4.13</version>
@@ -114,7 +114,7 @@
 					</buildArgs>
 					<from>adoptopenjdk/openjdk17:alpine-jre</from>
 				</configuration>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
 </project>
