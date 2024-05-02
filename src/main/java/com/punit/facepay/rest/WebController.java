@@ -20,6 +20,11 @@ public class WebController {
 	public String admin() {
 		return "admin";
 	}
+
+	@RequestMapping(value = "/contact")
+	public String contact() {
+		return "contact";
+	}
 	
 	@RequestMapping(value = "/1")
 	public String index2() {
