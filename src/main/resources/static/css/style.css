@@ -107,7 +107,7 @@
 #slider3 {
   height: 36px;
   width: 46px;
-  background-color: orange;
+  background-color: skyblue;
   border-radius: 3px;  
   transition: all 0.5s;
 }
@@ -118,7 +118,7 @@
   -o-transform: translatex(50px);
   transform: translatex(50px);
   transition: all 0.5s;
-  background-color: orange;
+  background-color: skyblue;
 }
 
 #outer3.outerActive {
@@ -131,7 +131,7 @@
   height: 450px;
   width: 450px;  
   border-radius: 5px;
-  background-color: #eb9100;
+  background-color: skyblue;
   margin-left: 10px;
   margin-right: 10px;
   z-index: 1;
@@ -150,7 +150,7 @@
   border-radius: 5px;
   transform: skewy(5deg);
   transform-origin: top right;
-  background-color: #eb9100;
+  background-color: skyblue;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -169,7 +169,7 @@
   border-radius: 5px;
   transform: skewy(-5deg);
   transform-origin: top left;
-  background-color: #eb9100;
+  background-color:skyblue;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -196,7 +196,7 @@
 .navBtns:hover {
   opacity: 1;
   transition: all 1s;
-  background-color: #eb9100;
+  background-color: skyblue;
 }
 
 #navLeft {

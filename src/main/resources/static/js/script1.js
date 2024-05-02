@@ -32,17 +32,11 @@ function toggleState3() {
 }
 
 let imgObject = [
-  "https://source.unsplash.com/450x450/?girl",
-  "https://source.unsplash.com/450x450/?animals",
-  "https://source.unsplash.com/450x450/?architecture",
-  "https://source.unsplash.com/450x450/?nature",
-  "https://source.unsplash.com/450x450/?people",
-  "https://source.unsplash.com/450x450/?tech",
-  "https://source.unsplash.com/450x450/?girl",
-  "https://source.unsplash.com/450x450/?animals",
-  "https://source.unsplash.com/450x450/?architecture",
-  "https://source.unsplash.com/450x450/?nature",
-  "https://source.unsplash.com/450x450/?people",
+  "https://awspe.com/qart/punit-pic.png",
+  "https://awspe.com/qart/nick.jat007@okicici/2_qart.png",
+  "https://awspe.com/qart/nick.jat007@okicici/2_qart.png",
+   "https://awspe.com/qart/punit-pic.png"
+  
 ];
 
 let mainImg = 0;
