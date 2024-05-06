@@ -46,7 +46,7 @@ public class QArtQueue {
 		SendMessageResult mr = null;
 		try {
 			jsonMessage = objectMapper.writeValueAsString(message);
-			System.out.println(jsonMessage.toString());
+			logger.info(jsonMessage.toString());
 
 
 

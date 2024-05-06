@@ -272,17 +272,15 @@ public class FaceScanService {
 			return null;			 			
 		}
 
-
-
 		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
 		dbUtil.putNewFaceID(faceID, upiID, email, phone);
 
+		String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
+		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
+		String returnmessage ="uploaded image with id: "+fileFinalPath ;
 
-		s3Util.storeAdminImageAsync(Configs.S3_BUCKET, upiID, imagebytes);
-		String returnmessage ="uploaded image with id: "+upiID +" email: " + email+ " phone: "+phone;
-
-		//String messageid= q.sendRequest("upi://pay?pa=nick.jat007@okicici", "qart/nick.jat007@okicici/person.jpg");
-		qartQueue.sendRequest("upi://pay?pa="+upiID, upiID+"faceID.jpg");
+		//String messageid= q.sendRequest("upi://pay?pa=punit.15884-1@okhdfcbank", "qart/punit.15884-1@okhdfcbank/person.jpg");
+		qartQueue.sendRequest("upi://pay?pa="+upiID, fileFinalPath);
 
 		return returnmessage;
 
