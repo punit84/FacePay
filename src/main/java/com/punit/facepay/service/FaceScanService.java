@@ -212,13 +212,13 @@ public class FaceScanService {
 			if(faceObject == null) {
 				logger.info("no matching User found");
 
-				s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "0%");
+				s3Util.storeinS3(Configs.S3_PATH_SCAN, imageToSearch, imagebytes, responseSTR, "0%");
 
 			}else {
 				
 				logger.info("Printing face " +  faceObject.printValue());
 				
-				s3Util.storeinS3(imageToSearch, imagebytes, faceObject.getFaceid(),""+faceObject.getScore()  );
+				s3Util.storeinS3(Configs.S3_PATH_SCAN,imageToSearch, imagebytes, faceObject.getFaceid(),""+faceObject.getScore()  );
 				if (faceObject.getFaceURL().contains("://")) {
 					return faceObject.getFaceURL();
 				}
@@ -267,7 +267,7 @@ public class FaceScanService {
 		dbUtil.putNewFaceID(faceID, imageID, email, phone);
 
 		
-		s3Util.storeAdminImageAsync(faceID, imagebytes);
+		s3Util.storeAdminImageAsync(Configs.S3_PATH_REGISTER, imageID, imagebytes);
 
 		return "uploaded image with id: "+imageID +" email: " + email+ " phone: "+phone;
 

@@ -1,7 +1,6 @@
 package com.qart;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
@@ -16,7 +15,7 @@ import com.punit.facepay.service.Configs;
         public static void main(String[] args) throws Exception  {
         	QArtQueue q= new QArtQueue();
         	
-        	String messageid= q.sendRequest("upi://pay?pa=nick.jat007@okicici", "userpicURL");
+        	String messageid= q.sendRequest("upi://pay?pa=nick.jat007@okicici", "qart/nick.jat007@okicici/person.jpg");
         	System.out.println(messageid);
         	
         }
@@ -30,14 +29,16 @@ import com.punit.facepay.service.Configs;
             // Create message object
             QArtMessage message = new QArtMessage();
             message.setUpiId(upi);
-            message.setBucket(Configs.S3_PATH_ADMIN);
-            message.setPersonS3Key(userpicURL);
-           
+            message.setBucket(Configs.S3_PATH_ADMIN); //awspe.com/qart
+            message.setPersonS3Key(userpicURL); //    /nick.jat007@okicici/person.jpg
+            
           
             // Convert message object to JSON string
             String jsonMessage = null;
             try {
                 jsonMessage = objectMapper.writeValueAsString(message);
+                System.out.println(jsonMessage.toString());
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -46,9 +47,9 @@ import com.punit.facepay.service.Configs;
 
             SendMessageRequest send_msg_request = new SendMessageRequest()
                     .withQueueUrl(queueUrl)
-                    .withMessageBody(jsonMessage)
-                    .withMessageGroupId("1") // Add MessageGroupId
-                    .withMessageDeduplicationId(UUID.randomUUID().toString()); // Add MessageDeduplicationId
+                    .withMessageBody(jsonMessage);
+                    //.withMessageGroupId("1"); // Add MessageGroupId
+                    //.withMessageDeduplicationId(UUID.randomUUID().toString()); // Add MessageDeduplicationId
 
             SendMessageResult mr=sqs.sendMessage(send_msg_request);
             System.out.println("Message sent successfully!");

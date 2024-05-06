@@ -12,9 +12,11 @@ public class Configs {
 	public static final String COLLECTION_ID = "FacePayCollection";
 	public static final Region REGION = Region.AP_SOUTH_1;
 	public static final String FACE_ID = "faceid";
-	public static final String S3_PATH = "awspe.com/scan";
+	public static final String S3_PATH_SCAN = "awspe.com/scan/";
 	
-	public static final String S3_PATH_ADMIN = "awspe.com/qart";
+	public static final String S3_PATH_REGISTER = "awspe.com/qart/";
+
+	public static final String S3_PATH_ADMIN = "awspe.com";
 
 	//public static final String S3_PATH = "s3://muhpe.com/images/";
 	public static int MAX_MATCHES = 1;
@@ -30,7 +32,7 @@ public class Configs {
 	public static final int DEVICE_ANDROID = 1;
 	public static final int DEVICE_WEB = 2;
 	
-	public static final String SQS_QUEUE  = "https://sqs.ap-south-1.amazonaws.com/057641535369/qart.fifo";
+	public static final String SQS_QUEUE  = "https://sqs.ap-south-1.amazonaws.com/057641535369/qart";
 
 
 }

@@ -32,7 +32,7 @@ public class s3Util {
 
 
 	
-	public void storeAdminImageAsync( String filename,  byte[] imageToSearch)  {
+	public void storeAdminImageAsync(String path,  String filename,  byte[] imageToSearch)  {
 
 		// Create a temporary file to store the uploaded image
 
@@ -41,12 +41,12 @@ public class s3Util {
 		// Upload the file to Amazon S3 bucket
 
 		PutObjectRequest objectRequest = PutObjectRequest.builder()
-				.bucket(Configs.S3_PATH_ADMIN)
+				.bucket(path)
 				.key(filename)
 				.build();
 
 
-		logger.info(Configs.S3_PATH_ADMIN);
+		logger.info("path is " + path);
 		logger.info(filename);
 		// Upload the image file to S3 asynchronously
 
@@ -63,7 +63,7 @@ public class s3Util {
 
 				} else {
 					// Get the file URL
-					String fileUrl = s3Client.utilities().getUrl(builder -> builder.bucket(Configs.S3_PATH).key(filename)).toExternalForm();
+					String fileUrl = s3Client.utilities().getUrl(builder -> builder.bucket(path).key(filename)).toExternalForm();
 
 					logger.info("file stored in s3 "+ fileUrl);
 				}
@@ -81,7 +81,7 @@ public class s3Util {
 
 
 	
-	private void storeImageAsync( String filename,  byte[] imageToSearch)  {
+	private void storeImageAsync(String path, String filename,  byte[] imageToSearch)  {
 
 		// Create a temporary file to store the uploaded image
 
@@ -90,12 +90,12 @@ public class s3Util {
 		// Upload the file to Amazon S3 bucket
 
 		PutObjectRequest objectRequest = PutObjectRequest.builder()
-				.bucket(Configs.S3_PATH)
+				.bucket(path)
 				.key(filename)
 				.build();
 
 
-		logger.info(Configs.S3_PATH);
+		logger.info(path);
 		logger.info(filename);
 		// Upload the image file to S3 asynchronously
 
@@ -112,7 +112,7 @@ public class s3Util {
 
 				} else {
 					// Get the file URL
-					String fileUrl = s3Client.utilities().getUrl(builder -> builder.bucket(Configs.S3_PATH).key(filename)).toExternalForm();
+					String fileUrl = s3Client.utilities().getUrl(builder -> builder.bucket(path).key(filename)).toExternalForm();
 
 					logger.info("file stored in s3 "+ fileUrl);
 				}
@@ -130,7 +130,7 @@ public class s3Util {
 
 	} 
 
-	public String storeinS3(MultipartFile imageToSearch, byte[] imagebytes, String folder, String similarity) {
+	public String storeinS3(String path, MultipartFile imageToSearch, byte[] imagebytes, String folder, String similarity) {
 		String fileName = StringUtils.cleanPath(System.currentTimeMillis()+"_"+imageToSearch.getOriginalFilename()  );
 
 		logger.info("folder is "+ folder);
@@ -143,7 +143,7 @@ public class s3Util {
 
 			fileName =  "images/"+folder+"/"+similarity+"_"+fileName;
 		}
-		storeImageAsync( fileName, imagebytes);
+		storeImageAsync( path, fileName, imagebytes);
 		logger.info("url is : " + fileName);
 
 

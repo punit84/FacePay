@@ -20,14 +20,14 @@ public class AsyncService {
 
 
 	@Async
-	public CompletableFuture<String> performAsyncTask(MultipartFile imageToSearch, byte[] imagebytes, String responseSTR) {
+	public CompletableFuture<String> performAsyncTask(String path, MultipartFile imageToSearch, byte[] imagebytes, String responseSTR) {
 		// Perform your asynchronous task here
 		// This could be a time-consuming operation, API call, or any other async logic
 
 		// Simulating a delay of 5 seconds
 		try {
 			logger.info("Storing file in s3");
-			s3Util.storeinS3(imageToSearch, imagebytes, responseSTR, "100%");
+			s3Util.storeinS3(path, imageToSearch, imagebytes, responseSTR, "100%");
 
 		} catch (Exception e) {
 			e.printStackTrace();

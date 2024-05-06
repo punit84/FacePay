@@ -65,7 +65,7 @@ public class FaceScanRestController {
 	public Object registerImage(@RequestParam MultipartFile myFile, @RequestParam String imageID, @RequestParam(required = false) String imagePhone, @RequestParam(required = false) String imageEmail) throws IOException {
 		logger.info("***********");
 
-		logger.info("File name is : "+imageID);
+		logger.info("UPI Id  is : "+imageID);
 
 		String respString= facepayService.registerImage(myFile, imageID, imageEmail, imagePhone);
 		

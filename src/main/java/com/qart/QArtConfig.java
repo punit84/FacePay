@@ -2,7 +2,9 @@ package com.qart;
 
 public class QArtConfig {
     private String url = "http://13.233.155.177";
-    private String bucket = "qart-test-bucket";
+    private String bucket = "awspe.com/qart";
+    
+   // s3://awspe.com/qart/nick.jat007@okicici/person.jpg
     //private String personS3Key = "qart/p.khokhar27@okhdfcbank/person.jpg";
     private String modelEndpoint = "qart-face-async-30-04-24-18-29-06";
     private double reductionRatio = 0.70;
