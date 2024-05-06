@@ -95,7 +95,7 @@ public class s3Util {
 				.build();
 
 
-		logger.info(path);
+		logger.info("path is " + path);
 		logger.info(filename);
 		// Upload the image file to S3 asynchronously
 
@@ -137,11 +137,11 @@ public class s3Util {
 		fileName = fileName.replaceAll("\\s", "");
 		if(folder ==null) {
 
-			fileName =  "images/failed/"+fileName;
+			fileName =  Configs.S3_FOLDER_SCAN+"failed/"+fileName;
 
 		}else {
 
-			fileName =  "images/"+folder+"/"+similarity+"_"+fileName;
+			fileName =  Configs.S3_FOLDER_SCAN+folder+"/"+similarity+"_"+fileName;
 		}
 		storeImageAsync( path, fileName, imagebytes);
 		logger.info("url is : " + fileName);

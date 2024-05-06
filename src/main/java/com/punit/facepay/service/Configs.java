@@ -12,11 +12,16 @@ public class Configs {
 	public static final String COLLECTION_ID = "FacePayCollection";
 	public static final Region REGION = Region.AP_SOUTH_1;
 	public static final String FACE_ID = "faceid";
-	public static final String S3_PATH_SCAN = "awspe.com/scan/";
 	
-	public static final String S3_PATH_REGISTER = "awspe.com/qart/";
+	
+	public static final String S3_BUCKET = "awspe.com";
+ 	public static final String S3_FOLDER_SCAN = "scan/";
+ 	public static final String S3_FOLDER_REGISTER = "qart/";
 
-	public static final String S3_PATH_ADMIN = "awspe.com";
+//	
+//	public static final String S3_PATH_REGISTER = "/qart";
+//
+//	public static final String S3_PATH_ADMIN = "awspe.com";
 
 	//public static final String S3_PATH = "s3://muhpe.com/images/";
 	public static int MAX_MATCHES = 1;

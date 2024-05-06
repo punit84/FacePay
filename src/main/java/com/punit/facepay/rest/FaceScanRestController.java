@@ -49,10 +49,11 @@ public class FaceScanRestController {
 
 			}
 		} catch (FaceNotFoundException e) {
+			logger.error("no human face found" + e.getMessage());
 			return ResponseEntity.ok(Configs.FACE_NOHUMAN);
 		}		
 		catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error("Server error " +e.getMessage());
 			return ResponseEntity.ok(Configs.SERVER_ERROR );
 			
 		}		

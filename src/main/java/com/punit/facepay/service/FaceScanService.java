@@ -207,35 +207,42 @@ public class FaceScanService {
 		logger.info("************ searchFaceInCollection ********");
 
 		//FaceMatch face = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
+		try {
 
-		List<FaceObject> faceObjList= fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
+			List<FaceObject> faceObjList= fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
 
-		String  responseSTR = null;
+			String  responseSTR = null;
 
-		for (FaceObject faceObject : faceObjList) {
-			if(faceObject == null) {
-				logger.info("no matching User found");
+			for (FaceObject faceObject : faceObjList) {
+				if(faceObject == null) {
+					logger.info("no matching User found");
 
-				s3Util.storeinS3(Configs.S3_PATH_SCAN, imageToSearch, imagebytes, responseSTR, "0%");
+					s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, responseSTR, "0%");
 
-			}else {
+				}else {
 
-				logger.info("Printing face " +  faceObject.printValue());
+					logger.info("Printing face " +  faceObject.printValue());
 
-				s3Util.storeinS3(Configs.S3_PATH_SCAN,imageToSearch, imagebytes, faceObject.getFaceid(),""+faceObject.getScore()  );
-				if (faceObject.getFaceURL().contains("://")) {
-					return faceObject.getFaceURL();
+					s3Util.storeinS3(Configs.S3_BUCKET,imageToSearch, imagebytes, faceObject.getFaceid(),""+faceObject.getScore()  );
+					if (faceObject.getFaceURL().contains("://")) {
+						return faceObject.getFaceURL();
+					}
+					return UPILinkUtil.getUrl(faceObject.getFaceURL(), type);
+
 				}
-				return UPILinkUtil.getUrl(faceObject.getFaceURL(), type);
-
 			}
+
+			if (responseSTR == null && !detectFace(souImage)) {
+				throw new FaceNotFoundException("No human face found");			 			
+			}
+
+			return responseSTR;
+
+		}catch (Exception e) {
+			s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, null, "0%");
+			throw e;
 		}
 
-		if (responseSTR == null && !detectFace(souImage)) {
-			throw new FaceNotFoundException("No human face found");			 			
-		}
-
-		return responseSTR;
 	}
 
 
@@ -271,7 +278,7 @@ public class FaceScanService {
 		dbUtil.putNewFaceID(faceID, upiID, email, phone);
 
 
-		s3Util.storeAdminImageAsync(Configs.S3_PATH_REGISTER, upiID, imagebytes);
+		s3Util.storeAdminImageAsync(Configs.S3_BUCKET, upiID, imagebytes);
 		String returnmessage ="uploaded image with id: "+upiID +" email: " + email+ " phone: "+phone;
 
 		//String messageid= q.sendRequest("upi://pay?pa=nick.jat007@okicici", "qart/nick.jat007@okicici/person.jpg");
