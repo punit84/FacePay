@@ -5,11 +5,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class QartGenerator {
+public class QArtGenerator {
 
     public static void main(String[] args) {
         try {
-            QartConfig config = new QartConfig();
+            QArtConfig config = new QArtConfig();
 
             // Make HTTP request
             int responseCode = makeRequest(config, "sample-UPI", "qart/p.khokhar27@okhdfcbank/person.jpg");
@@ -21,7 +21,7 @@ public class QartGenerator {
         }
     }
 
-    private static int makeRequest(QartConfig config, String upi, String userpicURL) throws Exception {
+    private static int makeRequest(QArtConfig config, String upi, String userpicURL) throws Exception {
         // Create URL
         URL obj = new URL(config.getUrl());
         HttpURLConnection connection = (HttpURLConnection) obj.openConnection();

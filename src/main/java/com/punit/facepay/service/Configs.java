@@ -29,6 +29,8 @@ public class Configs {
 	public static final int DEVICE_IOS = 0;
 	public static final int DEVICE_ANDROID = 1;
 	public static final int DEVICE_WEB = 2;
+	
+	public static final String SQS_QUEUE  = "https://sqs.ap-south-1.amazonaws.com/057641535369/qart.fifo";
 
 
 }

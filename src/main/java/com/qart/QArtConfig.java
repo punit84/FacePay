@@ -1,6 +1,6 @@
 package com.qart;
 
-public class QartConfig {
+public class QArtConfig {
     private String url = "http://13.233.155.177";
     private String bucket = "qart-test-bucket";
     //private String personS3Key = "qart/p.khokhar27@okhdfcbank/person.jpg";
