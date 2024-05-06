@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.punit.facepay.service.helper.DynamoDBUtil;
 import com.punit.facepay.service.helper.FaceImageCollectionUtil;
+import com.punit.facepay.service.helper.QArtQueue;
 import com.punit.facepay.service.helper.RekoUtil;
 import com.punit.facepay.service.helper.UPILinkUtil;
 import com.punit.facepay.service.helper.s3Util;
@@ -48,14 +49,17 @@ public class FaceScanService {
 
 	@Autowired
 	private s3Util s3Util;
-	
+
+	@Autowired
+	private QArtQueue qartQueue;
+
 	@Autowired
 	DynamoDBUtil dbUtil;
 
-//	@Autowired
-//	private AsyncService asyncService;
-	
-	
+	//	@Autowired
+	//	private AsyncService asyncService;
+
+
 	final static Logger logger= LoggerFactory.getLogger(FaceScanService.class);
 
 
@@ -183,8 +187,8 @@ public class FaceScanService {
 		return customLable;
 	}
 
-	
-	
+
+
 	public String searchImage(MultipartFile imageToSearch, int type ) throws IOException, FaceNotFoundException{
 
 		RekognitionClient rekClient= getRekClient();
@@ -205,9 +209,9 @@ public class FaceScanService {
 		//FaceMatch face = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
 
 		List<FaceObject> faceObjList= fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
-		
+
 		String  responseSTR = null;
-		
+
 		for (FaceObject faceObject : faceObjList) {
 			if(faceObject == null) {
 				logger.info("no matching User found");
@@ -215,9 +219,9 @@ public class FaceScanService {
 				s3Util.storeinS3(Configs.S3_PATH_SCAN, imageToSearch, imagebytes, responseSTR, "0%");
 
 			}else {
-				
+
 				logger.info("Printing face " +  faceObject.printValue());
-				
+
 				s3Util.storeinS3(Configs.S3_PATH_SCAN,imageToSearch, imagebytes, faceObject.getFaceid(),""+faceObject.getScore()  );
 				if (faceObject.getFaceURL().contains("://")) {
 					return faceObject.getFaceURL();
@@ -226,7 +230,7 @@ public class FaceScanService {
 
 			}
 		}
-		
+
 		if (responseSTR == null && !detectFace(souImage)) {
 			throw new FaceNotFoundException("No human face found");			 			
 		}
@@ -249,31 +253,35 @@ public class FaceScanService {
 	//		return null;
 	//	}
 
-	public String registerImage(MultipartFile myFile, String imageID,String email, String phone) throws IOException {
+	public String registerImage(MultipartFile myFile, String upiID,String email, String phone) throws IOException {
 
 		RekognitionClient rekClient= getRekClient();
 		byte[] imagebytes = null;
 		imagebytes= myFile.getBytes();
 
 		Image souImage = getImage(imagebytes);
-		
+
 		if ( !detectFace(souImage)) {
 			return null;			 			
 		}
 
-		
+
 
 		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
-		dbUtil.putNewFaceID(faceID, imageID, email, phone);
+		dbUtil.putNewFaceID(faceID, upiID, email, phone);
 
-		
-		s3Util.storeAdminImageAsync(Configs.S3_PATH_REGISTER, imageID, imagebytes);
 
-		return "uploaded image with id: "+imageID +" email: " + email+ " phone: "+phone;
+		s3Util.storeAdminImageAsync(Configs.S3_PATH_REGISTER, upiID, imagebytes);
+		String returnmessage ="uploaded image with id: "+upiID +" email: " + email+ " phone: "+phone;
+
+		//String messageid= q.sendRequest("upi://pay?pa=nick.jat007@okicici", "qart/nick.jat007@okicici/person.jpg");
+		qartQueue.sendRequest("upi://pay?pa="+upiID, upiID+"faceID.jpg");
+
+		return returnmessage;
 
 
 	}
-	
+
 	public boolean detectFace(Image souImage) throws IOException {
 
 		RekognitionClient rekClient= getRekClient();
@@ -285,7 +293,7 @@ public class FaceScanService {
 
 		DetectFacesResponse facesResponse = rekClient.detectFaces(facesRequest);
 		List<FaceDetail> faceDetails = facesResponse.faceDetails();
-		
+
 		if (null == faceDetails || faceDetails.isEmpty() ) {
 			return false;
 		}
@@ -296,7 +304,7 @@ public class FaceScanService {
 					+ " years old.");
 			logger.info("There is a smile : "+face.smile().value().toString());
 		}
-	
+
 		return true;
 
 	}

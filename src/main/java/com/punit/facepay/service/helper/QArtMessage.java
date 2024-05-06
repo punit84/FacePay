@@ -1,5 +1,8 @@
-package com.qart;
+package com.punit.facepay.service.helper;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class QArtMessage {
 
 	
