@@ -36,9 +36,9 @@ public class QArtQueue {
 
 		// Create message object
 		QArtMessage message = new QArtMessage();
-		message.setUpiId(upi);
+		message.setUpi_id(upi);
 		message.setBucket(Configs.S3_BUCKET); //awspe.com/qart
-		message.setPersonS3Key(userpicURL); //    /nick.jat007@okicici/person.jpg
+		message.setPerson_s3_key(userpicURL); //    /nick.jat007@okicici/person.jpg
 
 
 		// Convert message object to JSON string
