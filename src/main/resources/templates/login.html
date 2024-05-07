@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Cognito Social Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #user-profile {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AWS Cognito Social Login</h1>
+        <div id="user-profile"></div>
+        <div id="login-form">
+            <h2>Login</h2>
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password"><br><br>
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            // Make a POST request to your backend service for authentication
+            fetch('/login?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password))
+            .then(response => response.text())
+            .then(token => {
+                // Once authenticated, display user profile
+                getUserProfile(token);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function getUserProfile(token) {
+            // Make a GET request to get user profile using the token
+            fetch('https://cognito-idp.YOUR_REGION.amazonaws.com/YOUR_USER_POOL_ID/.well-known/jwks.json', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => response.json())
+            .then(profile => {
+                // Display user profile information
+                document.getElementById("user-profile").innerHTML = `
+                    <p>Welcome, ${profile.username}</p>
+                    <p>Email: ${profile.email}</p>
+                    <p>Phone: ${profile.phone_number}</p>
+                    <button onclick="logout()">Logout</button>
+                `;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function logout() {
+            // Clear user profile and perform logout
+            document.getElementById("user-profile").innerHTML = "";
+            document.getElementById("login-form").style.display = "block";
+        }
+    </script>
+</body>
+</html>

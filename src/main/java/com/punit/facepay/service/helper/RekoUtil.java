@@ -49,7 +49,7 @@ public class RekoUtil {
 			logger.info("Status code: " + collectionResponse.statusCode().toString());
 
 			DynamoDBUtil dbUtil = new DynamoDBUtil();
-			dbUtil.putFaceID("CollectionArn", collectionResponse.collectionArn());
+			dbUtil.putFaceIDInDB("CollectionArn", collectionResponse.collectionArn(), "","");
 
 		} catch(RekognitionException e) {
 			logger.info(e.getMessage());

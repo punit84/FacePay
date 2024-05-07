@@ -91,7 +91,7 @@ public class FaceImageCollectionUtil {
 		SearchFacesByImageRequest facesByImageRequest = SearchFacesByImageRequest.builder()
 				.image(souImage)
 				.maxFaces(1)
-				.faceMatchThreshold(70F)
+				.faceMatchThreshold(80F)
 				.collectionId(collectionId)
 				.build();
 
@@ -105,7 +105,7 @@ public class FaceImageCollectionUtil {
 			matchingface = face;
 
 			logger.info("The similarity level is  "+face.similarity());
-			if (face.similarity() >98) {
+			if (face.similarity() >90) {
 				logger.info("search file details are  " +face.toString() );
 				foundFaceName=matchingface.face().faceId();
 				logger.info("fileid  is " +foundFaceName );
