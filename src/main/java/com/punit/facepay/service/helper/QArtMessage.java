@@ -26,171 +26,124 @@ public class QArtMessage {
 	private String bucket = "qart-test-bucket";
 	//private String personS3Key = "qart/p.khokhar27@okhdfcbank/person.jpg";
 	private String modelEndpoint = "qart-face-async-30-04-24-18-29-06";
-	private double reductionRatio = 0.70;
-	private int theme = 0;
-	private int seed = 1441837673;
-	private int numInferenceSteps = 50;
-	private int numImagesPerPrompt = 1;
-	private double strength = 0.75;
-	private double guidanceScale = 7.00;
-	private double controlNet1ConditioningScale = 0.95;
-	public double getControlNet1ConditioningScale() {
-		return controlNet1ConditioningScale;
-	}
-
-	public void setControlNet1ConditioningScale(double controlNet1ConditioningScale) {
-		this.controlNet1ConditioningScale = controlNet1ConditioningScale;
-	}
-
-	public double getControlNet1GuidanceStart() {
-		return controlNet1GuidanceStart;
-	}
-
-	public void setControlNet1GuidanceStart(double controlNet1GuidanceStart) {
-		this.controlNet1GuidanceStart = controlNet1GuidanceStart;
-	}
-
-	public double getControlNet1GuidanceEnd() {
-		return controlNet1GuidanceEnd;
-	}
-
-	public void setControlNet1GuidanceEnd(double controlNet1GuidanceEnd) {
-		this.controlNet1GuidanceEnd = controlNet1GuidanceEnd;
-	}
-
-	public double getControlNet2ConditioningScale() {
-		return controlNet2ConditioningScale;
-	}
-
-	public void setControlNet2ConditioningScale(double controlNet2ConditioningScale) {
-		this.controlNet2ConditioningScale = controlNet2ConditioningScale;
-	}
-
-	public double getControlNet2GuidanceStart() {
-		return controlNet2GuidanceStart;
-	}
-
-	public void setControlNet2GuidanceStart(double controlNet2GuidanceStart) {
-		this.controlNet2GuidanceStart = controlNet2GuidanceStart;
-	}
-
-	public double getControlNet2GuidanceEnd() {
-		return controlNet2GuidanceEnd;
-	}
-
-	public void setControlNet2GuidanceEnd(double controlNet2GuidanceEnd) {
-		this.controlNet2GuidanceEnd = controlNet2GuidanceEnd;
-	}
-
-	private double controlNet1GuidanceStart = 0.20;
-	private double controlNet1GuidanceEnd = 0.96;
-	private double controlNet2ConditioningScale = 0.55;
-	private double controlNet2GuidanceStart = 0.18;
-	private double controlNet2GuidanceEnd = 0.80;
-
-	// Getters and setters
+	private String reductionRatio = "0.70";
+	private String theme = "0";
+	private String seed = "1441837673";
+	private String numInferenceSteps = "50";
+	private String numImagesPerPrompt = "1";
+	private String strength = "0.75";
+	private String guidanceScale = "7.00";
+	private String controlNet1ConditioningScale = "0.95";
+	
+	private String controlNet1GuidanceStart = "0.20";
+	private String controlNet1GuidanceEnd = "0.96";
+	private String controlNet2ConditioningScale = "0.55";
+	private String controlNet2GuidanceStart = "0.18";
+	private String controlNet2GuidanceEnd = "0.80";
 	public String getUpiId() {
 		return upiId;
 	}
-
 	public void setUpiId(String upiId) {
 		this.upiId = upiId;
 	}
-
-	public String getBucket() {
-		return bucket;
-	}
-
-	public void setBucket(String bucket) {
-		this.bucket = bucket;
-	}
-
 	public String getPersonS3Key() {
 		return personS3Key;
 	}
-
 	public void setPersonS3Key(String personS3Key) {
 		this.personS3Key = personS3Key;
 	}
-
+	public String getBucket() {
+		return bucket;
+	}
+	public void setBucket(String bucket) {
+		this.bucket = bucket;
+	}
 	public String getModelEndpoint() {
 		return modelEndpoint;
 	}
-
 	public void setModelEndpoint(String modelEndpoint) {
 		this.modelEndpoint = modelEndpoint;
 	}
-
-	public double getReductionRatio() {
+	public String getReductionRatio() {
 		return reductionRatio;
 	}
-
-	public void setReductionRatio(double reductionRatio) {
+	public void setReductionRatio(String reductionRatio) {
 		this.reductionRatio = reductionRatio;
 	}
-
-
-	public int getTheme() {
+	public String getTheme() {
 		return theme;
 	}
-
-	public void setTheme(int theme) {
+	public void setTheme(String theme) {
 		this.theme = theme;
 	}
-
-	public int getSeed() {
+	public String getSeed() {
 		return seed;
 	}
-
-	public void setSeed(int seed) {
+	public void setSeed(String seed) {
 		this.seed = seed;
 	}
-
-	public int getNumInferenceSteps() {
+	public String getNumInferenceSteps() {
 		return numInferenceSteps;
 	}
-
-	public void setNumInferenceSteps(int numInferenceSteps) {
+	public void setNumInferenceSteps(String numInferenceSteps) {
 		this.numInferenceSteps = numInferenceSteps;
 	}
-
-	public int getNumImagesPerPrompt() {
+	public String getNumImagesPerPrompt() {
 		return numImagesPerPrompt;
 	}
-
-	public void setNumImagesPerPrompt(int numImagesPerPrompt) {
+	public void setNumImagesPerPrompt(String numImagesPerPrompt) {
 		this.numImagesPerPrompt = numImagesPerPrompt;
 	}
-
-	public double getStrength() {
+	public String getStrength() {
 		return strength;
 	}
-
-	public void setStrength(double strength) {
+	public void setStrength(String strength) {
 		this.strength = strength;
 	}
-
-	public double getGuidanceScale() {
+	public String getGuidanceScale() {
 		return guidanceScale;
 	}
-
-	public void setGuidanceScale(double guidanceScale) {
+	public void setGuidanceScale(String guidanceScale) {
 		this.guidanceScale = guidanceScale;
 	}
-
-	public double getControlnet2GuidanceStart() {
+	public String getControlNet1ConditioningScale() {
+		return controlNet1ConditioningScale;
+	}
+	public void setControlNet1ConditioningScale(String controlNet1ConditioningScale) {
+		this.controlNet1ConditioningScale = controlNet1ConditioningScale;
+	}
+	public String getControlNet1GuidanceStart() {
+		return controlNet1GuidanceStart;
+	}
+	public void setControlNet1GuidanceStart(String controlNet1GuidanceStart) {
+		this.controlNet1GuidanceStart = controlNet1GuidanceStart;
+	}
+	public String getControlNet1GuidanceEnd() {
+		return controlNet1GuidanceEnd;
+	}
+	public void setControlNet1GuidanceEnd(String controlNet1GuidanceEnd) {
+		this.controlNet1GuidanceEnd = controlNet1GuidanceEnd;
+	}
+	public String getControlNet2ConditioningScale() {
+		return controlNet2ConditioningScale;
+	}
+	public void setControlNet2ConditioningScale(String controlNet2ConditioningScale) {
+		this.controlNet2ConditioningScale = controlNet2ConditioningScale;
+	}
+	public String getControlNet2GuidanceStart() {
 		return controlNet2GuidanceStart;
 	}
-
-	public void setControlnet2GuidanceStart(double controlnet2GuidanceStart) {
-		this.controlNet2GuidanceStart = controlnet2GuidanceStart;
+	public void setControlNet2GuidanceStart(String controlNet2GuidanceStart) {
+		this.controlNet2GuidanceStart = controlNet2GuidanceStart;
 	}
-
-	public double getControlnet2GuidanceEnd() {
+	public String getControlNet2GuidanceEnd() {
 		return controlNet2GuidanceEnd;
 	}
-
-	public void setControlnet2GuidanceEnd(double controlnet2GuidanceEnd) {
-		this.controlNet2GuidanceEnd = controlnet2GuidanceEnd;
+	public void setControlNet2GuidanceEnd(String controlNet2GuidanceEnd) {
+		this.controlNet2GuidanceEnd = controlNet2GuidanceEnd;
 	}
+	
+	
+
+	
 }
