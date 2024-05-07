@@ -6,7 +6,7 @@ mvn clean package
 
 # Find and kill Java process
 echo "Finding and killing AWSPE service process..."
-pid=$(pgrep -f "java -jar target/AWSPe-0.0.1-SNAPSHOT.jar")
+pid=$(pgrep -f "AWSPe-0.0.1-SNAPSHOT.jar")
 if [ -z "$pid" ]; then
     echo "No AWSPE  process found."
 else
@@ -20,7 +20,7 @@ echo "Executing another command..."
 # For example: java -jar your_jar_file.jar
 echo "Starting AWSPE..."
 
-nohup java -jar ../target/AWSPe-0.0.1-SNAPSHOT.jar &
+nohup java -jar target/AWSPe-0.0.1-SNAPSHOT.jar &
 
 echo "Logs are available in tail -f logs/awspe.log"
 #tail -f logs/awspe.log
@@ -38,6 +38,6 @@ fi
 
 # Run qart.py again in the background
 
-echo "Starting qart.py..."
-python3 qart.py &
+echo "Starting bin/qart.py..."
+python3 bin/qart.py &
 
