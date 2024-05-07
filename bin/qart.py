@@ -145,6 +145,6 @@ def your_callback(message, greeting):
 
 start_time = time.time()
 s3 = boto3.client('s3')
-your_queue_url="https://sqs.ap-south-1.amazonaws.com/093847107635/qart"
+your_queue_url="https://sqs.ap-south-1.amazonaws.com/057641535369/qart"
 
 sqs_polling(queue_url=your_queue_url, callback=your_callback, callback_args={"greeting": "Hello, "})
