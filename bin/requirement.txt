@@ -1,0 +1,5 @@
+sagemaker
+qrcode
+rembg
+pip
+sqs_polling

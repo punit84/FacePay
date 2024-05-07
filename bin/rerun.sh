@@ -3,12 +3,10 @@
 git pull origin master
 
 mvn clean package
-java -jar target/facepay-0.0.1-SNAPSHOT.jar
-
 
 # Find and kill Java process
 echo "Finding and killing Java process..."
-pid=$(pgrep -f "java -jar target/facepay-0.0.1-SNAPSHOT.jar")
+pid=$(pgrep -f "java -jar target/AWSPe-0.0.1-SNAPSHOT.jar")
 if [ -z "$pid" ]; then
     echo "No Java process found."
 else
@@ -20,4 +18,6 @@ fi
 echo "Executing another command..."
 # Replace the following line with your desired command
 # For example: java -jar your_jar_file.jar
-nohup java -jar target/facepay-0.0.1-SNAPSHOT.jar &
+nohup java -jar target/AWSPe-0.0.1-SNAPSHOT.jar &
+
+tail -f logs/awspe.log
