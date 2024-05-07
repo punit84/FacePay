@@ -49,7 +49,7 @@ public class DynamoDBUtil {
 		PutItemRequest request = PutItemRequest.builder()
 				.tableName(Configs.FACE_TABLE)
 				.item(
-						Map.of("id", keyAttribute, "value", valueAttribute, "email", emailAttribute, "mobile",mobileAttribute )
+						Map.of(Configs.FACE_ID, keyAttribute, "value", valueAttribute, "email", emailAttribute, "mobile",mobileAttribute )
 						)
 				.build();
 
