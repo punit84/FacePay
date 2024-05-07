@@ -122,7 +122,7 @@ public class QArtMessage {
 	}
 	private String bucket = "qart-test-bucket";
 	private String person_s3_key ;
-	private String model_endpoint = "qart-face-async-30-04-24-18-29-06";
+	private String model_endpoint = "qart-face-async-02-05-24-11-52-25";
 	private String reduction_ratio = "0.70";
 	private String theme = "0";
 	private String seed = "1441837673";
@@ -139,5 +139,6 @@ public class QArtMessage {
 
 
 	
+
 
 }

@@ -70,6 +70,7 @@ def your_callback(message, greeting):
 
     image1 = qrc1
     image2 = qrc_person
+    print("removed image background")
 
     buffered1 = BytesIO()
     image1.save(buffered1, format="PNG")
@@ -121,7 +122,9 @@ def your_callback(message, greeting):
         "controlnet_2_guidance_end": controlnet_2_guidance_end
     }
 
+
     response=async_predictor.predict(data=request, input_path="s3://"+bucket+"/qart/"+upi_id.split("pa=")[1]+"/"+theme+"_input.json")
+    print("response from sagemaker model")
     
     output=json.loads(response.decode())
     for image in output["output_images"]:
