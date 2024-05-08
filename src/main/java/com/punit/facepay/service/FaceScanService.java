@@ -231,7 +231,11 @@ public class FaceScanService {
 		String returnmessage ="uploaded image with id: "+fileFinalPath ;
 		dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
 
-		qartQueue.sendRequest(userID, fileFinalPath);
+		if (upiID.contains("upi://")) {
+			logger.info("Generating QART ");
+			qartQueue.sendRequest(userID, fileFinalPath);
+		}
+		logger.info("skipping QART generation");
 
 		return returnmessage;
 

@@ -286,7 +286,7 @@ function registerFace() {
 	var imageEmailValue = imageEmail.value;
 
 	if (hasSpaces(imageIDValue)) {
-		alert("Kindly provide valid upi ID or link");
+		alert("Kindly provide valid UPI ID or URL");
 		return true;
 	} else {
 
