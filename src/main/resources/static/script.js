@@ -235,7 +235,9 @@ function displayInfo(evt) {
 	hideLoadingOverlay();
 
 	var text = evt.target.responseText;
-	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {
+	if (text == '') {
+	}
+	else if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {
 		alert("Given face is not registered. please register using admin page ");
 	}
 	else if (text == 'NO-HUMAN-FACE-FOUND') {
@@ -253,8 +255,6 @@ function displayInfo(evt) {
 
 		// Display user info
 		//document.getElementById('name').textContent = data.name;
-		document.getElementById('email').value = data.email;
-		document.getElementById('phone').value = data.mobile;
 		document.getElementById('upi').value = data.value;
 		document.getElementById('qart').src = data.qart;
 		document.getElementById('image').src = data.image;
