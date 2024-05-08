@@ -13,7 +13,6 @@
 	<link rel="stylesheet" href="css/style.css">
 	<!-- Demo CSS (No need to include it into your project) -->
 	<link rel="stylesheet" href="css/demo.css">
-	<link rel="stylesheet" href="style1.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="styles1.css">
 	<title>AWSPe</title>
@@ -50,7 +49,7 @@
 				<img src="face1.png" alt="Logo">
 			</div>
 
-			<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
+			<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx" onsubmit="return validateForm()">
 				<div>
 					<br>
 
@@ -68,8 +67,11 @@
 					<input type="text" id="imageEmail" name="imageEmail" placeholder="Email ID (Optional) ">
 					<input type="text" id="imagePhone" name="imagePhone" placeholder="Phone No (Optional)">
 					<br>
+					<input type="checkbox" id="consent" name="consent" onchange="toggleRegisterButton()">
+					<label for="content">I agree to all the terms and conditions:</label>
+					<br><br>
 
-					<input type="button" onclick="registerFace()" value="Register Face">
+					<input type="button" id= "registerButton" onclick="registerFace()" value="Register Face" disabled>
 				</div><br>
 
 
@@ -79,7 +81,6 @@
 
 			</form>
 		</div>
-
 
 
 	</div>

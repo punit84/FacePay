@@ -31,6 +31,34 @@ function detectDeviceType() {
 	}
 }
 
+
+
+function toggleRegisterButton() {
+	var checkBox = document.getElementById("consent");
+	var registerButton = document.getElementById("registerButton");
+	registerButton.disabled = !checkBox.checked || hasSpaces();
+}
+
+function hasSpaces() {
+	var inputs = document.querySelectorAll('input[type="text"]');
+	for (var i = 0; i < inputs.length; i++) {
+		if (/\s/.test(inputs[i].value)) {
+			alert("Please remove spaces from all fields.");
+			return true;
+		}
+	}
+	return false;
+}
+
+function validateForm() {
+	var checkBox = document.getElementById("content");
+	if (!checkBox.checked) {
+		alert("Please agree to the terms and conditions.");
+		return false;
+	}
+	return !hasSpaces();
+}
+
 function fileSelected() {
 
 	var count = document.getElementById('imageFileSelected').files.length;
@@ -242,41 +270,52 @@ function displayInfo(evt) {
 
 }
 
+function hasSpaces(value) {
+	return /^\s*$/.test(value) || /\s/.test(value);
+}
+
+
 function registerFace() {
 	var url = '/api/registerImage';
 	var method = 'POST';
 	var fd = new FormData();
-
 	var count = document.getElementById('imageFileSelected').files.length;
 	var imageID = document.getElementById('imageID');
-
 	var imageIDValue = imageID.value;
 	var imagePhoneValue = imagePhone.value;
 	var imageEmailValue = imageEmail.value;
 
-	for (var index = 0; index < count; index++) {
+	if (hasSpaces(imageIDValue)) {
+		alert("Kindly provide valid upi ID or link");
+		return true;
+	} else {
 
-		var file = document.getElementById('imageFileSelected').files[index];
-		fd.append('myFile', file);
-		fd.append('imageID', imageIDValue);
-		fd.append('imagePhone', imagePhoneValue);
-		fd.append('imageEmail', imageEmailValue);
+		for (var index = 0; index < count; index++) {
 
+			var file = document.getElementById('imageFileSelected').files[index];
+			fd.append('myFile', file);
+			fd.append('imageID', imageIDValue);
+			fd.append('imagePhone', imagePhoneValue);
+			fd.append('imageEmail', imageEmailValue);
+
+		}
+
+		var xhr = new XMLHttpRequest();
+
+		xhr.upload.addEventListener("progress", uploadProgress, false);
+
+		xhr.addEventListener("load", uploadComplete, false);
+
+		xhr.addEventListener("error", uploadFailed, false);
+
+		xhr.addEventListener("abort", uploadCanceled, false);
+
+		xhr.open(method, url, false); // true for asynchronous request
+
+		xhr.send(fd);
 	}
 
-	var xhr = new XMLHttpRequest();
 
-	xhr.upload.addEventListener("progress", uploadProgress, false);
-
-	xhr.addEventListener("load", uploadComplete, false);
-
-	xhr.addEventListener("error", uploadFailed, false);
-
-	xhr.addEventListener("abort", uploadCanceled, false);
-
-	xhr.open(method, url, false); // true for asynchronous request
-
-	xhr.send(fd);
 
 }
 
