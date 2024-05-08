@@ -19,7 +19,6 @@
 
 </head>
 
-
 <header>
 	<div class="container">
 		<nav>
@@ -35,38 +34,64 @@
 
 <section class="home">
 	<div>
-		<h3>AWSPe : Pay using Face Scan</h3>
+		<h3>AWSPe : User Info</h3>
 	</div>
 </section>
 
 <body>
 
 	<main>
+
 		<!-- Start DEMO HTML (Use the following code into your project)-->
-		<div id="container">
-			<div id="galleryView">
-				<div id="tilesContainer">
-					<div id="leftView"></div>
-					<button id="navLeft" class="navBtns"><i class="fas fa-arrow-left fa-3x"></i></button>
-					<a id="linkTag">
-						<div id="mainView"></div>
-					</a>
-					<div id="rightView"></div>
-					<button id="navRight" class="navBtns"><i class="fas fa-arrow-right fa-3x"></i></button>
-				</div>
+
+		<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
+			<div>
+				<label for="imageFileSelected" class="custom-file-upload">
+					Scan Face to search associalted details
+				</label>
+				<input type="file" name="searchSelectedFile" id="imageFileSelected"
+					onchange="searchUserInfoSelectedFile();" accept="image/*" capture="camera" />
+				<div id="details"></div>
 			</div>
-		</div>
-		<!-- END EDMO HTML (Happy Coding!)-->
+			<div id="userInfo">
+				<form id="updateForm">
+					<label for="upi">URL:</label>
+					<input type="text" id="upi" name="newName" required readonly><br>
+					<label for="email">Email:</label>
+					<input type="text" id="email" name="newEmail" required readonly><br>
+					<label for="phone">Mobile:</label>
+					<input type="text" id="phone" name="newUpi" required readonly><br>
+				</form>
+				<div class="image-container">
+					<img id="qart" src="" alt="qart Image">
+				</div>
+
+				<div class="image-container">
+					<img id="image" src="" alt="User Image">
+				</div>
+
+
+			</div>
+
+			<br>
+			<div id="loading-overlay" class="disabled">
+				<div class="loader"></div>
+			</div>
+
+
+			<div class="container">
+
 	</main>
 
 
 	<footer>
-	    <div class="mb-5">
-	        <a href="https://aws.amazon.com/what-is-cloud-computing"><img
-	                src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing" class="logo1"></a>
-	    </div>
+		<div class="mb-5">
+			<a href="https://aws.amazon.com/what-is-cloud-computing"><img
+					src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing"
+					class="logo1"></a>
+		</div>
 	</footer>
-	<script src="script1.js"></script>
+	<script src="script.js"></script>
 
 </body>
 

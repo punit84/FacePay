@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Info</h1>
+        <div id="userInfo">
+            <p><strong>Name:</strong> <span id="name"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+            <p><strong>Phone:</strong> <span id="phone"></span></p>
+            <p><strong>UPI ID:</strong> <span id="upi"></span></p>
+            <img id="image" src="" alt="User Image">
+        </div>
+
+        <form id="updateForm" style="display: none;">
+            <label for="newName">Name:</label>
+            <input type="text" id="newName" name="newName" required><br>
+            <label for="newEmail">Email:</label>
+            <input type="text" id="newEmail" name="newEmail" required><br>
+            <label for="newUpi">UPI ID:</label>
+            <input type="text" id="newUpi" name="newUpi" required><br>
+            <input type="submit" value="Update">
+        </form>
+
+        <button id="updateButton" onclick="toggleUpdateForm()">Update Info</button>
+    </div>
+
+    <script>
+        // Function to fetch user info from API
+        async function fetchUserInfo() {
+            try {
+                const response = await fetch('https://awspe.com/api/userinfo'); // Replace with your API endpoint
+                const data = await response.json();
+                console.log(data);
+
+                // Display user info
+                document.getElementById('name').textContent = data.name;
+                document.getElementById('email').textContent = data.email;
+                document.getElementById('phone').textContent = data.phone;
+                document.getElementById('upi').textContent = data.upi;
+                document.getElementById('image').src = data.image;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to toggle the update form visibility
+        function toggleUpdateForm() {
+            var updateForm = document.getElementById('updateForm');
+            var updateButton = document.getElementById('updateButton');
+
+            if (updateForm.style.display === 'none') {
+                updateForm.style.display = 'block';
+                updateButton.textContent = 'Cancel';
+            } else {
+                updateForm.style.display = 'none';
+                updateButton.textContent = 'Update Info';
+            }
+        }
+
+        // Function to handle form submission
+        async function updateUserInfo(event) {
+            event.preventDefault();
+
+            var newName = document.getElementById('newName').value;
+            var newEmail = document.getElementById('newEmail').value;
+            var newUpi = document.getElementById('newUpi').value;
+
+            try {
+                const response = await fetch('https://api.example.com/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: newName,
+                        email: newEmail,
+                        upi: newUpi
+                    })
+                });
+
+                const data = await response.json();
+                console.log(data);
+
+                // Reload the user info after updating
+                fetchUserInfo();
+                
+                // Hide the update form
+                toggleUpdateForm();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.getElementById('updateForm').addEventListener('submit', updateUserInfo);
+
+        fetchUserInfo();
+    </script>
+</body>
+</html>

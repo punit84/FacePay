@@ -120,6 +120,75 @@ function searchUserInfoSelectedFile() {
 
 }
 
+function searchUserInfo() {
+	var url = '/api/userinfo';
+	var method = 'POST';
+	var fd = new FormData();
+	var device = detectDeviceType();
+
+	var count = document.getElementById('imageFileSelected').files.length;
+
+	for (var index = 0; index < count; index++) {
+
+		var file = document.getElementById('imageFileSelected').files[index];
+
+		fd.append('myFile', file);
+		fd.append('device', device)
+
+	}
+
+	var xhr = new XMLHttpRequest();
+
+	xhr.addEventListener("load", displayInfo, false);
+
+
+	xhr.open(method, url, true); // true for asynchronous request
+
+	xhr.send(fd);
+
+	showLoadingOverlay();
+}
+
+function displayInfo(evt) {
+
+	/* This event is raised when the server send back a response */
+	//alert(evt.target.responseText);
+	//alert(evt.target.responseText);
+	hideLoadingOverlay();
+    document.getElementById("userInfo").style.display = "block";
+
+	var text = evt.target.responseText;
+	var data = JSON.parse(text);
+
+	// Display user info
+	//document.getElementById('name').textContent = data.name;
+	document.getElementById('email').value = data.email;
+	document.getElementById('phone').value = data.mobile;
+	document.getElementById('upi').value = data.value;
+	document.getElementById('qart').src = data.qart;
+	document.getElementById('image').src = data.image;
+
+
+	//document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
+	loadingOverlay.style.display = 'none';
+
+	var text = evt.target.responseText;
+	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {
+		alert("Given face is not registered. please register using admin page ");
+	}
+	else if (text == 'NO-HUMAN-FACE-FOUND') {
+		alert("Only human faces are supported ");
+	}
+	else if (text == 'SERVER_ERROR') {
+		alert("PLEASE TRY AFTER SOMETIME");
+	}
+	else {
+		loadingOverlay.style.display = 'none';
+
+	}
+
+}
+
 function registerFace() {
 	var url = '/api/registerImage';
 	var method = 'POST';
@@ -193,36 +262,6 @@ function searchFaceId() {
 	showLoadingOverlay();
 }
 
-function searchUserInfo() {
-	var url = '/api/userinfo';
-	var method = 'POST';
-	var fd = new FormData();
-	var device = detectDeviceType();
-
-	var count = document.getElementById('imageFileSelected').files.length;
-
-	for (var index = 0; index < count; index++) {
-
-		var file = document.getElementById('imageFileSelected').files[index];
-
-		fd.append('myFile', file);
-		fd.append('device', device)
-
-	}
-
-
-	var xhr = new XMLHttpRequest();
-
-	xhr.addEventListener("load", displayInfo, false);
-
-
-	xhr.open(method, url, true); // true for asynchronous request
-
-	xhr.send(fd);
-
-	showLoadingOverlay();
-}
-
 
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -283,45 +322,6 @@ function profileDisplay(evt) {
 
 }
 
-function displayInfo(evt) {
-
-	/* This event is raised when the server send back a response */
-	//alert(evt.target.responseText);
-	//alert(evt.target.responseText);
-	hideLoadingOverlay();
-
-	var text = evt.target.responseText;
-	var data = JSON.parse(text);
-
-	// Display user info
-	//document.getElementById('name').textContent = data.name;
-	document.getElementById('email').textContent = data.email;
-	document.getElementById('phone').textContent = data.mobile;
-	document.getElementById('upi').textContent = data.value;
-	document.getElementById('qart').src = data.qart;
-	document.getElementById('image').src = data.image;
-
-
-	//document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
-	loadingOverlay.style.display = 'none';
-
-	var text = evt.target.responseText;
-	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {
-		alert("Given face is not registered. please register using admin page ");
-	}
-	else if (text == 'NO-HUMAN-FACE-FOUND') {
-		alert("Only human faces are supported ");
-	}
-	else if (text == 'SERVER_ERROR') {
-		alert("PLEASE TRY AFTER SOMETIME");
-	}
-	else {
-		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
-		loadingOverlay.style.display = 'none';
-
-	}
-
-}
 
 function redirectToPay(evt) {
 
