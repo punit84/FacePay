@@ -93,8 +93,8 @@ public class FaceScanRestController {
 
 		return ResponseEntity.ok(respString);
 	}
-	
-	
+
+
 
 	@PostMapping("/userinfo")
 	public Object userinfo(@RequestParam MultipartFile myFile, @RequestParam String device) throws IOException {
@@ -129,6 +129,16 @@ public class FaceScanRestController {
 
 		return ResponseEntity.ok(respString);
 	}
+	@PostMapping("/userbyface")
+	public Object userbyface( @RequestParam String faceid) throws IOException {
+		String respString = null;
+
+		respString = facepayService.searcUserDetailsByFaceID(faceid);
+
+		logger.info(" final response is "+respString);
+
+		return ResponseEntity.ok(respString);
+	}
 
 	@PostMapping("/registerImage")
 	public Object registerImage(@RequestParam MultipartFile myFile, @RequestParam String imageID,
@@ -159,17 +169,17 @@ public class FaceScanRestController {
 		String email = "jainpuni@amazon.com";
 		String message = "how are you";
 
-		
-//		String name = formData.get("name");
-//		String email = formData.get("email");
-//		String message = formData.get("message");
+
+		//		String name = formData.get("name");
+		//		String email = formData.get("email");
+		//		String message = formData.get("message");
 		String senderEmail = "jainpuni@amazon.com";
 		String recipientEmail = "jainpuni@amazon.com";
-		
-		
+
+
 		SesClient sesClien1t = SesClient.builder()
-        .region(Region.AP_SOUTH_1) // Replace YOUR_REGION with your region, e.g., Region.US_EAST_1
-        .build();
+				.region(Region.AP_SOUTH_1) // Replace YOUR_REGION with your region, e.g., Region.US_EAST_1
+				.build();
 
 		SendEmailRequest emailRequest = SendEmailRequest.builder()
 				.source(senderEmail)

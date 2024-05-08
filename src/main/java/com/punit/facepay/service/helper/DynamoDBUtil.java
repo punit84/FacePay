@@ -161,22 +161,13 @@ public class DynamoDBUtil {
 		String json =null;
 		try {
 			json = objectMapper.writeValueAsString(parsedAttributes);
-			System.out.println(json);
+			logger.info(json);
 
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 
-		//
-		//		AttributeValue valueAttribute = response.item().get("value");
-		//		if (valueAttribute !=null) {
-		//			String value = valueAttribute.s().trim();
-		//			logger.info("found face in db linked with url:" +value);
-		//
-		//			return value;
-		//
-		//		}
 
 		return json;
 	}

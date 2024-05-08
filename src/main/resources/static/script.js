@@ -120,6 +120,29 @@ function searchUserInfoSelectedFile() {
 
 }
 
+
+
+function searchUserByFaceIDInfo() {
+	var url = '/api/userbyface';
+	var method = 'POST';
+	var fd = new FormData();
+
+	var faceid = localStorage.getItem('faceid');
+
+	fd.append('faceid', faceid);
+
+	var xhr = new XMLHttpRequest();
+
+	xhr.addEventListener("load", displayInfo, false);
+
+
+	xhr.open(method, url, true); // true for asynchronous request
+
+	xhr.send(fd);
+
+	showLoadingOverlay();
+}
+
 function searchUserInfo() {
 	var url = '/api/userinfo';
 	var method = 'POST';
@@ -155,10 +178,11 @@ function displayInfo(evt) {
 	//alert(evt.target.responseText);
 	//alert(evt.target.responseText);
 	hideLoadingOverlay();
-    document.getElementById("userInfo").style.display = "block";
+	document.getElementById("userInfo").style.display = "block";
 
 	var text = evt.target.responseText;
 	var data = JSON.parse(text);
+    localStorage.setItem('faceid', data.faceid);
 
 	// Display user info
 	//document.getElementById('name').textContent = data.name;
