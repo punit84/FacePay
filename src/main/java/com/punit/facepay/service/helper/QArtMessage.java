@@ -16,6 +16,29 @@ public class QArtMessage {
 	"guidance_scale": "7.00", 
 	"controlnet_1_conditioning_scale": "0.85", "controlnet_1_guidance_start": "0.20", "controlnet_1_guidance_end": "0.96", "controlnet_2_conditioning_scale": "0.55", "controlnet_2_guidance_start": "0.18", "controlnet_2_guidance_end": "0.80"}
 	 */
+	
+	//{"upi_id": "upi://pay?pa=nick.jat007@okicici","bucket": "qart-test-bucket","person_s3_key": "qart/nick.jat007@okicici/snghptx.jpg", "model_endpoint": "qart-face-async-tile-canny-07-05-24-18-35-16","reduction_ratio": "0.70", "theme": "0","seed": "1441837673", "num_inference_steps": "50", "num_images_per_prompt": "1", "strength": "0.75", "guidance_scale": "7.00", "controlnet_1_conditioning_scale": "0.92", "controlnet_1_guidance_start": "0.15", "controlnet_1_guidance_end": "0.96", "controlnet_2_conditioning_scale": "1.00", "controlnet_2_guidance_start": "0.68", "controlnet_2_guidance_end":"0.80","controlnet_3_conditioning_scale": "1.00", "controlnet_3_guidance_start": "0.00",
+	//	"controlnet_3_guidance_end": "1.00"}
+	
+	private String bucket = "qart-test-bucket";
+	private String person_s3_key ;
+	private String model_endpoint = "qart-face-async-tile-canny-08-05-24-05-26-01";
+	private String reduction_ratio = "0.70";
+	private String theme = "0";
+	private String seed = "1441837673";
+	private String num_inference_steps = "50";
+	private String num_images_per_prompt = "1";
+	private String strength = "0.75";
+	private String guidance_scale = "7.00";
+	private String controlnet_1_conditioning_scale = "0.92";
+	private String controlnet_1_guidance_start = "0.15";
+	private String controlnet_1_guidance_end = "0.96";
+	private String controlnet_2_conditioning_scale = "1.00";
+	private String controlnet_2_guidance_start = "0.68";
+	private String controlnet_2_guidance_end = "0.80";
+	private String controlnet_3_conditioning_scale = "1.00";
+	private String controlnet_3_guidance_start = "0.00";
+	private String controlnet_3_guidance_end = "1.00";
 
 	private String upi_id ;
 	public String getUpi_id() {
@@ -120,23 +143,25 @@ public class QArtMessage {
 	public void setControlnet_2_guidance_end(String controlnet_2_guidance_end) {
 		this.controlnet_2_guidance_end = controlnet_2_guidance_end;
 	}
-	private String bucket = "qart-test-bucket";
-	private String person_s3_key ;
-	private String model_endpoint = "qart-face-async-02-05-24-11-52-25";
-	private String reduction_ratio = "0.70";
-	private String theme = "0";
-	private String seed = "1441837673";
-	private String num_inference_steps = "50";
-	private String num_images_per_prompt = "1";
-	private String strength = "0.75";
-	private String guidance_scale = "7.00";
-	private String controlnet_1_conditioning_scale = "0.85";
-	private String controlnet_1_guidance_start = "0.20";
-	private String controlnet_1_guidance_end = "0.96";
-	private String controlnet_2_conditioning_scale = "0.55";
-	private String controlnet_2_guidance_start = "0.18";
-	private String controlnet_2_guidance_end = "0.80";
 
+	public String getControlnet_3_conditioning_scale() {
+		return controlnet_3_conditioning_scale;
+	}
+	public void setControlnet_3_conditioning_scale(String controlnet_3_conditioning_scale) {
+		this.controlnet_3_conditioning_scale = controlnet_3_conditioning_scale;
+	}
+	public String getControlnet_3_guidance_start() {
+		return controlnet_3_guidance_start;
+	}
+	public void setControlnet_3_guidance_start(String controlnet_3_guidance_start) {
+		this.controlnet_3_guidance_start = controlnet_3_guidance_start;
+	}
+	public String getControlnet_3_guidance_end() {
+		return controlnet_3_guidance_end;
+	}
+	public void setControlnet_3_guidance_end(String controlnet_3_guidance_end) {
+		this.controlnet_3_guidance_end = controlnet_3_guidance_end;
+	}
 
 	
 
