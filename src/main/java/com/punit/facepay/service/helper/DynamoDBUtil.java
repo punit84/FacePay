@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.punit.facepay.service.Configs;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -34,10 +36,11 @@ public class DynamoDBUtil {
 		//		util.getFaceID("test");
 
 		DynamoDBUtil util = new DynamoDBUtil();
-		util.putFaceIDInDB("punit", "jain", "punit.15884", "99110"); 
+		util.getFaceInfo("ca5a30ac-188c-4b97-a3f1-60397b56511f");
+		//util.putFaceIDInDB("punit", "jain", "punit.15884", "99110"); 
 		//util.putFaceID1("punit", "jain"); 
 	}
-	
+
 	public void putFaceIDInDB(String faceId, String value , String email, String mobile){
 		// Create an item to be stored in DynamoDB
 		AttributeValue keyAttribute = AttributeValue.builder().s(faceId).build();
@@ -66,8 +69,8 @@ public class DynamoDBUtil {
 			logger.error("Error: " + e.getMessage());
 		}
 	}
-	
-	
+
+
 	public void putNewFaceIDInDB(String faceId, String value , String email, String mobile) {
 
 		Map<String, AttributeValue> itemKey = new HashMap<>();
@@ -128,5 +131,53 @@ public class DynamoDBUtil {
 		}
 
 		return null;
+	}
+
+	public String getFaceInfo(String faceid) {
+
+		GetItemRequest request = GetItemRequest.builder()
+				.tableName(Configs.FACE_TABLE)
+				.key(
+						Map.of(Configs.FACE_ID, AttributeValue.builder().s(faceid).build())
+						)
+				.build();
+
+		// Retrieve the item from DynamoDB
+		GetItemResponse response = client.getItem(request);
+		// Extract item attributes
+		Map<String, AttributeValue> itemAttributes = response.item();
+		Map<String, String> parsedAttributes = new HashMap<>();
+
+		// Parse attributes and trim values
+		for (Map.Entry<String, AttributeValue> entry : itemAttributes.entrySet()) {
+			String attributeName = entry.getKey();
+			AttributeValue attributeValue = entry.getValue();
+			String value = attributeValue.s().trim(); // Trim the value
+			parsedAttributes.put(attributeName, value);
+		}
+
+		// Convert to JSON
+		ObjectMapper objectMapper = new ObjectMapper();
+		String json =null;
+		try {
+			json = objectMapper.writeValueAsString(parsedAttributes);
+			System.out.println(json);
+
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		//
+		//		AttributeValue valueAttribute = response.item().get("value");
+		//		if (valueAttribute !=null) {
+		//			String value = valueAttribute.s().trim();
+		//			logger.info("found face in db linked with url:" +value);
+		//
+		//			return value;
+		//
+		//		}
+
+		return json;
 	}
 }

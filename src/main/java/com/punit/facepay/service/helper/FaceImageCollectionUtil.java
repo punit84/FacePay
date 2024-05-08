@@ -84,6 +84,49 @@ public class FaceImageCollectionUtil {
 		return faceObjectList;
 
 	}
+	
+	public List<FaceObject> searchFaceQART(RekognitionClient rekClient,String collectionId,Image souImage) {
+		
+		List<FaceObject> faceObjectList = new ArrayList<>();
+
+		SearchFacesByImageRequest facesByImageRequest = SearchFacesByImageRequest.builder()
+				.image(souImage)
+				.maxFaces(5)
+				.faceMatchThreshold(95F)
+				.collectionId(collectionId)
+				.build();
+
+		SearchFacesByImageResponse imageResponse = rekClient.searchFacesByImage(facesByImageRequest) ;
+		logger.info("Faces matching in the collection");
+		List<FaceMatch> faceImageMatches = imageResponse.faceMatches();
+		logger.info("No of match found are " + faceImageMatches.size());
+		for (FaceMatch faceMatch: faceImageMatches) {
+
+			logger.info("face details are  " + faceMatch.toString());
+
+			Face face = faceMatch.face();
+			logger.info("The confidence level is  "+face.confidence());
+			logger.info("The similarity level is  "+faceMatch.similarity());
+			
+			if (face.confidence()>95) {
+				String faceURL = dbUtil.getFaceInfo(face.faceId());
+				if (null !=faceURL) {
+					faceObjectList.add(new FaceObject(face.faceId(), faceURL, face.confidence()));
+					logger.info("face match found  is " +face.faceId() +  " and Url is " +  faceURL);					
+				}else {
+					logger.info("Discarding : face match : " +face.faceId() +  " as Url is " +  faceURL);					
+				}
+				
+			}else {
+				logger.info("Face confidence is lower than 95  " +face.toString() );
+				logger.info("fileid  is " +face.faceId() );
+			}
+			
+		}
+		return faceObjectList;
+
+	}
+
 
 
 	public FaceMatch searchFaceInCollection(RekognitionClient rekClient,String collectionId,Image souImage) {

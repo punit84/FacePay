@@ -12,8 +12,13 @@ public class Configs {
 	public static final String COLLECTION_ID = "AWSPeCollection";
 	public static final Region REGION = Region.AP_SOUTH_1;
 	public static final String FACE_ID = "faceid";
-	
-	
+	public static final String FACE_EMAIL = "email";
+	public static final String FACE_MOBILE = "mobile";
+	public static final String FACE_IMAGE = "image";
+
+	public static final String FACE_UPI = "value";
+	public static final String FACE_QART = "qart";
+
 	public static final String S3_BUCKET = "awspe.com";
  	public static final String S3_FOLDER_SCAN = "scan/";
  	public static final String S3_FOLDER_REGISTER = "qart/";

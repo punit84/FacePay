@@ -40,4 +40,4 @@ fi
 
 echo "Starting bin/qart.py..."
 
-nohup python3 -u quart.py > ./logs/quart.log 2>&1 &
+nohup python3 -u bin/quart.py > logs/quart.log 2>&1 &

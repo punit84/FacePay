@@ -81,6 +81,56 @@ public class FaceScanService {
 	}
 	
 
+	public String searchUserDetails(MultipartFile imageToSearch, int type ) throws IOException, FaceNotFoundException{
+
+		RekognitionClient rekClient= getRekClient();
+
+		byte[] imagebytes = null;
+		Image souImage = null;
+		try {
+			imagebytes = imageToSearch.getBytes();
+			souImage = getImage(imagebytes);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		logger.info("************ searchFaceInCollection ********");
+
+		//FaceMatch face = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
+		try {
+
+			List<FaceObject> faceObjList= fiUtil.searchFaceQART(rekClient, Configs.COLLECTION_ID, souImage);
+
+			String  responseSTR = null;
+
+			for (FaceObject faceObject : faceObjList) {
+				if(faceObject == null) {
+					logger.info("no matching User found");
+					s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, responseSTR, "0%");
+
+				}else {
+
+					logger.info("Printing face " +  faceObject.printValue());
+					return faceObject.getFaceURL();
+
+				}
+			}
+
+			if (responseSTR == null && !detectFace(souImage)) {
+				throw new FaceNotFoundException("No human face found");			 			
+			}
+
+			return responseSTR;
+
+		}catch (Exception e) {
+			s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, null, "0%");
+			throw e;
+		}
+
+	}
+
 	public String searchImage(MultipartFile imageToSearch, int type ) throws IOException, FaceNotFoundException{
 
 		RekognitionClient rekClient= getRekClient();

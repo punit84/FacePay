@@ -56,5 +56,9 @@ public class WebController {
 		return "profile";
 	}
 	
+	@RequestMapping(value = "/userinfo")
+	public String userinfo() {
+		return "userinfo";
+	}
 	
 }

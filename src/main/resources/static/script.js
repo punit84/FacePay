@@ -12,23 +12,23 @@ function hideLoadingOverlay() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    var deviceType = detectDeviceType();
-    var deviceTypeElement = document.getElementById("deviceType");
-    deviceTypeElement.textContent = deviceType;
+	var deviceType = detectDeviceType();
+	var deviceTypeElement = document.getElementById("deviceType");
+	deviceTypeElement.textContent = deviceType;
 });
 
 function detectDeviceType() {
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        return "iOS";
-    } else if (/Android/i.test(navigator.userAgent)) {
-        return "Android";
-    }
-    else if (/Macintosh/i.test(navigator.userAgent)) {
-        return "Macintosh";
-    }
-    else {
-        return navigator.userAgent;
-    }
+	if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+		return "iOS";
+	} else if (/Android/i.test(navigator.userAgent)) {
+		return "Android";
+	}
+	else if (/Macintosh/i.test(navigator.userAgent)) {
+		return "Macintosh";
+	}
+	else {
+		return navigator.userAgent;
+	}
 }
 
 function fileSelected() {
@@ -90,6 +90,36 @@ function searchSelectedFile() {
 }
 
 
+function searchUserInfoSelectedFile() {
+
+	var count = document.getElementById('imageFileSelected').files.length;
+
+	document.getElementById('details').innerHTML = "";
+
+	for (var index = 0; index < count; index++) {
+
+		var file = document.getElementById('imageFileSelected').files[index];
+
+		var fileSize = 0;
+
+		if (file.size > 1024 * 1024)
+
+			fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+
+		else
+
+			fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+
+		document.getElementById('details').innerHTML += 'Name: ' + file.name + '<br>Size: ' + fileSize + '<br>Type: ' + file.type;
+
+		document.getElementById('details').innerHTML += '<p>';
+
+	}
+
+	searchUserInfo();
+
+}
+
 function registerFace() {
 	var url = '/api/registerImage';
 	var method = 'POST';
@@ -141,7 +171,7 @@ function searchFaceId() {
 		var file = document.getElementById('imageFileSelected').files[index];
 
 		fd.append('myFile', file);
-		fd.append('device',device )
+		fd.append('device', device)
 
 	}
 
@@ -162,6 +192,38 @@ function searchFaceId() {
 
 	showLoadingOverlay();
 }
+
+function searchUserInfo() {
+	var url = '/api/userinfo';
+	var method = 'POST';
+	var fd = new FormData();
+	var device = detectDeviceType();
+
+	var count = document.getElementById('imageFileSelected').files.length;
+
+	for (var index = 0; index < count; index++) {
+
+		var file = document.getElementById('imageFileSelected').files[index];
+
+		fd.append('myFile', file);
+		fd.append('device', device)
+
+	}
+
+
+	var xhr = new XMLHttpRequest();
+
+	xhr.addEventListener("load", displayInfo, false);
+
+
+	xhr.open(method, url, true); // true for asynchronous request
+
+	xhr.send(fd);
+
+	showLoadingOverlay();
+}
+
+
 
 window.addEventListener('DOMContentLoaded', function() {
 	var loadingOverlay = document.getElementById('loading-overlay');
@@ -221,6 +283,46 @@ function profileDisplay(evt) {
 
 }
 
+function displayInfo(evt) {
+
+	/* This event is raised when the server send back a response */
+	//alert(evt.target.responseText);
+	//alert(evt.target.responseText);
+	hideLoadingOverlay();
+
+	var text = evt.target.responseText;
+	var data = JSON.parse(text);
+
+	// Display user info
+	//document.getElementById('name').textContent = data.name;
+	document.getElementById('email').textContent = data.email;
+	document.getElementById('phone').textContent = data.mobile;
+	document.getElementById('upi').textContent = data.value;
+	document.getElementById('qart').src = data.qart;
+	document.getElementById('image').src = data.image;
+
+
+	//document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
+	loadingOverlay.style.display = 'none';
+
+	var text = evt.target.responseText;
+	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {
+		alert("Given face is not registered. please register using admin page ");
+	}
+	else if (text == 'NO-HUMAN-FACE-FOUND') {
+		alert("Only human faces are supported ");
+	}
+	else if (text == 'SERVER_ERROR') {
+		alert("PLEASE TRY AFTER SOMETIME");
+	}
+	else {
+		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
+		loadingOverlay.style.display = 'none';
+
+	}
+
+}
+
 function redirectToPay(evt) {
 
 	/* This event is raised when the server send back a response */
@@ -229,24 +331,25 @@ function redirectToPay(evt) {
 	hideLoadingOverlay();
 
 	var text = evt.target.responseText;
-	
+
 	//document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 	loadingOverlay.style.display = 'none';
 
 	var text = evt.target.responseText;
-	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE'){
+	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {
 		alert("Given face is not registered. please register using admin page ");
 	}
-	else if (text == 'NO-HUMAN-FACE-FOUND'){
+	else if (text == 'NO-HUMAN-FACE-FOUND') {
 		alert("Only human faces are supported ");
 	}
-	else if (text == 'SERVER_ERROR'){
+	else if (text == 'SERVER_ERROR') {
 		alert("PLEASE TRY AFTER SOMETIME");
 	}
-	else{
+	else {
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		loadingOverlay.style.display = 'none';
 		window.location.href = text;
+
 	}
 
 }

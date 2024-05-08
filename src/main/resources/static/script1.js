@@ -32,9 +32,8 @@ function toggleState3() {
 }
 
 let imgObject = [
-  "https://awspe.com/qart/punit-pic.png",
-  "https://awspe.com/qart/nick.jat007@okicici/2_qart.png",
-  "https://awspe.com/qart/nick.jat007@okicici/2_qart.png"
+  "https://awspe.com/qart/punit-15884@okhdfcbank/0_quart.png",
+  "https://awspe.com/qart/nick.jat007@okicici/0_qart.png",
 ];
 
 let mainImg = 0;
