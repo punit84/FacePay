@@ -39,5 +39,5 @@ fi
 # Run qart.py again in the background
 
 echo "Starting bin/qart.py..."
-python3 bin/qart.py &
 
+nohup python3 -u quart.py > ./logs/quart.log 2>&1 &
