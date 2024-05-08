@@ -27,7 +27,7 @@ public class QArtQueue {
 
 	}
 
-	public static String sendRequest(String upi, String userpicURL)   {
+	public String sendRequest(String upi, String userpicURL)   {
 		final String queueUrl = Configs.SQS_QUEUE; // Replace 'YOUR_QUEUE_URL' with the actual URL of your SQS queue
 
 		logger.info("sending sms to SQS for qart generation");

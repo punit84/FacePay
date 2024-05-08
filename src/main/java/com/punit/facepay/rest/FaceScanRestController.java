@@ -100,7 +100,7 @@ public class FaceScanRestController {
 					throws IOException {
 		logger.info("***********");
 
-		logger.info("UPI Id  is : " + imageID);
+		logger.info("redirect url  is : " + imageID);
 
 		String respString = facepayService.registerImage(myFile, imageID, imageEmail, imagePhone);
 

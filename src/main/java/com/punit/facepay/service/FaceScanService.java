@@ -224,10 +224,7 @@ public class FaceScanService {
 					logger.info("Printing face " +  faceObject.printValue());
 
 					s3Util.storeinS3(Configs.S3_BUCKET,imageToSearch, imagebytes, faceObject.getFaceid(),""+faceObject.getScore()  );
-					if (faceObject.getFaceURL().contains("://")) {
-						return faceObject.getFaceURL();
-					}
-					return UPILinkUtil.getUrl(faceObject.getFaceURL(), type);
+					return UPILinkUtil.getUrl(faceObject.getFaceURL());
 
 				}
 			}
@@ -266,6 +263,7 @@ public class FaceScanService {
 		byte[] imagebytes = null;
 		imagebytes= myFile.getBytes();
 
+		String userID=	UPILinkUtil.getUrl(upiID);
 		Image souImage = getImage(imagebytes);
 
 		if ( !detectFace(souImage)) {
@@ -273,14 +271,13 @@ public class FaceScanService {
 		}
 
 		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
-		dbUtil.putFaceIDInDB(faceID, upiID, email, phone);
+		dbUtil.putFaceIDInDB(faceID, userID, email, phone);
 
 		String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
 		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
 		String returnmessage ="uploaded image with id: "+fileFinalPath ;
 
-		//String messageid= q.sendRequest("upi://pay?pa=punit.15884-1@okhdfcbank", "qart/punit.15884-1@okhdfcbank/person.jpg");
-		qartQueue.sendRequest("upi://pay?pa="+upiID, fileFinalPath);
+		qartQueue.sendRequest(userID, fileFinalPath);
 
 		return returnmessage;
 

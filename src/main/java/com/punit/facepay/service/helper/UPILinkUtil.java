@@ -1,39 +1,32 @@
 package com.punit.facepay.service.helper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import com.punit.facepay.service.Configs;
 
 @Component
 public class UPILinkUtil {
 
+	final static Logger logger= LoggerFactory.getLogger(UPILinkUtil.class);
 
-	public static String getUrl(String faceid, int type) {
-		String prefix="upi";
-		switch (type) {
-		case Configs.DEVICE_ANDROID: {
-			prefix="upi";
-			break;
-		}
-		case Configs.DEVICE_IOS: {
-
-			prefix="Paytm";
-			break;
-
-		}
-
-		default:
-			prefix="upi";
-			break;
-		}
-
-		String responseSTR;
-		if (faceid.contains("@")) {
-
-			responseSTR =prefix+ "://pay?pa="+faceid+"&pn=PaytmUser&cu=INR";
+	
+	public static String getUrl(String faceid) {
+		
+		logger.info("Create url for faceid " + faceid);
+		String responseSTR = faceid;
+		if (faceid.contains("://") ) {
+			return faceid;
 		}else {
-			responseSTR = prefix+"://pay?pa="+faceid+"@paytm&pn=PaytmUser&cu=INR";
+			if (faceid.contains("@") ) {
+				responseSTR = "upi://pay?pa="+faceid;
+			}else {
+				logger.info("given face id is mobile no");
+				responseSTR = "upi://pay?pa="+faceid+"@paytm";
+			}
 		}
+
+		logger.info("UPI url is " + responseSTR);
+
 		return responseSTR;
 	}
 }
