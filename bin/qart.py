@@ -12,8 +12,11 @@ from sagemaker.predictor_async import AsyncPredictor
 import boto3
 from sqs_polling import sqs_polling
 import time
+import cv2 
+import numpy as np
 
 def your_callback(message, greeting):
+    thread_start_time = time.time()
     print(message)
     message = json.loads(message)
     print("request for "+str(message["upi_id"]))
@@ -25,24 +28,28 @@ def your_callback(message, greeting):
     theme = message["theme"]
     seed = int(message["seed"])
     num_inference_steps = int(message["num_inference_steps"])
-    num_images_per_prompt = int(message["num_images_per_prompt"])
+    num_images_per_prompt = int(message["num_images_per_prompt"]) 
     strength = float(message["strength"])
-    guidance_scale = float(message["guidance_scale"])
-    controlnet_1_conditioning_scale = float(message["controlnet_1_conditioning_scale"])
+    guidance_scale = float(message["guidance_scale"]) 
+    controlnet_1_conditioning_scale = float(message["controlnet_1_conditioning_scale"]) 
     controlnet_1_guidance_start = float(message["controlnet_1_guidance_start"])
     controlnet_1_guidance_end = float(message["controlnet_1_guidance_end"])
     controlnet_2_conditioning_scale = float(message["controlnet_2_conditioning_scale"])
     controlnet_2_guidance_start = float(message["controlnet_2_guidance_start"])
     controlnet_2_guidance_end = float(message["controlnet_2_guidance_end"])
+    controlnet_3_conditioning_scale = float(message["controlnet_3_conditioning_scale"])
+    controlnet_3_guidance_start = float(message["controlnet_3_guidance_start"])
+    controlnet_3_guidance_end = float(message["controlnet_3_guidance_end"])
+
 
     person_obj = s3.get_object(Bucket=bucket, Key=person_s3_key)
     person_dl = person_obj['Body'].read()
     person_raw_image = Image.open(BytesIO(person_dl))
 
-    #generate qr
+    #generate qr    
     qr = qrcode.QRCode(
         version=10,
-        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        error_correction=qrcode.constants.ERROR_CORRECT_Q,
         box_size=15,
         border=2,
     )
@@ -71,6 +78,7 @@ def your_callback(message, greeting):
     image1 = qrc1
     image2 = qrc_person
     print("removed image background")
+    image3 = qrc_person
 
     buffered1 = BytesIO()
     image1.save(buffered1, format="PNG")
@@ -81,6 +89,17 @@ def your_callback(message, greeting):
     image2.save(buffered2, format="PNG")
     cnet_image_2 = base64.b64encode(buffered2.getvalue())
 
+    low_threshold = 100
+    high_threshold = 101
+    image3 = np.array(image3)
+    image3 = cv2.Canny(image3, low_threshold, high_threshold)
+    image3 = image3[:, :, None]
+    image3 = np.concatenate([image3, image3, image3], axis=2)
+    image3 = Image.fromarray(image3)
+    buffered3 = BytesIO()
+    image3.save(buffered3, format="PNG")
+    cnet_image_3 = base64.b64encode(buffered3.getvalue())
+
     predictor = Predictor(model_endpoint)
     predictor.serializer=JSONSerializer()
     predictor.deserializer=BytesDeserializer()
@@ -88,43 +107,39 @@ def your_callback(message, greeting):
 
     theme_code = int(theme)
     if theme_code == 0:
-        p_prompt="a cubism painting of a town with a lot of houses in the snow with a sky background, Andreas Rocha, matte painting concept art, a detailed matte painting"
-        n_prompt="ugly, disfigured, low quality, blurry, NSFW"
+        p_prompt="a cubism painting of a town with a lot of skyscrappers with a sky background, Andreas Rocha, digital painting concept art, a detailed digital painting, smooth"
+        n_prompt= "fish eyes, ugly, disfigured, low quality, blurry, NSFW"
     elif theme_code == 1:
-        p_prompt="a cubism painting of a city with lots of small buildings and skyscrapers, bright daylight sky background, high quality, detailed"
-        n_prompt="ugly, disfigured, low quality, blurry, NSFW"
-    elif theme_code == 2:
-        p_prompt="bamboo forest, bright daylight sky background, high quality, detailed"
-        n_prompt="ugly, disfigured, low quality, blurry, NSFW"
-    elif theme_code == 3:
-        p_prompt="A photo-realistic rendering of a busy market, ((street vendors, fruits, vegetable, shops)), (Photorealistic:1.3), (Highly detailed:1.2), (Natural light:1.2), art inspired by Architectural Digest, Vogue Living, and Elle Decor"
-        n_prompt="ugly, disfigured, low quality, blurry, NSFW"
-    else:
-        p_prompt="A photo-realistic rendering of a busy market, ((street vendors, fruits, vegetable, shops)), (Photorealistic:1.3), (Highly detailed:1.2), (Natural light:1.2), art inspired by Architectural Digest, Vogue Living, and Elle Decor"
-        n_prompt="ugly, disfigured, low quality, blurry, NSFW"
+        p_prompt="a cubism painting of a town with a lot of skyscrappers with a sky background, Andreas Rocha, digital painting concept art, a detailed digital painting, smooth"
+        n_prompt= "fish eyes, ugly, disfigured, low quality, blurry, NSFW"
+    else: 
+        p_prompt="a cubism painting of a town with a lot of skyscrappers with a sky background, Andreas Rocha, digital painting concept art, a detailed digital painting, smooth"
+        n_prompt= "fish eyes, ugly, disfigured, low quality, blurry, NSFW"
         
-    request={
-        "prompt":p_prompt,
-        "negative_prompt":n_prompt,
-        "starting_image":starting_image.decode(),
-        "controlnet_1_image":cnet_image_1.decode(),
-        "controlnet_2_image":cnet_image_2.decode(),
-        "seed": seed,
-        "num_inference_steps": num_inference_steps,
-        "num_images_per_prompt": num_images_per_prompt,
-        "strength": strength,
-        "guidance_scale": guidance_scale,
-        "controlnet_1_conditioning_scale": controlnet_1_conditioning_scale,
-        "controlnet_1_guidance_start": controlnet_1_guidance_start,
-        "controlnet_1_guidance_end": controlnet_1_guidance_end,
-        "controlnet_2_conditioning_scale": controlnet_2_conditioning_scale,
-        "controlnet_2_guidance_start": controlnet_2_guidance_start,
-        "controlnet_2_guidance_end": controlnet_2_guidance_end
+    request={ 
+        "prompt":p_prompt, 
+        "negative_prompt":n_prompt, 
+        "starting_image":starting_image.decode(), 
+        "controlnet_1_image":cnet_image_1.decode(), 
+        "controlnet_2_image":cnet_image_2.decode(), 
+        "controlnet_3_image":cnet_image_3.decode(),
+        "seed": seed, 
+        "num_inference_steps": num_inference_steps, 
+        "num_images_per_prompt": num_images_per_prompt, 
+        "strength": strength, 
+        "guidance_scale": guidance_scale, 
+        "controlnet_1_conditioning_scale": controlnet_1_conditioning_scale, 
+        "controlnet_1_guidance_start": controlnet_1_guidance_start, 
+        "controlnet_1_guidance_end": controlnet_1_guidance_end, 
+        "controlnet_2_conditioning_scale": controlnet_2_conditioning_scale, 
+        "controlnet_2_guidance_start": controlnet_2_guidance_start, 
+        "controlnet_2_guidance_end": controlnet_2_guidance_end,
+        "controlnet_3_conditioning_scale": controlnet_3_conditioning_scale, 
+        "controlnet_3_guidance_start": controlnet_3_guidance_start, 
+        "controlnet_3_guidance_end": controlnet_3_guidance_end  
     }
 
-
-    response=async_predictor.predict(data=request, input_path="s3://"+bucket+"/qart/"+upi_id.split("pa=")[1]+"/"+theme+"_input.json")
-    print("response from sagemaker model")
+    response=async_predictor.predict(data=request, input_path="s3://"+bucket+"/qart/"+upi_id.split("pa=")[1]+"/"+theme+"_input.json")                          
     
     output=json.loads(response.decode())
     for image in output["output_images"]:
@@ -134,20 +149,19 @@ def your_callback(message, greeting):
         person_raw_image.save(in_mem_file, format=person_raw_image.format)
         in_mem_file.seek(0)
         s3.upload_fileobj(
-            in_mem_file,
+            in_mem_file, 
             bucket,
             "qart/"+upi_id.split("pa=")[1]+"/"+theme+"_qart.png"
         )
 
     print("Qart generated for " +str(message["upi_id"])+ " & saved to S3!")
-    print("-----------------------------------------------")
-    print("--- %s seconds ---" % (time.time() - start_time))
-    print("-----------------------------------------------")
+    print("----------------------------------------------------------------------------")
+    print("--- thread took %s seconds" % (time.time() - thread_start_time))
+    print("----------------------------------------------------------------------------")
 
     return True
 
-start_time = time.time()
 s3 = boto3.client('s3')
 your_queue_url="https://sqs.ap-south-1.amazonaws.com/057641535369/qart"
 
-sqs_polling(queue_url=your_queue_url, callback=your_callback, callback_args={"greeting": "Hello, "})
+sqs_polling(queue_url=your_queue_url, callback=your_callback, max_workers=4,  callback_args={"greeting": "Hello, "})
