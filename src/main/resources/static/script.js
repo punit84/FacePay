@@ -149,6 +149,21 @@ function searchUserByFaceIDInfo() {
 
 }
 
+function showDownloadButton(imageId) {
+	var image = document.getElementById(imageId);
+	var downloadBtn = document.querySelector(`#${imageId} + .download-btn`);
+	downloadBtn.classList.remove('hidden');
+}
+function downloadImage(imageId) {
+	var image = document.getElementById(imageId);
+	var url = image.src;
+	var filename = 'image.jpg'; // You can set a custom filename here
+	var anchor = document.createElement('a');
+	anchor.href = url;
+	anchor.download = filename;
+	anchor.click();
+}
+
 function searchUserInfo() {
 	var url = '/api/userinfo';
 	var method = 'POST';
