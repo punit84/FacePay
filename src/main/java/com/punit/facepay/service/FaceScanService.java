@@ -224,9 +224,10 @@ public class FaceScanService {
 		}
 
 		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
-		dbUtil.putFaceIDInDB(faceID, userID, email, phone);
 
 		String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
+		dbUtil.putFaceIDInDB(faceID, userID, email, phone, s3filepath);
+
 		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
 		String returnmessage ="uploaded image with id: "+fileFinalPath ;
 

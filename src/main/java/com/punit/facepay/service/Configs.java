@@ -15,7 +15,13 @@ public class Configs {
 	public static final String FACE_EMAIL = "email";
 	public static final String FACE_MOBILE = "mobile";
 	public static final String FACE_IMAGE = "image";
+	
+//	https://awspe.com/qart/punit.15884-1@okhdfcbank/0_qart.png
+	public static final String IMAGE_URL_PREFIX = "https://awspe.com/qart/";
+	public static final String IMAGE_URL_QART = "/0_qart.png";
 
+	
+	
 	public static final String FACE_UPI = "value";
 	public static final String FACE_QART = "qart";
 
@@ -23,6 +29,7 @@ public class Configs {
  	public static final String S3_FOLDER_SCAN = "scan/";
  	public static final String S3_FOLDER_REGISTER = "qart/";
 
+ 	
 //	
 //	public static final String S3_PATH_REGISTER = "/qart";
 //
