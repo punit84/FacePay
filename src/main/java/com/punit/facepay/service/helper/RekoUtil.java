@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.punit.facepay.service.Configs;
 
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.Attribute;
@@ -36,6 +37,21 @@ public class RekoUtil {
 	final static Logger logger= LoggerFactory.getLogger(RekoUtil.class);
 
 
+	
+	public static void main(String[] args) {
+		RekoUtil reko= new RekoUtil();
+		RekognitionClient client = RekognitionClient.builder()
+				.region(Configs.REGION)
+				.credentialsProvider(DefaultCredentialsProvider.create())
+				.build();
+		
+		
+		reko.createMyCollection(client, Configs.COLLECTION_ID);
+		
+		System.out.println("New collection created succesfully");
+		
+		
+	}
 	public CreateCollectionResponse createMyCollection(RekognitionClient rekClient,String collectionId ) {
 
 		CreateCollectionResponse collectionResponse = null;
@@ -49,7 +65,7 @@ public class RekoUtil {
 			logger.info("Status code: " + collectionResponse.statusCode().toString());
 
 			DynamoDBUtil dbUtil = new DynamoDBUtil();
-			dbUtil.putFaceIDInDB("CollectionArn", collectionResponse.collectionArn(), "","");
+			dbUtil.putFaceIDInDB("FaceCollectionArn", collectionResponse.collectionArn(), "","");
 
 		} catch(RekognitionException e) {
 			logger.info(e.getMessage());
