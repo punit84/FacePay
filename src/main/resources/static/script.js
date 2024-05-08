@@ -129,18 +129,24 @@ function searchUserByFaceIDInfo() {
 
 	var faceid = localStorage.getItem('faceid');
 
-	fd.append('faceid', faceid);
+	if (faceid == null || faceid == 'undefined' || faceid == '') {
+		console.log('Face ID is null or undefined');
 
-	var xhr = new XMLHttpRequest();
+	} else {
+		fd.append('faceid', faceid);
 
-	xhr.addEventListener("load", displayInfo, false);
+		var xhr = new XMLHttpRequest();
+
+		xhr.addEventListener("load", displayInfo, false);
 
 
-	xhr.open(method, url, true); // true for asynchronous request
+		xhr.open(method, url, true); // true for asynchronous request
 
-	xhr.send(fd);
+		xhr.send(fd);
 
-	showLoadingOverlay();
+		showLoadingOverlay();
+	}
+
 }
 
 function searchUserInfo() {
@@ -178,23 +184,6 @@ function displayInfo(evt) {
 	//alert(evt.target.responseText);
 	//alert(evt.target.responseText);
 	hideLoadingOverlay();
-	document.getElementById("userInfo").style.display = "block";
-
-	var text = evt.target.responseText;
-	var data = JSON.parse(text);
-    localStorage.setItem('faceid', data.faceid);
-
-	// Display user info
-	//document.getElementById('name').textContent = data.name;
-	document.getElementById('email').value = data.email;
-	document.getElementById('phone').value = data.mobile;
-	document.getElementById('upi').value = data.value;
-	document.getElementById('qart').src = data.qart;
-	document.getElementById('image').src = data.image;
-
-
-	//document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
-	loadingOverlay.style.display = 'none';
 
 	var text = evt.target.responseText;
 	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {
@@ -207,9 +196,28 @@ function displayInfo(evt) {
 		alert("PLEASE TRY AFTER SOMETIME");
 	}
 	else {
+
+		document.getElementById("userInfo").style.display = "block";
+
+		var data = JSON.parse(text);
+		localStorage.setItem('faceid', data.faceid);
+
+		// Display user info
+		//document.getElementById('name').textContent = data.name;
+		document.getElementById('email').value = data.email;
+		document.getElementById('phone').value = data.mobile;
+		document.getElementById('upi').value = data.value;
+		document.getElementById('qart').src = data.qart;
+		document.getElementById('image').src = data.image;
+
+
+		//document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		loadingOverlay.style.display = 'none';
 
 	}
+
+
+
 
 }
 

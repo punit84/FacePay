@@ -44,8 +44,10 @@ public class DynamoDBUtil {
 	public void putFaceIDInDB(String faceId, String value , String email, String mobile, String filePath){
 		
 		String upiid=UPILinkUtil.getID(value);
-		String qartImageURL = Configs.IMAGE_URL_PREFIX+ Configs.IMAGE_URL_QART;
+		String qartImageURL = Configs.IMAGE_URL_PREFIX+Configs.S3_FOLDER_REGISTER+upiid+Configs.IMAGE_URL_QART;
 		String imageURL = Configs.IMAGE_URL_PREFIX+filePath;
+		
+		
 		
 		logger.info("qart url is "+qartImageURL);
 		
