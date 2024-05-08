@@ -63,32 +63,6 @@ public class FaceScanService {
 	final static Logger logger= LoggerFactory.getLogger(FaceScanService.class);
 
 
-
-	//private static HashMap< String, String> faceStore = new HashMap<>();
-
-	public String detectLabels(MultipartFile imageToCheck) throws IOException {
-
-		Image souImage = getImage(imageToCheck.getBytes());
-		getRekClient();		
-
-		return detectLabels(souImage);
-	}
-
-	public String detectLabelsImage(String sourceImage) throws IOException {
-
-		InputStream sourceStream = new FileInputStream(sourceImage);
-		SdkBytes sourceBytes = SdkBytes.fromInputStream(sourceStream);
-
-		// Create an Image object for the source image
-
-		Image souImage = Image.builder()
-				.bytes(sourceBytes)
-				.build();
-
-		return detectLabels(souImage);
-	}
-
-
 	private RekognitionClient getRekClient() {
 
 		RekognitionClient client = RekognitionClient.builder()
@@ -105,89 +79,7 @@ public class FaceScanService {
 				.build();
 		return souImage;
 	}
-
-	public String detectLabels(String imageToCheck) throws IOException {
-		//DetectModerationLabelsRequest request = new DetectModerationLabelsRequest()
-		//		.withImage(new Image().withBytes(ByteBuffer.wrap(imageToCheck.getBytes())));
-
-		// Create an Image object from the loaded image bytes
-
-		Image souImage = Image.builder()
-				.bytes(SdkBytes.fromByteArray(imageToCheck.getBytes()))
-				.build();
-		return detectLabels(souImage);
-	}
-
-	public String detectImageCustomLabels( String sourceImage )  {
-
-		Image souImage =null;
-		try {
-			InputStream sourceStream = new FileInputStream(sourceImage);
-			SdkBytes sourceBytes = SdkBytes.fromInputStream(sourceStream);
-
-			// Create an Image object for the source image
-
-			souImage = Image.builder()
-					.bytes(sourceBytes)
-					.build();
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return detectLabels(souImage);
-
-	}
-
-	public String detectLabels( Image souImage) {
-		String customLable = null;
-
-
-		DetectCustomLabelsRequest detectCustomLabelsRequest = DetectCustomLabelsRequest.builder()
-				.image(souImage)
-				.projectVersionArn(Configs.MODEL_VERSION)
-				.build();
-		try {
-
-			RekognitionClient client= getRekClient();		
-
-			DetectCustomLabelsResponse customLabelsResponse = client.detectCustomLabels(detectCustomLabelsRequest);
-			List<CustomLabel> customLabels = customLabelsResponse.customLabels();
-
-			for (CustomLabel customLabel: customLabels) {
-				logger.info(customLabel.name() + ": " + customLabel.confidence().toString());
-			}
-
-			if(customLabels.size()==0) {
-				logger.info("no matching label found");
-			}else {
-				CustomLabel customLabel1=customLabels.get(0);
-
-				if (customLabel1.confidence() <80) {
-
-					logger.info("confidence score is low " +customLabel1.confidence());
-					return "low confidence <kindly take another image> : " + customLabel1.confidence();
-				}
-
-				customLable = customLabel1.name();
-				logger.info("Detected labels for the given photo: " +customLable);
-
-				if (!customLable.contains("paytm")) {
-					customLable = customLabel1 + "@paytm";
-					logger.info("Detected labels for the given photo: " +customLable);
-
-				}
-				customLable = "upi://pay?pa="+customLable+"&pn=PaytmUser&mc=0000&mode=02&purpose=00&orgid=159761";
-
-			}
-		} catch (RekognitionException e) {
-			logger.info(e.getMessage());
-		}
-		return customLable;
-	}
-
-
+	
 
 	public String searchImage(MultipartFile imageToSearch, int type ) throws IOException, FaceNotFoundException{
 

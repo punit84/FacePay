@@ -112,18 +112,6 @@ public class FaceScanRestController {
 		return ResponseEntity.ok(respString);
 	}
 
-	@PostMapping("/detectLabel")
-	public Object detectLabel(@RequestParam MultipartFile myFile) throws IOException {
-		String respString = facepayService.detectLabels(myFile);
-
-		return ResponseEntity.ok(respString);
-	}
-
-	@PostMapping("/facepayImage")
-	public Object facepayImage(@RequestParam String image) throws IOException {
-		return ResponseEntity.ok(facepayService.detectLabelsImage(image));
-
-	}
 
 	@PostMapping("/profile")
 	public Object profile(@RequestParam MultipartFile myFile) throws IOException {

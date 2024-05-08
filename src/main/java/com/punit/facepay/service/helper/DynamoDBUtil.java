@@ -121,7 +121,7 @@ public class DynamoDBUtil {
 		AttributeValue valueAttribute = response.item().get("value");
 		if (valueAttribute !=null) {
 			String value = valueAttribute.s().trim();
-			logger.info("found face in db with url:" +value);
+			logger.info("found face in db linked with url:" +value);
 
 			return value;
 
