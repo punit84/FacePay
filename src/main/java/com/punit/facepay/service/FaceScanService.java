@@ -142,7 +142,7 @@ public class FaceScanService {
 
 	}
 
-	public String searchImage(MultipartFile imageToSearch, int type ) throws IOException, FaceNotFoundException{
+	public String searchImage(MultipartFile imageToSearch ) throws IOException, FaceNotFoundException{
 
 		RekognitionClient rekClient= getRekClient();
 

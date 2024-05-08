@@ -66,17 +66,12 @@ public class FaceScanRestController {
 		int type = Configs.DEVICE_ANDROID;
 		logger.info("user agent received is :" + device);
 
-		if (device.toLowerCase().contains("ios")) {
-			type = Configs.DEVICE_IOS;
-			logger.info("reqeust received from iphone");
-		} else {
-			logger.info(device);
-		}
+	
 
 		String respString = null;
 		try {
 
-			respString = facepayService.searchImage(myFile, type);
+			respString = facepayService.searchImage(myFile);
 
 			if (respString == null) {
 				return ResponseEntity.ok(Configs.FACE_NOTFOUND);
@@ -89,6 +84,14 @@ public class FaceScanRestController {
 			logger.error("Server error " + e.getMessage());
 			return ResponseEntity.ok(Configs.SERVER_ERROR);
 
+		}
+		
+		if (device.toLowerCase().contains("ios")) {
+			type = Configs.DEVICE_IOS;
+			respString = respString.replace("upi://", "paytm://"); //defaulting to paytm
+			logger.info("reqeust received from iphone");
+		} else {
+			logger.info(device);
 		}
 
 		return ResponseEntity.ok(respString);
