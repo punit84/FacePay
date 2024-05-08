@@ -154,14 +154,20 @@ function showDownloadButton(imageId) {
 	var downloadBtn = document.querySelector(`#${imageId} + .download-btn`);
 	downloadBtn.classList.remove('hidden');
 }
+
 function downloadImage(imageId) {
 	var image = document.getElementById(imageId);
 	var url = image.src;
 	var filename = 'image.jpg'; // You can set a custom filename here
 	var anchor = document.createElement('a');
 	anchor.href = url;
-	anchor.download = filename;
+	anchor.setAttribute('download', filename);
+	document.body.appendChild(anchor);
 	anchor.click();
+	document.body.removeChild(anchor);
+	window.location.href = window.location.href; // Redirect to the same page
+	event.preventDefault(); // Prevent the default anchor behavior
+
 }
 
 function searchUserInfo() {
