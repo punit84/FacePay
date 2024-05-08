@@ -35,6 +35,11 @@ public class WebController {
 	public String login() {
 		return "/login";
 	}
+	
+	@RequestMapping(value = "/about")
+	public String about() {
+		return "/about";
+	}
 	@RequestMapping(value = "/1")
 	public String index2() {
 		return "1";

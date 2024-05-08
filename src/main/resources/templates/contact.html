@@ -11,13 +11,48 @@
 	<!-- Font Awesome Kit -->
 	<script src="https://kit.fontawesome.com/2c7fc28a2f.js"></script>
 	<!-- Style CSS -->
-	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<!-- Demo CSS (No need to include it into your project) -->
-	<link rel="stylesheet" href="css/demo.css">
-	<link rel="stylesheet" href="style1.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="styles1.css">
 	<title>AWSPe</title>
+	<style>
+	.card {
+	  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+	  max-width: 300px;
+	  margin: auto;
+	  text-align: center;
+	  font-family: arial;
+	}
+	
+	.title {
+	  color: grey;
+	  font-size: 18px;
+	}
+	
+	button {
+	  border: none;
+	  outline: 0;
+	  display: inline-block;
+	  padding: 8px;
+	  color: white;
+	  background-color: #000;
+	  text-align: center;
+	  cursor: pointer;
+	  width: 100%;
+	  font-size: 18px;
+	}
+	
+	a {
+	  text-decoration: none;
+	  font-size: 22px;
+	  color: black;
+	}
+	
+	button:hover, a:hover {
+	  opacity: 0.7;
+	}
+	</style>
 
 </head>
 
@@ -29,7 +64,7 @@
 				<li><a href="index">Home</a></li>
 				<li><a href="admin">Admin</a></li>
 				<li><a href="qart">Qart</a></li>
-				<li><a href="contact">Contact Us</a></li>
+				<li><a href="contact">Contact</a></li>
 			</ul>
 		</nav>
 	</div>
@@ -42,14 +77,30 @@
 		</div>
 	</section>
 
-	<div class="container2">
-		<form action="#" method="post">
-			<input type="text" name="name" placeholder="Your Name" required>
-			<input type="email" name="email" placeholder="Your Email" required>
-			<textarea name="message" placeholder="Your Message" required></textarea>
-			<input type="submit" value="Send Message">
-		</form>
+	<div class="container">
+
+	<div class="card">
+	  <img src="https://awspe.com/qart/punit.jpg" alt="Punit" style="width:100%">
+	  <h1>Punit Jain</h1>
+	  <p class="title">Senior Solutions Architect</p>
+	  <p>Amazon Web Services</p>
+	  <div style="margin: 24px 0;">
+	    <a href="https://www.linkedin.com/in/punitjain/"><i class="fa fa-linkedin"></i></a>  
+	  </div>
+	  <p><button>Contact</button></p>
 	</div>
+	<div class="card">
+		  <img src="https://awspe.com/qart/nikhil.jpeg" alt="Nikhil" style="width:100%">
+		  <h1>Nikhil Khokhar</h1>
+		  <p class="title">Senior Solutions Architect</p>
+		  <p>Amazon Web Services</p>
+		  <div style="margin: 24px 0;">
+		    <a href="https://www.linkedin.com/in/nikhil-kh//"><i class="fa fa-linkedin"></i></a>  
+		  </div>
+		  <p><button>Contact</button></p>
+		</div>
+		
+</div>
 
 </body>
 
