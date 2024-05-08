@@ -17,7 +17,7 @@ public class Configs {
 	public static final String FACE_IMAGE = "image";
 	
 //	https://awspe.com/qart/punit.15884-1@okhdfcbank/0_qart.png
-	public static final String IMAGE_URL_PREFIX = "https://awspe.com/qart/";
+	public static final String IMAGE_URL_PREFIX = "https://awspe.com/";
 	public static final String IMAGE_URL_QART = "/0_qart.png";
 
 	
