@@ -10,13 +10,12 @@
 	<!-- Font Awesome Kit -->
 	<script src="https://kit.fontawesome.com/2c7fc28a2f.js"></script>
 	<!-- Style CSS -->
-	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<!-- Demo CSS (No need to include it into your project) -->
-	<link rel="stylesheet" href="css/demo.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="styles1.css">
+	<link rel="stylesheet" href="css/style.css">
 	<title>AWSPe</title>
-
 </head>
 
 <header>
@@ -42,12 +41,13 @@
 	<div class="container">
 
 
-			<div class="imgBx">
-				<img src="face5.png" alt="Logo">
-			</div>
-			<div class="section-container">
+		<div class="imgBx">
+			<img src="face5.png" alt="Logo">
+		</div>
+		<div class="section-container">
 
-			<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx" onsubmit="return validateForm()">
+			<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx"
+				onsubmit="return validateForm()">
 				<div>
 					<br>
 
@@ -61,15 +61,18 @@
 				<div id="details"></div>
 
 				<div>
-					<input type="text" id="imageID" name="imageID" placeholder="Enter UPI ID or URL to redirect" maxlength="100">
-					<input type="text" id="imageEmail" name="imageEmail" placeholder="Email ID (Optional)"	maxlength="25">
-					<input type="text" id="imagePhone" name="imagePhone" placeholder="Phone No (Optional)" 	maxlength="25">
+					<input type="text" id="imageID" name="imageID" placeholder="Enter UPI ID or URL to redirect"
+						maxlength="100">
+					<input type="text" id="imageEmail" name="imageEmail" placeholder="Email ID (Optional)"
+						maxlength="25">
+					<input type="text" id="imagePhone" name="imagePhone" placeholder="Phone No (Optional)"
+						maxlength="25">
 					<br>
 					<input type="checkbox" id="consent" name="consent" onchange="toggleRegisterButton()">
 					<label for="content">I agree to all the terms and conditions:</label>
 					<br><br>
 
-					<input type="button" id= "registerButton" onclick="registerFace()" value="Register Face" disabled>
+					<input type="button" id="registerButton" onclick="registerFace()" value="Register Face" disabled>
 				</div><br>
 
 
@@ -90,8 +93,9 @@
 
 <footer>
 	<div class="mb-5">
-	    <a href="https://aws.amazon.com/what-is-cloud-computing"><img
-	            src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing" class="logo1"></a>
+		<a href="https://aws.amazon.com/what-is-cloud-computing"><img
+				src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing"
+				class="logo1"></a>
 	</div>
 </footer>
 
