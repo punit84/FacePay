@@ -3,19 +3,52 @@
 
 <head>
 	<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="author" content="CodeHim">
-		<!-- Google Fonts CSS -->
-		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=font1|font2|etc" type="text/css">
-		<!-- Font Awesome Kit -->
-		<script src="https://kit.fontawesome.com/2c7fc28a2f.js"></script>
-		<!-- Style CSS -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		<!-- Demo CSS (No need to include it into your project) -->
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="styles1.css">
-		<link rel="stylesheet" href="css/style.css">
-		<title>AWSPe</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="CodeHim">
+	<!-- Google Fonts CSS -->
+	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=font1|font2|etc" type="text/css">
+	<!-- Font Awesome Kit -->
+	<script src="https://kit.fontawesome.com/2c7fc28a2f.js"></script>
+	<!-- Style CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<!-- Demo CSS (No need to include it into your project) -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="styles1.css">
+	<link rel="stylesheet" href="css/style.css">
+	<title>AWSPe</title>
+	<style>
+		.card {
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+			max-width: 250px;
+			margin: auto;
+			text-align: center;
+			font-family: arial;
+		}
+
+		button {
+			border: none;
+			outline: 0;
+			display: inline-block;
+			padding: 8px;
+			color: white;
+			background-color: #000;
+			text-align: center;
+			cursor: pointer;
+			width: 100%;
+			font-size: 18px;
+		}
+
+		a {
+			text-decoration: none;
+			font-size: 18px;
+			color: blue;
+		}
+
+		button:hover,
+		a:hover {
+			opacity: 0.7;
+		}
+	</style>
 </head>
 
 <header>
@@ -24,7 +57,7 @@
 			<ul>
 				<li><a href="index">FacePe</a></li>
 				<li><a href="qart">Qart</a></li>
-					<li><a href="admin">Enroll</a></li>
+				<li><a href="admin">Enroll</a></li>
 				<li><a href="contact">Contact</a></li>
 			</ul>
 		</nav>
@@ -51,7 +84,7 @@
 				<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
 					<div>
 						<label for="imageFileSelected" class="custom-file-upload">
-							Scan Face to redirect to UPI App 
+							Scan Face to redirect to UPI App
 						</label>
 						<input type="file" name="imageFileSelected" id="imageFileSelected"
 							onchange="searchSelectedFile();" accept="image/*" capture="camera" />
@@ -81,10 +114,11 @@
 <br><br>
 
 <footer>
-    <div class="mb-5">
-        <a href="https://aws.amazon.com/what-is-cloud-computing"><img
-                src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing" class="logo1"></a>
-    </div>
+	<div class="mb-5">
+		<a href="https://aws.amazon.com/what-is-cloud-computing"><img
+				src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing"
+				class="logo1"></a>
+	</div>
 </footer>
 
 
