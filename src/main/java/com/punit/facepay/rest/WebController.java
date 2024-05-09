@@ -31,18 +31,9 @@ public class WebController {
 		return "contact";
 	}
 	
-	@RequestMapping(value = "/login")
-	public String login() {
-		return "/login";
-	}
-	
 	@RequestMapping(value = "/about")
 	public String about() {
 		return "/about";
-	}
-	@RequestMapping(value = "/1")
-	public String index2() {
-		return "1";
 	}
 
 	@RequestMapping(value = "/e")
@@ -50,20 +41,9 @@ public class WebController {
 		return "error";
 	}
 	
-	@RequestMapping(value = "/NOTFOUND")
-	public String NOTFOUND() {
-		return "NOTFOUND";
-	}
-	
-	
 	@RequestMapping(value = "/p")
 	public String profile() {
 		return "profile";
-	}
-	
-	@RequestMapping(value = "/userinfo")
-	public String userinfo() {
-		return "userinfo";
 	}
 	
 }
