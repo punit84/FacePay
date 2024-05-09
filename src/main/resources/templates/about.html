@@ -1,62 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 300px;
-  margin: auto;
-  text-align: center;
-  font-family: arial;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect to Google Pay</title>
+    <script>
+        function redirectToGooglePay() {
+            var upiId = "punit.15884-1@okhdfcbank"; // Replace with your UPI ID
+            var amount = "1"; // Replace with the amount
+            var description = "Payment for Fun"; // Replace with your payment description
 
-.title {
-  color: grey;
-  font-size: 18px;
-}
+            var url = "upi://pay?pa=" + upiId + "&pn=MerchantName&mc=1234&tid=CUST001&tr=" + Date.now() + "&tn=" + description + "&am=" + amount + "&cu=INR";
+            
+            var fallbackUrl = "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user";
 
-button {
-  border: none;
-  outline: 0;
-  display: inline-block;
-  padding: 8px;
-  color: white;
-  background-color: #000;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  font-size: 18px;
-}
+            // Try to open the Google Pay app
+            window.location.href = url;
 
-a {
-  text-decoration: none;
-  font-size: 22px;
-  color: black;
-}
-
-button:hover, a:hover {
-  opacity: 0.7;
-}
-</style>
+            // If the redirection fails, prompt the user to open the link in the Google Pay app
+            setTimeout(function() {
+                window.location.href = fallbackUrl;
+            }, 5000); // Redirect to fallbackUrl after 5 seconds
+        }
+    </script>
 </head>
 <body>
+    <button onclick="redirectToGooglePay()">Pay with Google Pay</button>
 
-<h2 style="text-align:center">User Profile Card</h2>
+    <div id="fallbackMessage" style="display: none;">
+        <p>Redirection to Google Pay failed. Please enable redirection in your browser settings or <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user">click here</a> to open Google Pay manually.</p>
+    </div>
 
-<div class="card">
-  <img src="https://awspe.com/qart/punit.jpg" alt="Punit" style="width:100%">
-  <h1>Punit Jain</h1>
-  <p class="title">Senior Solutions Architect</p>
-  <p>Amazon Web Services</p> <br>  <br>
-  <div style="margin: 24px 0;">
-    <a href="https://www.linkedin.com/in/punitjain/"><i class="fa fa-linkedin"></i></a>  
-	<a href="mailto:jainpuni@amazon.com"><i class="fa fa-envelope"></i> Email</a>
-  </div>
-  <p><button>jainpuni@amazon.com</button></p>
-</div>
-<br>
-<br>
-<br>
+    <script>
+        setTimeout(function() {
+            document.getElementById("fallbackMessage").style.display = "block";
+        }, 5000); // Show the fallback message after 5 seconds
+    </script>
 </body>
 </html>
