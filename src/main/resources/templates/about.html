@@ -10,7 +10,7 @@
             var amount = "1"; // Replace with the amount
             var description = "Payment for Fun"; // Replace with your payment description
 
-            var url = "upi://pay?pa=" + upiId + "&pn=MerchantName&mc=1234&tid=CUST001&tr=" + Date.now() + "&tn=" + description + "&am=" + amount + "&cu=INR";
+            var url = "upi://pay?pa=" + upiId +"&am=" + amount + "&cu=INR";
             
             var fallbackUrl = "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user";
 
