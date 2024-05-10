@@ -440,7 +440,7 @@ function redirectToPay(evt) {
 	else {
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		loadingOverlay.style.display = 'none';
-		window.location.href = text;
+		window.location.replace = text;
 
 	}
 
