@@ -439,6 +439,13 @@ function redirectToPay(evt) {
 	}
 	else {
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
+		document.getElementById('details').value
+
+
+		// Set the href attribute of the anchor tag
+		const linkElement = document.getElementById("dynamic-link");
+		linkElement.href = text;
+
 		loadingOverlay.style.display = 'none';
 		window.location.href = text;
 
