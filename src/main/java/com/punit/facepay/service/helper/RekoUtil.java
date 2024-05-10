@@ -45,7 +45,7 @@ public class RekoUtil {
 				.credentialsProvider(DefaultCredentialsProvider.create())
 				.build();
 		
-		
+//		reko.deleteMyCollection(client, Configs.COLLECTION_ID);
 		reko.createMyCollection(client, Configs.COLLECTION_ID);
 		
 		System.out.println("New collection created succesfully");
