@@ -438,12 +438,12 @@ function redirectToPay(evt) {
 		alert("PLEASE TRY AFTER SOMETIME");
 	}
 	else {
-		document.getElementById('details').innerHTML += 'UPI url with given face : <br>';
+		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		document.getElementById('details').value
 
 		// Create a link element
 		const linkElement = document.createElement("a");
-		linkElement.textContent = text;
+		linkElement.textContent = "Click to Pay";
 		linkElement.href = text;
 
 		// Append the link to the container
@@ -453,8 +453,9 @@ function redirectToPay(evt) {
 		loadingOverlay.style.display = 'none';
 		window.location.href = text;
 		
-			// Trigger click event on the anchor tag
+		// Trigger click event on the anchor tag
 		linkElement.click();
+
 
 	}
 
