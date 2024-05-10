@@ -223,19 +223,38 @@ public class FaceScanService {
 			return null;			 			
 		}
 
-		String  faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
 
-		String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
 
-		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
-		String returnmessage ="uploaded image with id: "+fileFinalPath ;
-		dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
+		List<FaceObject> faceObjList= fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
 
-		if (upiID.contains("upi://")) {
-			logger.info("Generating QART ");
-			qartQueue.sendRequest(userID, fileFinalPath);
+		String  responseSTR = null;
+
+		String  faceID =  null;
+		String returnmessage =Configs.FACE_ALREADY_EXIST;
+		for (FaceObject faceObject : faceObjList) {
+			if(faceObject == null) {
+				logger.info("no matching User found");
+
+				faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
+				String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
+
+				String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
+				returnmessage ="uploaded image with id: "+fileFinalPath ;
+				dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
+
+				if (upiID.contains("upi://")) {
+					logger.info("Generating QART ");
+					qartQueue.sendRequest(userID, fileFinalPath);
+				}
+				logger.info("skipping QART generation");
+
+			}else {
+
+				logger.info("User Already exist");
+				logger.info("Printing face " +  faceObject.printValue());
+
+			}
 		}
-		logger.info("skipping QART generation");
 
 		return returnmessage;
 

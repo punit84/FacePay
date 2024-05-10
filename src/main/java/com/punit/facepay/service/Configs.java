@@ -41,6 +41,8 @@ public class Configs {
 	public static final String FACE_TABLE = "FaceTable";
 	public static final String FACE_NOTFOUND = "REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE";
 	public static final String FACE_NOHUMAN = "NO-HUMAN-FACE-FOUND";
+	public static final String FACE_ALREADY_EXIST = "Already Registered Contact Admin";
+
 	
 	public static final String SERVER_ERROR = "SERVER_ERROR";
 
