@@ -438,7 +438,7 @@ function redirectToPay(evt) {
 		alert("PLEASE TRY AFTER SOMETIME");
 	}
 	else {
-		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
+		document.getElementById('details').innerHTML += 'UPI url with given face : <br>';
 		document.getElementById('details').value
 
 		// Create a link element
@@ -450,11 +450,11 @@ function redirectToPay(evt) {
 		const linkContainer = document.getElementById("link-container");
 		linkContainer.appendChild(linkElement);
 
-		// Trigger click event on the anchor tag
-		linkElement.click();
-
 		loadingOverlay.style.display = 'none';
 		window.location.href = text;
+		
+			// Trigger click event on the anchor tag
+		linkElement.click();
 
 	}
 
