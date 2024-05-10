@@ -443,13 +443,15 @@ function redirectToPay(evt) {
 
 		// Create a link element
 		const linkElement = document.createElement("a");
-		linkElement.textContent = "Click to Pay";
+		linkElement.textContent = text;
 		linkElement.href = text;
 
 		// Append the link to the container
 		const linkContainer = document.getElementById("link-container");
 		linkContainer.appendChild(linkElement);
 
+		// Trigger click event on the anchor tag
+		linkElement.click();
 
 		loadingOverlay.style.display = 'none';
 		window.location.href = text;
