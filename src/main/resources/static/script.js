@@ -441,18 +441,25 @@ function redirectToPay(evt) {
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		document.getElementById('details').value
 
-		// Create a link element
-		const linkElement = document.createElement("a");
-		linkElement.textContent = "Click to Pay";
-		linkElement.href = text;
 
-		// Append the link to the container
-		const linkContainer = document.getElementById("link-container");
-		linkContainer.appendChild(linkElement);
+		// Check if the anchor tag already exists
+		let linkElement = document.getElementById("dynamic-link");
+
+		// If it doesn't exist, create a new one
+		if (!linkElement) {
+			linkElement = document.createElement("a");
+			linkElement.id = "dynamic-link";
+			linkElement.textContent = "Click to Pay";
+			const linkContainer = document.getElementById("link-container");
+			linkContainer.appendChild(linkElement);
+		}
+
+		// Set the href attribute of the anchor tag
+		linkElement.href = text;
 
 		loadingOverlay.style.display = 'none';
 		window.location.href = text;
-		
+
 		// Trigger click event on the anchor tag
 		linkElement.click();
 
