@@ -441,10 +441,15 @@ function redirectToPay(evt) {
 		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		document.getElementById('details').value
 
-
-		// Set the href attribute of the anchor tag
-		const linkElement = document.getElementById("dynamic-link");
+		// Create a link element
+		const linkElement = document.createElement("a");
+		linkElement.textContent = "Click to Pay";
 		linkElement.href = text;
+
+		// Append the link to the container
+		const linkContainer = document.getElementById("link-container");
+		linkContainer.appendChild(linkElement);
+
 
 		loadingOverlay.style.display = 'none';
 		window.location.href = text;
