@@ -47,6 +47,11 @@ public class WebController {
 	}
 	
 	@RequestMapping(value = "/p")
+	public String p() {
+		return "profile";
+	}
+	
+	@RequestMapping(value = "/profile")
 	public String profile() {
 		return "profile";
 	}

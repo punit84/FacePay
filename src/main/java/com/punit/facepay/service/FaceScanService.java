@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.punit.facepay.service.helper.BedrockUtill;
 import com.punit.facepay.service.helper.DynamoDBUtil;
 import com.punit.facepay.service.helper.FaceImageCollectionUtil;
 import com.punit.facepay.service.helper.QArtQueue;
@@ -54,6 +55,9 @@ public class FaceScanService {
 
 	@Autowired
 	private s3Util s3Util;
+	
+	@Autowired
+	private BedrockUtill bedrockUtil;
 
 	@Autowired
 	private QArtQueue qartQueue;
@@ -324,8 +328,9 @@ public class FaceScanService {
 
 		logger.info("************ detectFaceInCollection ********");
 
+		
 
-		return faceDetails.toString();
+		return	bedrockUtil.InvokeModelLama3("provide 4-5 line summary of  given face detail : " + faceDetails.toString());
 	}
 
 	private String facejson(List<FaceDetail> faceDetails) {
