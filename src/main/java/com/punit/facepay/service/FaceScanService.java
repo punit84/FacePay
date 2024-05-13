@@ -319,7 +319,7 @@ public class FaceScanService {
 
 		try {
 			// Convert the list to JSON string
-			String json = objectMapper.writeValueAsString(faceDetails);
+			String json = objectMapper.writeValueAsString(faceDetails.get(0));
 			logger.info(json);
 			return json;
 		} catch (JsonProcessingException e) {
@@ -329,9 +329,18 @@ public class FaceScanService {
 		logger.info("************ detectFaceInCollection ********");
 
 		
-
-		return	bedrockUtil.InvokeModelLama3("provide 4-5 line summary of  given face detail : " + faceDetails.toString());
+String userprompt = "\"Please provide a 5-10 line summary of the given face detail in the following format:\n"
+		+ "\n"
+		+ "Age: [Age]<br>\n"
+		+ "Gender: [Gender]<br>\n"
+		+ "Mood: [Mood]<br>\n"
+		+ "Facial Expression: [Expression]<br>\n"
+		+ "Image Quality: [Quality]<br>\n"
+		+ "Please ensure each detail is provided in a new line.\"";
+		
+		return	bedrockUtil.InvokeModelLama3(userprompt + faceDetails.toString());
 	}
+	
 
 	private String facejson(List<FaceDetail> faceDetails) {
 		// Create a sample DetectFacesResponse with all available parameters
