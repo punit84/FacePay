@@ -299,26 +299,11 @@ public class FaceScanService {
 					+ ageRange.low().toString() + " and " + ageRange.high().toString()
 					+ " years old.");
 			logger.info("There is a smile : "+face.smile().value().toString());
-			break;
-		}
+			logger.info("************ detectFaceInCollection ********");
+			return	bedrockUtil.InvokeModelLama3(Configs.AI_PROMPT + face.toString());
 
-		// Create an instance of ObjectMapper
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		try {
-			// Convert the list to JSON string
-			String json = objectMapper.writeValueAsString(faceDetails.get(0));
-			logger.info(json);
-			return json;
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-
-		logger.info("************ detectFaceInCollection ********");
-
-	
+		}	
 		
-		return	bedrockUtil.InvokeModelLama3(Configs.AI_PROMPT + faceDetails.toString());
 	}
 	
 
