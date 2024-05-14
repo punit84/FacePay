@@ -1,10 +1,6 @@
 package com.punit.facepay.service;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -30,18 +26,10 @@ import software.amazon.awssdk.services.rekognition.model.AgeRange;
 import software.amazon.awssdk.services.rekognition.model.Attribute;
 import software.amazon.awssdk.services.rekognition.model.Beard;
 import software.amazon.awssdk.services.rekognition.model.BoundingBox;
-import software.amazon.awssdk.services.rekognition.model.CustomLabel;
-import software.amazon.awssdk.services.rekognition.model.DetectCustomLabelsRequest;
-import software.amazon.awssdk.services.rekognition.model.DetectCustomLabelsResponse;
 import software.amazon.awssdk.services.rekognition.model.DetectFacesRequest;
 import software.amazon.awssdk.services.rekognition.model.DetectFacesResponse;
-import software.amazon.awssdk.services.rekognition.model.Face;
 import software.amazon.awssdk.services.rekognition.model.FaceDetail;
-import software.amazon.awssdk.services.rekognition.model.FaceMatch;
 import software.amazon.awssdk.services.rekognition.model.Image;
-import software.amazon.awssdk.services.rekognition.model.RekognitionException;
-import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageRequest;
-import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
 
 @Service
 public class FaceScanService {

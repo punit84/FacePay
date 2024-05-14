@@ -16,8 +16,6 @@ import com.punit.facepay.service.Configs;
 import com.punit.facepay.service.FaceNotFoundException;
 import com.punit.facepay.service.FaceScanService;
 
-import software.amazon.awssdk.services.ses.SesClient;
-
 @RestController
 @RequestMapping("/api")
 public class FaceScanRestController {
