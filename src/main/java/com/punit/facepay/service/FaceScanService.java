@@ -303,6 +303,7 @@ public class FaceScanService {
 			return	bedrockUtil.InvokeModelLama3(Configs.AI_PROMPT + face.toString());
 
 		}	
+		return "";
 		
 	}
 	
