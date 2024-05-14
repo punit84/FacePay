@@ -221,15 +221,18 @@ function searchUserInfo() {
 	}
 
 	var xhr = new XMLHttpRequest();
-
+	xhr.upload.addEventListener("progress", uploadProgress, false);
 	xhr.addEventListener("load", displayInfo, false);
+	xhr.addEventListener("error", uploadFailed, false);
+
+	xhr.addEventListener("abort", uploadCanceled, false);
 
 
 	xhr.open(method, url, true); // true for asynchronous request
 
 	xhr.send(fd);
 
-	showLoadingOverlay();
+//	showLoadingOverlay();
 }
 
 function displayInfo(evt) {
@@ -237,8 +240,7 @@ function displayInfo(evt) {
 	/* This event is raised when the server send back a response */
 	//alert(evt.target.responseText);
 	//alert(evt.target.responseText);
-	hideLoadingOverlay();
-
+	
 	var text = evt.target.responseText;
 	if (text == '') {
 	}
