@@ -399,7 +399,7 @@ function registerComplete(evt) {
 function profileDisplay(evt) {
 
 	/* This event is raised when the server send back a response */
-	document.getElementById('details').innerHTML += '<br><br>' + evt.target.responseText + '<br><br>';
+	document.getElementById('bedrock').innerHTML = '<br>' + evt.target.responseText + '<br><br>';
 
 }
 
@@ -426,9 +426,8 @@ function redirectToPay(evt) {
 		alert("PLEASE TRY AFTER SOMETIME");
 	}
 	else {
-		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br><br>';
+		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		document.getElementById('details').value
-
 
 		// Check if the anchor tag already exists
 		let linkElement = document.getElementById("dynamic-link");

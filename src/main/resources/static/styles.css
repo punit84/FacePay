@@ -3,6 +3,7 @@ header {
 	color: #fff;
 	padding: 10px 0;
 }
+
 .container {
 	width: 95%;
 	max-width: 2200px;
@@ -12,7 +13,6 @@ header {
 	justify-content: space-between;
 	align-items: center;
 }
-
 
 .container1 {
 	max-width: 600px;
@@ -155,14 +155,18 @@ nav ul li {
 }
 
 nav ul li:last-child {
-  margin-right: 0; /* Remove margin from the last navigation item */
+	margin-right: 0;
+	/* Remove margin from the last navigation item */
 }
 
 nav ul li a {
-  text-decoration: none;
-  color: #fff; /* Set text color */
-  font-size: 18px; /* Set font size */
-  font-weight: bold; /* Set font weight */
+	text-decoration: none;
+	color: #fff;
+	/* Set text color */
+	font-size: 18px;
+	/* Set font size */
+	font-weight: bold;
+	/* Set font weight */
 }
 
 .home {
