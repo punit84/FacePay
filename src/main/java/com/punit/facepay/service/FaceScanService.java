@@ -299,6 +299,7 @@ public class FaceScanService {
 					+ ageRange.low().toString() + " and " + ageRange.high().toString()
 					+ " years old.");
 			logger.info("There is a smile : "+face.smile().value().toString());
+			break;
 		}
 
 		// Create an instance of ObjectMapper
