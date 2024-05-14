@@ -66,8 +66,8 @@ function loadCachedImage() {
 
 	if (uploadedImage) {
 		document.getElementById('preview').setAttribute('src', uploadedImage);
-		document.getElementById('imageFileSelected').files[0]=uploadedImage;
-		updateFileDetails (uploadedImage)
+		document.getElementById('imageFileSelected').files[0] = uploadedImage;
+		updateFileDetails(uploadedImage)
 
 	}
 }
@@ -75,25 +75,25 @@ function loadCachedImage() {
 let fd = null;
 let file = null;
 
-function updateFileDetails(file){
+function updateFileDetails(file) {
 	var fileSize = 0;
 
-		if (file.size > 1024 * 1024)
+	if (file.size > 1024 * 1024)
 
-			fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+		fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
 
-		else
+	else
 
-			fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+		fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
 
-		document.getElementById('details').innerHTML += 'Name: ' + file.name + '<br>Size: ' + fileSize + '<br>Type: ' + file.type;
+	document.getElementById('details').innerHTML += 'Name: ' + file.name + '<br>Size: ' + fileSize + '<br>Type: ' + file.type;
 
-		document.getElementById('details').innerHTML += '<p>';
+	document.getElementById('details').innerHTML += '<p>';
 }
 
 function fileSelected() {
 	showLoadingOverlay();
-	
+
 	var count = document.getElementById('imageFileSelected').files.length;
 	document.getElementById('details').innerHTML = "";
 
@@ -111,8 +111,8 @@ function fileSelected() {
 			localStorage.setItem('imageFile', e.target.result);
 		}
 		reader.readAsDataURL(file);
-		updateFileDetails (file)
-		
+		updateFileDetails(file)
+
 
 	}
 
@@ -247,7 +247,12 @@ function displayInfo(evt) {
 	if (text == '') {
 	}
 	else if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {
-		alert("Given face is not registered. please register using admin page ");
+		var userResponse = confirm("Given face is not registered. Do you want to Enroll now?");
+		if (userResponse) {
+			window.location.href = 'admin';
+		} else {
+			// User canceled, do nothing
+		}
 	}
 	else if (text == 'NO-HUMAN-FACE-FOUND') {
 		alert("Only human faces are supported ");
@@ -268,14 +273,10 @@ function displayInfo(evt) {
 		document.getElementById('qart').src = data.qart;
 		document.getElementById('image').src = data.image;
 
-
 		//document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
 		loadingOverlay.style.display = 'none';
 
 	}
-
-
-
 
 }
 

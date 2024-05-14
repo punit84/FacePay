@@ -21,6 +21,7 @@ public class Configs {
 			+ "\n"
 			+ "<br>Age: [Age]\n"
 			+ "<br>Gender: [Gender]<br>\n"
+			+ "<EyeWear> : [Sunglass|eyewear]"
 			+ "<br>Mood: [Mood]<br>\n"
 			+ "<br>Facial Expression: [Expression]<br>\n"
 			+ "<br>Image Quality: [Quality]<br>\n";
