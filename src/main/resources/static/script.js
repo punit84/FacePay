@@ -426,7 +426,7 @@ function redirectToPay(evt) {
 		alert("PLEASE TRY AFTER SOMETIME");
 	}
 	else {
-		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
+		document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br><br>';
 		document.getElementById('details').value
 
 

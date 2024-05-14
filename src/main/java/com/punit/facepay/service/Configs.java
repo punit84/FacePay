@@ -27,7 +27,7 @@ public class Configs {
 //			+ "<br>Image Quality: [Quality]\n";
 //	
 	
-	public static final String AI_PROMPT ="Provide a crisp summary in not more than 1 lines include photo quality details ::";
+	public static final String AI_PROMPT ="Provide a crisp summary in not more than 1 lines include photo quality details, do not include confidence details:";
 //	https://awspe.com/qart/punit.15884-1@okhdfcbank/0_qart.png
 	public static final String IMAGE_URL_PREFIX = "https://awspe.com/";
 	public static final String IMAGE_URL_QART = "/0_qart.png";
