@@ -124,7 +124,7 @@ function searchSelectedFile() {
 }
 
 
-function searchUserInfoSelectedFile() {
+function searchQR() {
 
 	var count = document.getElementById('imageFileSelected').files.length;
 
@@ -156,7 +156,7 @@ function searchUserInfoSelectedFile() {
 
 
 
-function searchUserByFaceIDInfo() {
+function searchQARTFaceIDInfo() {
 	var url = '/api/userbyface';
 	var method = 'POST';
 	var fd = new FormData();

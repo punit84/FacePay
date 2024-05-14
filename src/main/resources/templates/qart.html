@@ -24,7 +24,6 @@
 			text-align: center;
 			font-family: arial;
 		}
-
 	</style>
 </head>
 
@@ -47,20 +46,18 @@
 		<h3>Pay using artistic QR</h3>
 	</div>
 </section>
+<script src="script.js"></script>
 
-<body onload="searchUserByFaceIDInfo()">
-
+<body onload="searchQARTFaceIDInfo()">
 	<main>
-
 		<!-- Start DEMO HTML (Use the following code into your project)-->
-
 		<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
 			<div>
 				<label for="imageFileSelected" class="custom-file-upload">
 					Scan Face to search your artistic QR
 				</label>
-				<input type="file" name="searchSelectedFile" id="imageFileSelected"
-					onchange="searchUserInfoSelectedFile();" accept="image/*" capture="camera"/>
+				<input type="file" name="searchSelectedFile" id="imageFileSelected" onchange="searchQR();"
+					accept="image/*" capture="camera" />
 				<div id="details"></div>
 			</div>
 			<div id="userInfo">
@@ -90,10 +87,7 @@
 			<div id="loading-overlay" class="disabled">
 				<div class="loader"></div>
 			</div>
-
-
 			<div class="container">
-
 	</main>
 
 
@@ -104,7 +98,6 @@
 					class="logo1"></a>
 		</div>
 	</footer>
-	<script src="script.js"></script>
 
 </body>
 
