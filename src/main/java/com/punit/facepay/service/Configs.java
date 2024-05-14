@@ -20,11 +20,11 @@ public class Configs {
 	public static final String AI_PROMPT = "\"Please provide summary of the given face in format:\n"
 			+ "\n"
 			+ "<br>Age: [Age]\n"
-			+ "<br>Gender: [Gender]<br>\n"
-			+ "<EyeWear> : [Sunglass|eyewear]"
+			+ "<br>Gender: [Gender]\n"
+			+ "<EyeWear> : [Sunglass|eyewear]\n"
 			+ "<br>Mood: [Mood]<br>\n"
-			+ "<br>Facial Expression: [Expression]<br>\n"
-			+ "<br>Image Quality: [Quality]<br>\n";
+			+ "<br>Facial Expression: [Expression]\n"
+			+ "<br>Image Quality: [Quality]\n";
 	
 	
 //	https://awspe.com/qart/punit.15884-1@okhdfcbank/0_qart.png
