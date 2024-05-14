@@ -45,7 +45,6 @@ public class FaceScanRestController {
 
 			if (respString == null) {
 				return ResponseEntity.ok(Configs.FACE_NOTFOUND);
-
 			}
 		} catch (FaceNotFoundException e) {
 			logger.error("no human face found" + e.getMessage());
@@ -71,20 +70,11 @@ public class FaceScanRestController {
 
 	@PostMapping("/userinfo")
 	public Object userinfo(@RequestParam MultipartFile myFile, @RequestParam String device) throws IOException {
-		int type = Configs.DEVICE_ANDROID;
-		logger.info("user agent received is :" + device);
-
-		if (device.toLowerCase().contains("ios")) {
-			type = Configs.DEVICE_IOS;
-			logger.info("reqeust received from iphone");
-		} else {
-			logger.info(device);
-		}
 
 		String respString = null;
 		try {
 
-			respString = facepayService.searchUserDetails(myFile, type);
+			respString = facepayService.searchUserDetails(myFile);
 
 			logger.info(" final response is "+respString);
 			System.out.println(" final response is "+respString);

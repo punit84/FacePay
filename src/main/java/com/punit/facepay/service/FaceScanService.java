@@ -96,7 +96,7 @@ public class FaceScanService {
 
 	}
 
-	public String searchUserDetails(MultipartFile imageToSearch, int type ) throws IOException, FaceNotFoundException{
+	public String searchUserDetails(MultipartFile imageToSearch ) throws IOException, FaceNotFoundException{
 
 		RekognitionClient rekClient= getRekClient();
 
@@ -113,7 +113,6 @@ public class FaceScanService {
 
 		logger.info("************ searchFaceInCollection ********");
 
-		//FaceMatch face = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
 		try {
 
 			List<FaceObject> faceObjList= fiUtil.searchFaceQART(rekClient, Configs.COLLECTION_ID, souImage);
@@ -328,17 +327,9 @@ public class FaceScanService {
 
 		logger.info("************ detectFaceInCollection ********");
 
+	
 		
-String userprompt = "\"Please provide a 5-10 line summary of the given face detail in the following format:\n"
-		+ "\n"
-		+ "Age: [Age]<br>\n"
-		+ "Gender: [Gender]<br>\n"
-		+ "Mood: [Mood]<br>\n"
-		+ "Facial Expression: [Expression]<br>\n"
-		+ "Image Quality: [Quality]<br>\n"
-		+ "Please ensure each detail is provided in a new line.\"";
-		
-		return	bedrockUtil.InvokeModelLama3(userprompt + faceDetails.toString());
+		return	bedrockUtil.InvokeModelLama3(Configs.AI_PROMPT + faceDetails.toString());
 	}
 	
 

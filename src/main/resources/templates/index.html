@@ -73,13 +73,11 @@
 <body>
 	<div class="container">
 		<div class="imgBx">
-		
+
 			<img id="preview" src="face5.png" alt="Logo">
 		</div>
 
-
 		<div class="section-container">
-
 
 			<div class="mb-5">
 				<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
@@ -88,7 +86,7 @@
 							Scan Face to redirect to UPI App
 						</label>
 						<input type="file" name="imageFileSelected" id="imageFileSelected"
-							onchange="searchSelectedFile(this);" accept="image/*"/>
+							onchange="searchSelectedFile(this);" accept="image/*" capture="camera"/>
 
 					</div>
 					<br>

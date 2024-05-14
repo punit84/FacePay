@@ -47,7 +47,7 @@ public class BedrockUtill {
 				.build();
 
 		// Set the model ID, e.g., Llama 3 8B Instruct.
-		var modelId = "meta.llama3-8b-instruct-v1:0";
+		var modelId = "meta.llama3-70b-instruct-v1:0";
 
 		// Embed the message in Llama 3's prompt format.
 		var prompt = MessageFormat.format("""

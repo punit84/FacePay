@@ -16,6 +16,17 @@ public class Configs {
 	public static final String FACE_MOBILE = "mobile";
 	public static final String FACE_IMAGE = "image";
 	
+	
+	public static final String AI_PROMPT = "\"Please provide a 5 line summary of the given face detail in the following format:\n"
+			+ "\n"
+			+ "Age: [Age]<br>\n"
+			+ "Gender: [Gender]<br>\n"
+			+ "Mood: [Mood]<br>\n"
+			+ "Facial Expression: [Expression]<br>\n"
+			+ "Image Quality: [Quality]<br>\n"
+			+ "Please ensure each detail is provided in a new line.\"";
+	
+	
 //	https://awspe.com/qart/punit.15884-1@okhdfcbank/0_qart.png
 	public static final String IMAGE_URL_PREFIX = "https://awspe.com/";
 	public static final String IMAGE_URL_QART = "/0_qart.png";

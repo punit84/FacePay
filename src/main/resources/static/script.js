@@ -57,17 +57,25 @@ function validateForm() {
 	return !hasSpaces();
 }
 
-function fileSelected() {
+window.onload = function() {
+	loadCachedImage();
+}
 
-	var count = document.getElementById('imageFileSelected').files.length;
+function loadCachedImage() {
+	var uploadedImage = localStorage.getItem('imageFile');
 
-	document.getElementById('details').innerHTML = "";
+	if (uploadedImage) {
+		document.getElementById('preview').setAttribute('src', uploadedImage);
+		document.getElementById('imageFileSelected').files[0]=uploadedImage;
+		updateFileDetails (uploadedImage)
 
-	for (var index = 0; index < count; index++) {
+	}
+}
 
-		var file = document.getElementById('imageFileSelected').files[index];
+let fd = null;
 
-		var fileSize = 0;
+function updateFileDetails(file){
+	var fileSize = 0;
 
 		if (file.size > 1024 * 1024)
 
@@ -80,37 +88,19 @@ function fileSelected() {
 		document.getElementById('details').innerHTML += 'Name: ' + file.name + '<br>Size: ' + fileSize + '<br>Type: ' + file.type;
 
 		document.getElementById('details').innerHTML += '<p>';
-
-	}
-
 }
 
-window.onload = function() {
-	loadCachedImage();
-}
-
-function loadCachedImage() {
-	var uploadedImage = localStorage.getItem('imageFile');
-
-	if (uploadedImage) {
-		document.getElementById('preview').setAttribute('src', uploadedImage);
-	}
-}
-
-
-function searchSelectedFile() {
+function fileSelected() {
 	showLoadingOverlay();
-
+	
 	var count = document.getElementById('imageFileSelected').files.length;
-
 	document.getElementById('details').innerHTML = "";
-	var fd = new FormData();
-
 
 	for (var index = 0; index < count; index++) {
 
 		var file = document.getElementById('imageFileSelected').files[index];
 		var device = detectDeviceType();
+		fd = new FormData();
 		fd.append('myFile', file);
 		fd.append('device', device)
 
@@ -120,21 +110,16 @@ function searchSelectedFile() {
 			localStorage.setItem('imageFile', e.target.result);
 		}
 		reader.readAsDataURL(file);
+		updateFileDetails (file)
+		
 
-		var fileSize = 0;
-
-		if (file.size > 1024 * 1024) {
-
-			fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
-
-		}
-		else
-
-			fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
-
-		document.getElementById('details').innerHTML += 'Name: ' + file.name + '<br>Size: ' + fileSize + '<br>Type: ' + file.type;
-		document.getElementById('details').innerHTML += '<p>';
 	}
+
+}
+
+function searchSelectedFile() {
+
+	fileSelected();
 
 	profile(fd)
 	searchFaceId(fd);
@@ -424,7 +409,6 @@ function profileDisplay(evt) {
 
 }
 
-
 function redirectToPay(evt) {
 
 	/* This event is raised when the server send back a response */
@@ -439,7 +423,12 @@ function redirectToPay(evt) {
 
 	var text = evt.target.responseText;
 	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {
-		alert("Given face is not registered. please register using admin page ");
+		var userResponse = confirm("Given face is not registered. Do you want to Enroll now?");
+		if (userResponse) {
+			window.location.href = 'admin';
+		} else {
+			// User canceled, do nothing
+		}
 	}
 	else if (text == 'NO-HUMAN-FACE-FOUND') {
 		alert("Only human faces are supported ");
