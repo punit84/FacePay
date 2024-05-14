@@ -296,7 +296,6 @@ function registerFace() {
 		return true;
 	} else {
 		showLoadingOverlay();
-
 		for (var index = 0; index < count; index++) {
 
 			var file = document.getElementById('imageFileSelected').files[index];
@@ -311,7 +310,7 @@ function registerFace() {
 
 		xhr.upload.addEventListener("progress", uploadProgress, false);
 
-		xhr.addEventListener("load", uploadComplete, false);
+		xhr.addEventListener("load", registerComplete, false);
 
 		xhr.addEventListener("error", uploadFailed, false);
 
@@ -386,7 +385,7 @@ function uploadProgress(evt) {
 	}
 }
 
-function uploadComplete(evt) {
+function registerComplete(evt) {
 
 	/* This event is raised when the server send back a response */
 
