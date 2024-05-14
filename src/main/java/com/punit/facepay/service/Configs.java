@@ -17,16 +17,17 @@ public class Configs {
 	public static final String FACE_IMAGE = "image";
 	
 	
-	public static final String AI_PROMPT = "\"Please provide summary of the given face in format:\n"
-			+ "\n"
-			+ "<br>Age: [Age]\n"
-			+ "<br>Gender: [Gender]\n"
-			+ "<EyeWear> : [Sunglass|eyewear]\n"
-			+ "<br>Mood: [Mood]<br>\n"
-			+ "<br>Facial Expression: [Expression]\n"
-			+ "<br>Image Quality: [Quality]\n";
+//	public static final String AI_PROMPT = "\"Please provide summary of the given face in format:\n"
+//			+ "\n"
+//			+ "<br>Age: [Age]\n"
+//			+ "<br>Gender: [Gender]\n"
+//			+ "<EyeWear> : [Sunglass|eyewear]\n"
+//			+ "<br>Mood: [Mood]<br>\n"
+//			+ "<br>Facial Expression: [Expression]\n"
+//			+ "<br>Image Quality: [Quality]\n";
+//	
 	
-	
+	public static final String AI_PROMPT ="Provide a crisp summary in not more than 1 lines include photo quality details ::";
 //	https://awspe.com/qart/punit.15884-1@okhdfcbank/0_qart.png
 	public static final String IMAGE_URL_PREFIX = "https://awspe.com/";
 	public static final String IMAGE_URL_QART = "/0_qart.png";

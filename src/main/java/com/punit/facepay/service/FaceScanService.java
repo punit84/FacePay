@@ -214,8 +214,6 @@ public class FaceScanService {
 			return null;			 			
 		}
 
-
-
 		List<FaceObject> faceObjList= fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
 
 		String  responseSTR = null;

@@ -122,7 +122,15 @@ public class FaceScanRestController {
 
 	@PostMapping("/profile")
 	public Object profile(@RequestParam MultipartFile myFile) throws IOException {
-		return ResponseEntity.ok(facepayService.profile(myFile));
+		
+		String responsemSG=facepayService.profile(myFile);
+		
+        String result = responsemSG.replaceFirst(".*?:", "Image summary by Amazon Bedrock:\n").trim(); // Replace everything up to the first colon and trim it
+        System.out.println(result); // Output: Keep this text
+
+		//responsemSG.replace("Here is a crisp summary in 2 lines, including photo quality details: ", ":");
+		
+		return ResponseEntity.ok(result);
 	}
 	
 
