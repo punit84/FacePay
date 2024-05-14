@@ -3,12 +3,26 @@ var loadingOverlay = document.getElementById('loading-overlay');
 
 // Function to enable the loading overlay
 function showLoadingOverlay() {
-	loadingOverlay.classList.remove('disabled');
+
+	var loadingOverlay = document.getElementById('loading-overlay');
+
+	if (loadingOverlay) {
+		loadingOverlay.classList.remove('disabled');
+	} else {
+		console.error("Element with ID 'loadingOverlay' not found");
+	}
 }
 
 // Function to disable the loading overlay
 function hideLoadingOverlay() {
-	loadingOverlay.classList.add('disabled');
+
+	var loadingOverlay = document.getElementById('loading-overlay');
+
+	if (loadingOverlay) {
+		loadingOverlay.classList.add('disabled');
+	} else {
+		console.error("Element with ID 'loadingOverlay' not found");
+	}
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -91,8 +105,6 @@ function updateFileDetails(file) {
 }
 
 function fileSelected() {
-	showLoadingOverlay();
-
 	var count = document.getElementById('imageFileSelected').files.length;
 	document.getElementById('details').innerHTML = "";
 
@@ -232,7 +244,7 @@ function searchUserInfo() {
 
 	xhr.send(fd);
 
-//	showLoadingOverlay();
+	//	showLoadingOverlay();
 }
 
 function displayInfo(evt) {
@@ -240,7 +252,7 @@ function displayInfo(evt) {
 	/* This event is raised when the server send back a response */
 	//alert(evt.target.responseText);
 	//alert(evt.target.responseText);
-	
+
 	var text = evt.target.responseText;
 	if (text == '') {
 	}
@@ -282,24 +294,24 @@ function hasSpaces(value) {
 	return /^\s*$/.test(value) || /\s/.test(value);
 }
 
-
 function registerFace() {
-	var url = '/api/registerImage';
-	var method = 'POST';
-	var fd = new FormData();
-	var count = document.getElementById('imageFileSelected').files.length;
-	var imageID = document.getElementById('imageID');
-	var imageIDValue = imageID.value;
-	var imagePhoneValue = imagePhone.value;
-	var imageEmailValue = imageEmail.value;
 
+	var imageID = document.getElementById('imageID');
+
+	var imageIDValue = imageID.value;
 	if (hasSpaces(imageIDValue)) {
 		alert("Kindly provide valid UPI ID or URL");
 		return true;
 	} else {
-		showLoadingOverlay();
-		for (var index = 0; index < count; index++) {
 
+		var url = '/api/registerImage';
+		var method = 'POST';
+		var fd = new FormData();
+		var count = document.getElementById('imageFileSelected').files.length;
+		var imagePhoneValue = imagePhone.value;
+		var imageEmailValue = imageEmail.value;
+
+		for (var index = 0; index < count; index++) {
 			var file = document.getElementById('imageFileSelected').files[index];
 			fd.append('myFile', file);
 			fd.append('imageID', imageIDValue);
@@ -321,6 +333,8 @@ function registerFace() {
 		xhr.open(method, url, false); // true for asynchronous request
 
 		xhr.send(fd);
+		//showLoadingOverlay();
+
 	}
 
 
@@ -347,32 +361,6 @@ function searchFaceId(fd) {
 	xhr.send(fd);
 
 }
-
-window.addEventListener('DOMContentLoaded', function() {
-	var loadingOverlay = document.getElementById('loading-overlay');
-
-	// Function to enable the loading overlay
-	function showLoadingOverlay() {
-		loadingOverlay.classList.remove('disabled');
-	}
-
-	// Function to disable the loading overlay
-	function hideLoadingOverlay() {
-		loadingOverlay.classList.add('disabled');
-	}
-
-	// Simulating a delay for demonstration purposes
-	setTimeout(function() {
-		// Enable the loading overlay
-		showLoadingOverlay();
-
-		// Simulating another delay before disabling the overlay
-		setTimeout(function() {
-			// Disable the loading overlay
-			hideLoadingOverlay();
-		}, 2000); // Adjust the delay as per your requirements
-	}, 2000); // Adjust the delay as per your requirements
-});
 function uploadProgress(evt) {
 
 	if (evt.lengthComputable) {
@@ -400,7 +388,6 @@ function registerComplete(evt) {
 function profileDisplay(evt) {
 
 	/* This event is raised when the server send back a response */
-	hideLoadingOverlay();
 	document.getElementById('details').innerHTML += '<br>--------------------------<br>' + evt.target.responseText + '<br><br>';
 
 }
@@ -489,17 +476,14 @@ function profile(fd) {
 }
 
 function uploadFailed(evt) {
-	loadingOverlay.style.display = 'none';
-
-
+	registerComplete
 	alert("There was an error attempting to upload the file.");
 
 }
 
 function uploadCanceled(evt) {
 
-	loadingOverlay.style.display = 'none';
-
+	registerComplete
 	alert("The upload has been canceled by the user or the browser dropped the connection.");
 
 }
