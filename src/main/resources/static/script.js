@@ -73,6 +73,7 @@ function loadCachedImage() {
 }
 
 let fd = null;
+let file = null;
 
 function updateFileDetails(file){
 	var fileSize = 0;
@@ -98,7 +99,7 @@ function fileSelected() {
 
 	for (var index = 0; index < count; index++) {
 
-		var file = document.getElementById('imageFileSelected').files[index];
+		file = document.getElementById('imageFileSelected').files[index];
 		var device = detectDeviceType();
 		fd = new FormData();
 		fd.append('myFile', file);

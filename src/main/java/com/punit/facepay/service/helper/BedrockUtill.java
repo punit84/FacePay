@@ -37,7 +37,6 @@ public class BedrockUtill {
 
 	final static Logger logger= LoggerFactory.getLogger(FaceScanService.class);
 
-
 	public static String InvokeModelLama3(String userMessage) {
 
 

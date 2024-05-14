@@ -17,14 +17,13 @@ public class Configs {
 	public static final String FACE_IMAGE = "image";
 	
 	
-	public static final String AI_PROMPT = "\"Please provide a 5 line summary of the given face detail in the following format:\n"
+	public static final String AI_PROMPT = "\"Please provide summary of the given face in format:\n"
 			+ "\n"
-			+ "Age: [Age]<br>\n"
-			+ "Gender: [Gender]<br>\n"
-			+ "Mood: [Mood]<br>\n"
-			+ "Facial Expression: [Expression]<br>\n"
-			+ "Image Quality: [Quality]<br>\n"
-			+ "Please ensure each detail is provided in a new line.\"";
+			+ "<br>Age: [Age]\n"
+			+ "<br>Gender: [Gender]<br>\n"
+			+ "<br>Mood: [Mood]<br>\n"
+			+ "<br>Facial Expression: [Expression]<br>\n"
+			+ "<br>Image Quality: [Quality]<br>\n";
 	
 	
 //	https://awspe.com/qart/punit.15884-1@okhdfcbank/0_qart.png
