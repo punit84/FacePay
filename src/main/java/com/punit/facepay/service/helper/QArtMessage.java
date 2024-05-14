@@ -20,11 +20,9 @@ public class QArtMessage {
 	//{"upi_id": "upi://pay?pa=nick.jat007@okicici","bucket": "qart-test-bucket","person_s3_key": "qart/nick.jat007@okicici/snghptx.jpg", "model_endpoint": "qart-face-async-tile-canny-07-05-24-18-35-16","reduction_ratio": "0.70", "theme": "0","seed": "1441837673", "num_inference_steps": "50", "num_images_per_prompt": "1", "strength": "0.75", "guidance_scale": "7.00", "controlnet_1_conditioning_scale": "0.92", "controlnet_1_guidance_start": "0.15", "controlnet_1_guidance_end": "0.96", "controlnet_2_conditioning_scale": "1.00", "controlnet_2_guidance_start": "0.68", "controlnet_2_guidance_end":"0.80","controlnet_3_conditioning_scale": "1.00", "controlnet_3_guidance_start": "0.00",
 	//	"controlnet_3_guidance_end": "1.00"}
 	
-	
-
 	private String bucket = "qart-test-bucket";
 	private String person_s3_key ;
-	private String model_endpoint = "qart-face-async-tile-canny-14-05-24-16-02-00";
+	private String model_endpoint = "qart-face-async-tile-canny-08-05-24-05-26-01";
 	private String reduction_ratio = "0.70";
 	private String theme = "0";
 	private String seed = "1441837673";
