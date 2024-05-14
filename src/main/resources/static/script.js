@@ -282,7 +282,6 @@ function hasSpaces(value) {
 
 
 function registerFace() {
-	showLoadingOverlay();
 	var url = '/api/registerImage';
 	var method = 'POST';
 	var fd = new FormData();
@@ -296,6 +295,7 @@ function registerFace() {
 		alert("Kindly provide valid UPI ID or URL");
 		return true;
 	} else {
+		showLoadingOverlay();
 
 		for (var index = 0; index < count; index++) {
 
@@ -347,6 +347,31 @@ function searchFaceId(fd) {
 
 }
 
+window.addEventListener('DOMContentLoaded', function() {
+	var loadingOverlay = document.getElementById('loading-overlay');
+
+	// Function to enable the loading overlay
+	function showLoadingOverlay() {
+		loadingOverlay.classList.remove('disabled');
+	}
+
+	// Function to disable the loading overlay
+	function hideLoadingOverlay() {
+		loadingOverlay.classList.add('disabled');
+	}
+
+	// Simulating a delay for demonstration purposes
+	setTimeout(function() {
+		// Enable the loading overlay
+		showLoadingOverlay();
+
+		// Simulating another delay before disabling the overlay
+		setTimeout(function() {
+			// Disable the loading overlay
+			hideLoadingOverlay();
+		}, 2000); // Adjust the delay as per your requirements
+	}, 2000); // Adjust the delay as per your requirements
+});
 function uploadProgress(evt) {
 
 	if (evt.lengthComputable) {
@@ -430,8 +455,10 @@ function redirectToPay(evt) {
 		window.location.href = text;
 
 		// Trigger click event on the anchor tag
-		linkElement.click();
 
+		setTimeout(() => {
+			linkElement.click();
+		}, 20);
 	}
 
 	profile(fd)
