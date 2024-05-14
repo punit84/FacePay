@@ -380,8 +380,19 @@ function registerComplete(evt) {
 	/* This event is raised when the server send back a response */
 
 	hideLoadingOverlay();
+	
+	var text = evt.target.responseText;
 
-	alert(evt.target.responseText);
+	if (text == 'Already Registered Contact Admin') {
+			alert(evt.target.responseText);
+
+		
+	}
+	else  {
+	  localStorage.setItem('faceid', text);
+	  	alert("User enrolled Successfully");
+
+	}
 
 }
 
@@ -398,11 +409,6 @@ function redirectToPay(evt) {
 	//alert(evt.target.responseText);
 	//alert(evt.target.responseText);
 	hideLoadingOverlay();
-
-	var text = evt.target.responseText;
-
-	//document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
-	loadingOverlay.style.display = 'none';
 
 	var text = evt.target.responseText;
 	if (text == 'REGISTER-FACE-FIRST-VISIT-ADMIN-PAGE') {

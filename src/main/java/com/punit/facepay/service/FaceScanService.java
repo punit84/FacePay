@@ -231,7 +231,7 @@ public class FaceScanService {
 			String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
 
 			String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
-			returnmessage ="uploaded image with id: "+fileFinalPath ;
+			returnmessage =  faceID;
 			dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
 
 			if (userID.contains("upi://")) {
@@ -245,7 +245,6 @@ public class FaceScanService {
 
 			for (FaceObject faceObject : faceObjList) {
 				if(faceObject == null) {
-					returnmessage = "no matching User found";
 					logger.info("no matching User found");
 				}else {
 					faceID = faceObject.getFaceid();
@@ -253,7 +252,7 @@ public class FaceScanService {
 					
 					String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
 					String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
-					returnmessage ="Details updated with id: "+fileFinalPath ;
+					returnmessage =faceID ;
 					dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
 
 					if (userID.contains("upi://")) {
