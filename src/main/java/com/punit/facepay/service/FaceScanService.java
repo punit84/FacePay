@@ -241,9 +241,31 @@ public class FaceScanService {
 			logger.info("skipping QART generation");
 		}else {
 
-			logger.info("User Already exist");
-			//			logger.info("Printing face " +  faceObject.printValue());
+			//find face id
 
+			for (FaceObject faceObject : faceObjList) {
+				if(faceObject == null) {
+					returnmessage = "no matching User found";
+					logger.info("no matching User found");
+				}else {
+					faceID = faceObject.getFaceid();
+					logger.info("Printing face " +  faceObject.printValue());
+					
+					String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
+					String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
+					returnmessage ="Details updated with id: "+fileFinalPath ;
+					dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
+
+					if (userID.contains("upi://")) {
+						logger.info("Generating QART ");
+						qartQueue.sendRequest(userID, fileFinalPath);
+					}
+					logger.info("skipping QART generation");
+					
+					return returnmessage;
+				}
+			}
+					
 		}
 
 		return returnmessage;
