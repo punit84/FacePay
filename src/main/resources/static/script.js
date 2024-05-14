@@ -58,18 +58,18 @@ function validateForm() {
 }
 
 window.onload = function() {
-	loadCachedImage();
+	//loadCachedImage();
 }
 
 function loadCachedImage() {
 	var uploadedImage = localStorage.getItem('imageFile');
 
-	if (uploadedImage) {
-		document.getElementById('preview').setAttribute('src', uploadedImage);
-		document.getElementById('imageFileSelected').files[0] = uploadedImage;
-		updateFileDetails(uploadedImage)
+//	if (uploadedImage) {
+//		document.getElementById('preview').setAttribute('src', uploadedImage);
+//		document.getElementById('imageFileSelected').files[0] = uploadedImage;
+//		updateFileDetails(uploadedImage)
 
-	}
+//	}
 }
 
 let fd = null;
@@ -111,7 +111,6 @@ function fileSelected() {
 		}
 		reader.readAsDataURL(file);
 		updateFileDetails(file)
-
 	}
 
 }
