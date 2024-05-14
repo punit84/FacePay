@@ -125,7 +125,7 @@ public class FaceScanRestController {
 		
 		String responsemSG=facepayService.profile(myFile);
 		
-        String result = responsemSG.replaceFirst(".*?:", "Image summary by Amazon Bedrock:\n").trim(); // Replace everything up to the first colon and trim it
+        String result = responsemSG.replaceFirst(".*?:", "Image summary by Amazon Bedrock:<br>").trim(); // Replace everything up to the first colon and trim it
         System.out.println(result); // Output: Keep this text
 
 		//responsemSG.replace("Here is a crisp summary in 2 lines, including photo quality details: ", ":");

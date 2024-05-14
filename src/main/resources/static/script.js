@@ -399,7 +399,7 @@ function registerComplete(evt) {
 function profileDisplay(evt) {
 
 	/* This event is raised when the server send back a response */
-	document.getElementById('details').innerHTML += '<br>--------------------------<br>' + evt.target.responseText + '<br><br>';
+	document.getElementById('details').innerHTML += '<br><br>' + evt.target.responseText + '<br><br>';
 
 }
 
