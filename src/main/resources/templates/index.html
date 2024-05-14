@@ -59,8 +59,6 @@
 				<li><a href="qart">Qart</a></li>
 				<li><a href="admin">Enroll</a></li>
 				<li><a href="contact">Contact</a></li>
-				<li><a href="profile">Profile</a></li>
-
 			</ul>
 		</nav>
 	</div>
@@ -75,7 +73,8 @@
 <body>
 	<div class="container">
 		<div class="imgBx">
-			<img src="face5.png" alt="Logo">
+		
+			<img id="preview" src="face5.png" alt="Logo">
 		</div>
 
 
@@ -89,7 +88,7 @@
 							Scan Face to redirect to UPI App
 						</label>
 						<input type="file" name="imageFileSelected" id="imageFileSelected"
-							onchange="searchSelectedFile();" accept="image/*" capture="camera" />
+							onchange="searchSelectedFile(this);" accept="image/*"/>
 
 					</div>
 					<br>

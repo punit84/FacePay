@@ -31,8 +31,6 @@ function detectDeviceType() {
 	}
 }
 
-
-
 function toggleRegisterButton() {
 	var checkBox = document.getElementById("consent");
 	var registerButton = document.getElementById("registerButton");
@@ -87,33 +85,59 @@ function fileSelected() {
 
 }
 
+window.onload = function() {
+	loadCachedImage();
+}
+
+function loadCachedImage() {
+	var uploadedImage = localStorage.getItem('imageFile');
+
+	if (uploadedImage) {
+		document.getElementById('preview').setAttribute('src', uploadedImage);
+	}
+}
+
+
 function searchSelectedFile() {
+	showLoadingOverlay();
 
 	var count = document.getElementById('imageFileSelected').files.length;
 
 	document.getElementById('details').innerHTML = "";
+	var fd = new FormData();
+
 
 	for (var index = 0; index < count; index++) {
 
 		var file = document.getElementById('imageFileSelected').files[index];
+		var device = detectDeviceType();
+		fd.append('myFile', file);
+		fd.append('device', device)
+
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			document.getElementById('preview').setAttribute('src', e.target.result);
+			localStorage.setItem('imageFile', e.target.result);
+		}
+		reader.readAsDataURL(file);
 
 		var fileSize = 0;
 
-		if (file.size > 1024 * 1024)
+		if (file.size > 1024 * 1024) {
 
 			fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
 
+		}
 		else
 
 			fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
 
 		document.getElementById('details').innerHTML += 'Name: ' + file.name + '<br>Size: ' + fileSize + '<br>Type: ' + file.type;
-
 		document.getElementById('details').innerHTML += '<p>';
-
 	}
 
-	searchFaceId();
+	profile(fd)
+	searchFaceId(fd);
 
 }
 
@@ -172,7 +196,6 @@ function searchUserByFaceIDInfo() {
 
 		xhr.send(fd);
 
-		showLoadingOverlay();
 	}
 
 }
@@ -319,23 +342,10 @@ function registerFace() {
 
 }
 
-function searchFaceId() {
+function searchFaceId(fd) {
 	var url = '/api/facepay';
 	var method = 'POST';
-	var fd = new FormData();
-	var device = detectDeviceType();
-
-	var count = document.getElementById('imageFileSelected').files.length;
-
-	for (var index = 0; index < count; index++) {
-
-		var file = document.getElementById('imageFileSelected').files[index];
-
-		fd.append('myFile', file);
-		fd.append('device', device)
-
-	}
-
+	showLoadingOverlay();
 
 	var xhr = new XMLHttpRequest();
 
@@ -351,7 +361,6 @@ function searchFaceId() {
 
 	xhr.send(fd);
 
-	showLoadingOverlay();
 }
 
 
@@ -401,6 +410,8 @@ function uploadComplete(evt) {
 
 	/* This event is raised when the server send back a response */
 
+	hideLoadingOverlay();
+
 	alert(evt.target.responseText);
 
 }
@@ -409,8 +420,7 @@ function profileDisplay(evt) {
 
 	/* This event is raised when the server send back a response */
 	hideLoadingOverlay();
-
-	document.getElementById('details').innerHTML += 'faceDetails are : ' + evt.target.responseText + '<br>';
+	document.getElementById('details').innerHTML += '<br>--------------------------<br>' + evt.target.responseText + '<br><br>';
 
 }
 
@@ -468,21 +478,9 @@ function redirectToPay(evt) {
 
 }
 
-function profile() {
+function profile(fd) {
 	var url = '/api/profile';
 	var method = 'POST';
-	var fd = new FormData();
-
-	var count = document.getElementById('imageFileSelected').files.length;
-
-	for (var index = 0; index < count; index++) {
-
-		var file = document.getElementById('imageFileSelected').files[index];
-
-		fd.append('myFile', file);
-
-	}
-
 
 	var xhr = new XMLHttpRequest();
 
