@@ -2,6 +2,8 @@ package com.punit.facepay.service.helper;
 
 import org.springframework.stereotype.Component;
 
+import com.punit.facepay.service.Configs;
+
 @Component
 public class QArtMessage {
 	/*{"upi_id": "upi://pay?pa=nick.jat007@okicici",
@@ -22,7 +24,7 @@ public class QArtMessage {
 	
 	private String bucket = "qart-test-bucket";
 	private String person_s3_key ;
-	private String model_endpoint = "qart-face-async-tile-canny-08-05-24-05-26-01";
+	private String model_endpoint = Configs.QART_MODEL;
 	private String reduction_ratio = "0.70";
 	private String theme = "0";
 	private String seed = "1441837673";

@@ -15,6 +15,7 @@ public class Configs {
 	public static final String FACE_EMAIL = "email";
 	public static final String FACE_MOBILE = "mobile";
 	public static final String FACE_IMAGE = "image";
+	public static final String QART_MODEL = "qart-face-async-tile-canny-16-05-24-01-22-11";
 	
 	
 //	public static final String AI_PROMPT = "\"Please provide summary of the given face in format:\n"

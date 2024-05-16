@@ -232,10 +232,6 @@ public class FaceScanService {
 			returnmessage =  faceID;
 			dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
 
-			if (userID.contains("upi://")) {
-				logger.info("Generating QART ");
-				qartQueue.sendRequest(userID, fileFinalPath);
-			}
 			logger.info("skipping QART generation");
 		}else {
 

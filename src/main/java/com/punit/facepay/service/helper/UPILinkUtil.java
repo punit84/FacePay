@@ -17,8 +17,9 @@ public class UPILinkUtil {
 	public static String getUrl(String faceid) {
 
 		logger.info("Create url for faceid " + faceid);
+		
 		String responseSTR = faceid;
-		if (faceid.contains("://") ) {
+		if (faceid.contains("://") || faceid.contains("linkedin") || faceid.contains("insta") ) {
 			return faceid;
 		}else {
 			if (faceid.contains("@") ) {
