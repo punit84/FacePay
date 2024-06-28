@@ -10,12 +10,12 @@ public class WebController {
 	public String index() {
 		return "index";
 	}
-	
+
 	@RequestMapping(value = "/test")
 	public String test() {
 		return "test";
 	}
-	
+
 	@RequestMapping(value = "/home")
 	public String home() {
 		return "index";
@@ -30,12 +30,12 @@ public class WebController {
 	public String qart() {
 		return "qart";
 	}
-	
+
 	@RequestMapping(value = "/contact")
 	public String contact() {
 		return "contact";
 	}
-	
+
 	@RequestMapping(value = "/about")
 	public String about() {
 		return "/about";
@@ -45,15 +45,29 @@ public class WebController {
 	public String error() {
 		return "error";
 	}
-	
+
 	@RequestMapping(value = "/p")
 	public String p() {
 		return "profile";
 	}
-	
+
 	@RequestMapping(value = "/profile")
 	public String profile() {
 		return "profile";
 	}
-	
+	@RequestMapping(value = "/face")
+	public String face() {
+		return "face";
+	}
+
+	@RequestMapping(value = "/document")
+	public String document() {
+		return "document";
+	}
+
+	@RequestMapping(value = "/kyc")
+	public String kyc() {
+		return "kyc";
+	}
+
 }

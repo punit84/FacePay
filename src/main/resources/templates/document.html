@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Update Profile</title>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=font1|font2|etc" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Add your custom styles here */
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Include your navigation menu here -->
+    </header>
+
+    <main>
+        <section>
+            <h2>Update Profile</h2>
+            <form id="profileForm" enctype="multipart/form-data">
+                <div>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div>
+                    <label for="bankAccount">Bank Account:</label>
+                    <input type="text" id="bankAccount" name="bankAccount" required>
+                </div>
+                <div>
+                    <label for="photo">Profile Photo:</label>
+                    <input type="file" id="photo" name="photo" accept="image/*">
+                </div>
+                <div>
+                    <label for="kycDocument">KYC Document:</label>
+                    <select id="kycDocument" name="kycDocument" required>
+                        <option value="">Select a document</option>
+                        <option value="passport">Passport</option>
+                        <option value="voterID">Voter's Identity Card</option>
+                        <option value="drivingLicense">Driving License</option>
+                        <option value="aadhaar">Aadhaar Letter/Card</option>
+                        <option value1="nrega">NREGA Card</option>
+                        <option value="nprLetter">Letter issued by the National Population Register</option>
+                    </select>
+                    <input type="file" id="kycFile" name="kycFile" accept="image/*,application/pdf" required>
+                </div>
+                <button type="submit">Update Profile</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Include your footer here -->
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

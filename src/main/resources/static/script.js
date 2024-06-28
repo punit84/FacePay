@@ -135,6 +135,13 @@ function searchSelectedFile() {
 
 }
 
+function fetchDocumentDetails() {
+
+	fileSelected();
+	fetchDocumentAPI(fd);
+}
+
+
 
 function searchQR() {
 
@@ -341,6 +348,29 @@ function registerFace() {
 
 }
 
+
+
+function fetchDocumentAPI(fd) {
+	var url = '/api/kyc';
+	var method = 'POST';
+	showLoadingOverlay();
+
+	var xhr = new XMLHttpRequest();
+
+	xhr.upload.addEventListener("progress", uploadProgress, false);
+
+	xhr.addEventListener("load", redirectToKYC, false);
+
+	xhr.addEventListener("error", uploadFailed, false);
+
+	xhr.addEventListener("abort", uploadCanceled, false);
+
+	xhr.open(method, url, true); // true for asynchronous request
+
+	xhr.send(fd);
+
+}
+
 function searchFaceId(fd) {
 	var url = '/api/facepay';
 	var method = 'POST';
@@ -380,17 +410,17 @@ function registerComplete(evt) {
 	/* This event is raised when the server send back a response */
 
 	hideLoadingOverlay();
-	
+
 	var text = evt.target.responseText;
 
 	if (text == 'Already Registered Contact Admin') {
-			alert(evt.target.responseText);
+		alert(evt.target.responseText);
 
-		
+
 	}
 	else  {
-	  localStorage.setItem('faceid', text);
-	  	alert("User enrolled Successfully");
+		localStorage.setItem('faceid', text);
+		alert("User enrolled Successfully");
 
 	}
 
@@ -402,6 +432,25 @@ function profileDisplay(evt) {
 	document.getElementById('bedrock').innerHTML = '<br>' + evt.target.responseText + '<br><br>';
 
 }
+
+function redirectToKYC(evt) {
+
+	/* This event is raised when the server send back a response */
+	//alert(evt.target.responseText);
+	//alert(evt.target.responseText);
+	hideLoadingOverlay();
+
+	var text = evt.target.responseText;
+	document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
+	document.getElementById('details').value
+
+	/* This event is raised when the server send back a response */
+	document.getElementById('bedrock').innerHTML = '<br>' + evt.target.responseText + '<br><br>';
+
+
+
+}
+
 
 function redirectToPay(evt) {
 

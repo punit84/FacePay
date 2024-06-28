@@ -3,6 +3,7 @@ package com.punit.facepay.service.helper;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +29,14 @@ public class BedrockUtill {
 				.region(Configs.REGION)
 				.credentialsProvider(ProfileCredentialsProvider.create())
 
-				.build();	
+				.build();
 		//		BedrockUtill.invokeClaude("provide 4-5 line summary of  given face detail and predict humand details \n"
 		//				+ "[FaceDetail(BoundingBox=BoundingBox(Width=0.25544488, Height=0.3909185, Left=0.35042447, Top=0.19347797), AgeRange=AgeRange(Low=31, High=39), Smile=Smile(Value=false, Confidence=88.38633), Eyeglasses=Eyeglasses(Value=false, Confidence=99.916435), Sunglasses=Sunglasses(Value=false, Confidence=99.99473), Gender=Gender(Value=Male, Confidence=99.22574), Beard=Beard(Value=true, Confidence=98.61274), Mustache=Mustache(Value=true, Confidence=70.31538), EyesOpen=EyeOpen(Value=true, Confidence=98.19997), MouthOpen=MouthOpen(Value=false, Confidence=99.52749), Emotions=[Emotion(Type=CALM, Confidence=100.0), Emotion(Type=HAPPY, Confidence=0.0060796738), Emotion(Type=FEAR, Confidence=2.9206276E-4), Emotion(Type=DISGUSTED, Confidence=2.3245811E-4), Emotion(Type=SAD, Confidence=1.7881393E-4), Emotion(Type=SURPRISED, Confidence=4.4703484E-5), Emotion(Type=ANGRY, Confidence=1.1920929E-5), Emotion(Type=CONFUSED, Confidence=1.1920929E-5)], Landmarks=[Landmark(Type=eyeLeft, X=0.43098167, Y=0.33953437), Landmark(Type=eyeRight, X=0.5416262, Y=0.3586149), Landmark(Type=mouthLeft, X=0.4224637, Y=0.46836543), Landmark(Type=mouthRight, X=0.5148277, Y=0.4842749), Landmark(Type=nose, X=0.48030612, Y=0.41992703), Landmark(Type=leftEyeBrowLeft, X=0.39201882, Y=0.30190095), Landmark(Type=leftEyeBrowRight, X=0.46026522, Y=0.30661464), Landmark(Type=leftEyeBrowUp, X=0.42843854, Y=0.293875), Landmark(Type=rightEyeBrowLeft, X=0.5235607, Y=0.3175142), Landmark(Type=rightEyeBrowRight, X=0.58431613, Y=0.33481872), Landmark(Type=rightEyeBrowUp, X=0.55592674, Y=0.31576887), Landmark(Type=leftEyeLeft, X=0.41069523, Y=0.33515522), Landmark(Type=leftEyeRight, X=0.45245424, Y=0.34440225), Landmark(Type=leftEyeUp, X=0.43160564, Y=0.3331868), Landmark(Type=leftEyeDown, X=0.43048057, Y=0.34521276), Landmark(Type=rightEyeLeft, X=0.51924324, Y=0.35591522), Landmark(Type=rightEyeRight, X=0.56063044, Y=0.36091897), Landmark(Type=rightEyeUp, X=0.5426872, Y=0.35231575), Landmark(Type=rightEyeDown, X=0.5400754, Y=0.36405468), Landmark(Type=noseLeft, X=0.45483372, Y=0.42841393), Landmark(Type=noseRight, X=0.4957919, Y=0.43539867), Landmark(Type=mouthUp, X=0.47147122, Y=0.46236923), Landmark(Type=mouthDown, X=0.46552765, Y=0.5001743), Landmark(Type=leftPupil, X=0.43098167, Y=0.33953437), Landmark(Type=rightPupil, X=0.5416262, Y=0.3586149), Landmark(Type=upperJawlineLeft, X=0.35867757, Y=0.32551366), Landmark(Type=midJawlineLeft, X=0.36294374, Y=0.46749434), Landmark(Type=chinBottom, X=0.45471728, Y=0.5645863), Landmark(Type=midJawlineRight, X=0.5587331, Y=0.50070554), Landmark(Type=upperJawlineRight, X=0.5998669, Y=0.36667028)], Pose=Pose(Roll=7.7445073, Yaw=0.9672852, Pitch=1.5708907), Quality=ImageQuality(Brightness=87.34692, Sharpness=92.22801), Confidence=99.99985, FaceOccluded=FaceOccluded(Value=false, Confidence=99.93733), EyeDirection=EyeDirection(Yaw=-4.984548, Pitch=-11.698688, Confidence=99.988754))]");
 		//		
 
 	}
 
-	final static Logger logger= LoggerFactory.getLogger(FaceScanService.class);
+	final static Logger logger = LoggerFactory.getLogger(FaceScanService.class);
 
 	public static String InvokeModelLama3(String userMessage) {
 
@@ -81,55 +82,110 @@ public class BedrockUtill {
 	}
 
 
-/**
- * Invokes the Anthropic Claude 3 model to run an inference based on the
- * provided input.
- *
- * @param prompt The prompt for Claude to complete.
- * @return The generated response.
- */
-public static String invokeClaude(String prompt) {
-	/*
-	 * The different model providers have individual request and response formats.
-	 * For the format, ranges, and default values for Anthropic Claude, refer to:
-	 * https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-claude.html
+	/**
+	 * Invokes the Anthropic Claude 3 model to run an inference based on the
+	 * provided input.
+	 *
+	 * @param prompt The prompt for Claude to complete.
+	 * @return The generated response.
 	 */
+	public static String invokeClaude(String prompt) {
+		/*
+		 * The different model providers have individual request and response formats.
+		 * For the format, ranges, and default values for Anthropic Claude, refer to:
+		 * https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-claude.html
+		 */
 
-	BedrockRuntimeClient client =BedrockRuntimeClient.builder()
-			.region(Region.AP_SOUTH_1)
-			.build();
+		BedrockRuntimeClient client = BedrockRuntimeClient.builder()
+				.region(Region.AP_SOUTH_1)
+				.build();
 
 
-	logger.info("prompt is " + prompt);
+		logger.info("prompt is " + prompt);
 
-	//String claudeModelId = "anthropic.claude-3-sonnet-20240229-v1:0";
+		//String claudeModelId = "anthropic.claude-3-sonnet-20240229-v1:0";
 
-	String claudeModelId = "meta.llama3-8b-instruct-v1:0";
+		String claudeModelId = "meta.llama3-8b-instruct-v1:0";
 
-	// Claude requires you to enclose the prompt as follows:
-	String enclosedPrompt = "Human: " + prompt + "\n\nAssistant:";
+		// Claude requires you to enclose the prompt as follows:
+		String enclosedPrompt = "Human: " + prompt + "\n\nAssistant:";
 
-	String payload = new JSONObject()
-			.put("prompt", enclosedPrompt)
-			.put("max_tokens_to_sample", 4096)
-			.put("temperature", 1)
-			.put("stop_sequences", List.of("\n\nHuman:"))
-			.toString();
+		String payload = new JSONObject()
+				.put("prompt", enclosedPrompt)
+				.put("max_tokens_to_sample", 4096)
+				.put("temperature", 1)
+				.put("stop_sequences", List.of("\n\nHuman:"))
+				.toString();
 
-	InvokeModelRequest request = InvokeModelRequest.builder()
-			.body(SdkBytes.fromUtf8String(payload))
-			.modelId(claudeModelId)
-			.contentType("application/json")
-			.accept("application/json")
-			.build();
+		InvokeModelRequest request = InvokeModelRequest.builder()
+				.body(SdkBytes.fromUtf8String(payload))
+				.modelId(claudeModelId)
+				.contentType("application/json")
+				.accept("application/json")
+				.build();
 
-	InvokeModelResponse response = client.invokeModel(request);
+		InvokeModelResponse response = client.invokeModel(request);
 
-	JSONObject responseBody = new JSONObject(response.body().asUtf8String());
+		JSONObject responseBody = new JSONObject(response.body().asUtf8String());
 
-	String generatedText = responseBody.getString("completion");
+		String generatedText = responseBody.getString("completion");
 
-	return generatedText;
-}
+		return generatedText;
+	}
 
+	public static String invokeHaiku( String imageBase64, String userMessage) {
+		// Create a Bedrock Runtime client in the AWS Region of your choice.
+		var client = BedrockRuntimeClient.builder()
+				.region(Region.AP_SOUTH_1)
+				.build();
+
+		// Set the model ID
+		var modelId = "anthropic.claude-3-haiku-20240307-v1:0";
+
+		// Create the JSON payload
+		var request = new JSONObject()
+				.put("anthropic_version", "bedrock-2023-05-31")
+				.put("max_tokens", 4000)
+				.put("messages", new JSONArray()
+						.put(new JSONObject()
+								.put("role", "user")
+								.put("content", new JSONArray()
+										.put(new JSONObject()
+												.put("type", "image")
+												.put("source", new JSONObject()
+														.put("type", "base64")
+														.put("media_type", ImageTypeDetector.getFileType(imageBase64))
+														.put("data", imageBase64)))
+										.put(new JSONObject()
+												.put("type", "text")
+												.put("text", userMessage)))));
+
+		// Encode and send the request.
+		var response = client.invokeModel(req -> req
+				.body(SdkBytes.fromUtf8String(request.toString()))
+				.modelId(modelId)
+				.contentType("application/json")
+				.accept("application/json"));
+
+		// Decode the native response body.
+		var nativeResponse = new JSONObject(response.body().asUtf8String());
+
+		// Extract and print the response text.
+		var responseText = nativeResponse.getString("result");
+		System.out.println(responseText);
+		return responseText;
+	}
+
+	private static String getMediaType(String imageType) {
+		switch (imageType.toLowerCase()) {
+			case "jpeg":
+			case "jpg":
+				return "image/jpeg";
+			case "png":
+				return "image/png";
+			default:
+				throw new IllegalArgumentException("Unsupported image type: " + imageType);
+		}
+
+	}
 }
