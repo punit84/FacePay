@@ -38,7 +38,8 @@ public class DynamoDBUtil {
 		DynamoDBUtil util = new DynamoDBUtil();
 		util.getFaceInfo("ca5a30ac-188c-4b97-a3f1-60397b56511f");
 		//util.putFaceIDInDB("punit", "jain", "punit.15884", "99110"); 
-		//util.putFaceID1("punit", "jain"); 
+		//util.putFaceID1("punit", "jain");
+		// Define table parameters
 	}
 
 	public void putFaceIDInDB(String faceId, String value , String email, String mobile, String filePath){

@@ -1,0 +1,5 @@
+{
+  "UpdateBankDetails": ["Checkbook", "Passbook", "Bank Statement"],
+  "UpdateName": ["Passport", "Driving License", "Voter's ID card", "Pan Card", "Aadhaar Card", "NRGEA Job Card"],
+  "UpdateAddress": ["Electricity Bill", "Gas Bill", "Bank Account Statement", "Landline Bill", "Life Insurance Policy", "Registered Lease/Rent Agreement"]
+}

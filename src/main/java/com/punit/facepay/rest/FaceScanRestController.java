@@ -1,15 +1,14 @@
 package com.punit.facepay.rest;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.punit.facepay.service.Configs;
@@ -139,10 +138,10 @@ public class FaceScanRestController {
 	}
 	
 	@PostMapping("/kyc")
-	public ResponseEntity<String> kyc(@RequestParam MultipartFile myFile) throws IOException {
+	public ResponseEntity<String> kyc(@RequestParam MultipartFile myFile, @RequestParam String requestType , @RequestParam String docType) throws IOException {
 		System.out.println("Fetcing document details"); //
 
-		String result = facepayService.kycScan(myFile, " Fetch text from image in json format");
+		String result = facepayService.kycScan(myFile, requestType, docType, " Fetch text from image in json format");
 
 
 		result = result.replaceAll("\\bnull\\b", "\"NotFound\"");
@@ -151,4 +150,14 @@ public class FaceScanRestController {
 		return ResponseEntity.ok(result);
 	}
 
+
+	@GetMapping("/doctype")
+	public Map<String, Object> getDocumentTypes() {
+		Map<String, Object> documentData = new HashMap<>();
+		documentData.put("UpdateBankDetails", new String[]{"cheque", "Passbook", "Bank Statement"});
+		documentData.put("UpdateName", new String[]{"Passport", "Driving License", "Voter's ID card", "Pan Card", "Aadhaar Card", "NRGEA Job Card"});
+		documentData.put("UpdateAddress", new String[]{"Electricity Bill", "Gas Bill", "Bank Account Statement", "Landline Bill", "Life Insurance Policy", "Registered Lease/Rent Agreement"});
+
+		return documentData;
+	}
 }

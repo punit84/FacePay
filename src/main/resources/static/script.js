@@ -28,7 +28,7 @@ function hideLoadingOverlay() {
 document.addEventListener("DOMContentLoaded", function() {
 	var deviceType = detectDeviceType();
 	var deviceTypeElement = document.getElementById("deviceType");
-	deviceTypeElement.textContent = deviceType;
+	deviceTypeElement.textContent = deviceTypedeviceType;
 });
 
 function detectDeviceType() {
@@ -114,7 +114,8 @@ function fileSelected() {
 		var device = detectDeviceType();
 		fd = new FormData();
 		fd.append('myFile', file);
-		fd.append('device', device)
+		fd.append('device', device);
+
 
 		var reader = new FileReader();
 		reader.onload = function(e) {
@@ -353,6 +354,13 @@ function registerFace() {
 function fetchDocumentAPI(fd) {
 	var url = '/api/kyc';
 	var method = 'POST';
+	// Include selected dropdown values in the form data
+	var requestType = document.getElementById('requestType').value;
+	var docType = document.getElementById('docType').value;
+	fd.append('requestType', requestType);
+	fd.append('docType', docType);
+
+
 	showLoadingOverlay();
 
 	var xhr = new XMLHttpRequest();
@@ -466,7 +474,6 @@ function redirectToKYC(evt) {
 		// Handle error display or logging as needed
 	}
 }
-
 // Function to parse JSON and render as key-value pairs
 function renderKeyValue(jsonResponse) {
 	// Assuming jsonResponse is an array and we're accessing the first object
@@ -584,4 +591,49 @@ function uploadCanceled(evt) {
 	registerComplete
 	alert("The upload has been canceled by the user or the browser dropped the connection.");
 
+}
+
+async function fetchDocumentData(url, method) {
+	try {
+		const response = await fetch(url, { method: method }); // Fetch data using provided URL and method
+		if (!response.ok) {
+			throw new Error('Network response was not ok');
+		}
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching documents:', error);
+		return null; // Handle error gracefully
+	}
+}
+
+// Function to update document type dropdown
+async function updateDocTypeDropdown() {
+	var requestType = document.getElementById('requestType').value;
+	var docTypeSelect = document.getElementById('docType');
+	docTypeSelect.innerHTML = ''; // Clear previous options
+
+	try {
+		const documentData = await fetchDocumentData('/api/doctype', 'GET'); // Call fetchDocumentData with URL and GET method
+		if (documentData && requestType in documentData) {
+			addOptionsToSelect(docTypeSelect, documentData[requestType]);
+		} else {
+			docTypeSelect.innerHTML = '<option disabled selected>No documents found</option>';
+		}
+
+		// Enable the docType select
+		docTypeSelect.disabled = false;
+	} catch (error) {
+		console.error('Error fetching documents:', error);
+		docTypeSelect.innerHTML = '<option disabled selected>Error fetching documents</option>';
+	}
+}
+
+// Function to add options to select dropdown
+function addOptionsToSelect(selectElement, options) {
+	options.forEach(function(option) {
+		var optionElement = document.createElement('option');
+		optionElement.value = option;
+		optionElement.textContent = option;
+		selectElement.appendChild(optionElement);
+	});
 }

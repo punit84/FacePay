@@ -49,6 +49,20 @@
 			opacity: 0.7;
 		}
 
+		#requestType {
+			width: 300px; /* Adjust width as needed */
+			padding: 10px; /* Add padding for better visibility */
+			font-size: 16px; /* Increase font size for readability */
+			border: 1px solid #ccc; /* Add a border for clarity */
+			border-radius: 4px; /* Optional: Rounded corners */
+		}
+		#docType {
+			width: 300px; /* Adjust width as needed */
+			padding: 10px; /* Add padding for better visibility */
+			font-size: 16px; /* Increase font size for readability */
+			border: 1px solid #ccc; /* Add a border for clarity */
+			border-radius: 4px; /* Optional: Rounded corners */
+		}
 
 	</style>
 </head>
@@ -84,10 +98,26 @@
 		<div class="section-container">
 
 			<div class="mb-5">
+				<label for="requestType">Select Request Type:</label>
+				<select id="requestType" name="requestType" onchange="updateDocTypeDropdown()">
+					<option disabled selected>Select an option</option>
+					<option value="UpdateBankDetails">Update Bank Details</option>
+					<option value="UpdateName">Update Name</option>
+					<option value="UpdateAddress">Update Address</option>
+				</select>
+
+				<br><br>
+
+				<label for="docType">Select Document Type:</label>
+				<select id="docType" name="docType" disabled>
+					<option disabled selected>Please select a request type first</option>
+				</select>
+				<br><br>
+
 				<form id="form1" enctype="multipart/form-data" method="post" action="Upload.aspx">
 					<div>
 						<label for="imageFileSelected" class="custom-file-upload">
-							update document for update
+							Upload proof
 						</label>
 						<input type="file" name="imageFileSelected" id="imageFileSelected"
 							onchange="fetchDocumentDetails(this);" accept="image/*, application/pdf, .doc, .docx, .txt, .rtf, application/msword" capture="camera" />

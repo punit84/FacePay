@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
+import com.punit.facepay.service.helper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.punit.facepay.service.helper.BedrockUtill;
-import com.punit.facepay.service.helper.DynamoDBUtil;
-import com.punit.facepay.service.helper.FaceImageCollectionUtil;
-import com.punit.facepay.service.helper.QArtQueue;
-import com.punit.facepay.service.helper.RekoUtil;
-import com.punit.facepay.service.helper.UPILinkUtil;
-import com.punit.facepay.service.helper.s3Util;
 
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
@@ -363,15 +357,16 @@ public class FaceScanService {
 		return faceDetails.toString();
 	}
 
-	public String kycScan(MultipartFile imageToSearch, String text) throws IOException {
+	public String kycScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException {
 		logger.info("************ call claude ********");
 		byte[] bytes = imageToSearch.getBytes();
+		String prompt = PromptGenerator.generateLLMPrompt(requestType,docType);
 		String base64Image = Base64.getEncoder().encodeToString(bytes);
 
 		String s3filepath= Configs.S3_FOLDER_KYC ;
 		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
 
-		return	bedrockUtil.invokeHaiku(base64Image, Configs.IMAGE_PROMPT + text );
+		return	bedrockUtil.invokeHaiku(base64Image, prompt );
 
 	}
 }
