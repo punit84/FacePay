@@ -434,23 +434,51 @@ function profileDisplay(evt) {
 }
 
 function redirectToKYC(evt) {
+	hideLoadingOverlay(); // Assuming hideLoadingOverlay() is defined elsewhere
 
-	/* This event is raised when the server send back a response */
-	//alert(evt.target.responseText);
-	//alert(evt.target.responseText);
-	hideLoadingOverlay();
+	try {
+		var jsonResponse = evt.target.responseText;
+		var parsedJson = JSON.parse(jsonResponse);
 
-	var text = evt.target.responseText;
-	document.getElementById('details').innerHTML += 'UPI url with given face : ' + text + '<br>';
-	document.getElementById('details').value
+		var html = "<h3>Key-Value Form:</h3><table>";
 
-	/* This event is raised when the server send back a response */
-	document.getElementById('bedrock').innerHTML = '<br>' + evt.target.responseText + '<br><br>';
+		// Assuming parsedJson is an array with a single object as per your example
+		var jsonData = parsedJson[0];
 
+		for (var key in jsonData) {
+			if (jsonData.hasOwnProperty(key)) {
+				html += "<tr><th>" + key + "</th><td>" + jsonData[key] + "</td></tr>";
+			}
+		}
+		html += "</table>";
 
-
+		document.getElementById('bedrock').innerHTML = '<br>' + html + '<br><br>';
+	} catch (error) {
+		console.error("Error parsing or displaying JSON:", error);
+		// Handle error display or logging as needed
+	}
 }
 
+// Function to parse JSON and render as key-value pairs
+function renderKeyValue(jsonResponse) {
+	var jsonContent = jsonResponse[0].text; // Assuming there's only one object in the array
+
+	// Parse the JSON content
+	var parsedJson = JSON.parse(jsonContent);
+
+	// Prepare HTML for displaying key-value pairs
+	var html = "<h3>Key-Value Form:</h3>";
+	html += "<table>";
+	for (var key in parsedJson) {
+		html += "<tr><th>" + key + "</th><td>" + parsedJson[key] + "</td></tr>";
+	}
+	html += "</table>";
+
+	/* This event is raised when the server send back a response */
+	document.getElementById('bedrock').innerHTML = '<br>' + html + '<br><br>'
+	// Display HTML content
+	document.getElementById("bedrock").innerHTML = html;
+}
 
 function redirectToPay(evt) {
 

@@ -133,7 +133,7 @@ public class BedrockUtill {
 		return generatedText;
 	}
 
-	public static String invokeHaiku( String imageBase64, String userMessage) {
+	public static String invokeHaiku1( String imageBase64, String userMessage) {
 		// Create a Bedrock Runtime client in the AWS Region of your choice.
 		var client = BedrockRuntimeClient.builder()
 				.region(Region.AP_SOUTH_1)
@@ -174,6 +174,58 @@ public class BedrockUtill {
 		var responseText = nativeResponse.getString("result");
 		System.out.println(responseText);
 		return responseText;
+	}
+
+	public String invokeHaiku(String imageBase64, String userMessage) {
+		// Create a Bedrock Runtime client in the AWS Region of your choice.
+		BedrockRuntimeClient client = BedrockRuntimeClient.builder()
+				.region(Region.AP_SOUTH_1)
+				.build();
+
+		// Set the model ID
+		String modelId = "anthropic.claude-3-haiku-20240307-v1:0";
+
+		// Create the JSON payload
+		JSONObject request = new JSONObject()
+				.put("anthropic_version", "bedrock-2023-05-31")
+				.put("max_tokens", 4000)
+				.put("messages", new JSONArray()
+						.put(new JSONObject()
+								.put("role", "user")
+								.put("content", new JSONArray()
+										.put(new JSONObject()
+												.put("type", "image")
+												.put("source", new JSONObject()
+														.put("type", "base64")
+														.put("media_type", "image/jpeg") // Adjust if needed
+														.put("data", imageBase64)))
+										.put(new JSONObject()
+												.put("type", "text")
+												.put("text", userMessage)))));
+
+		// Encode and send the request.
+		var response = client.invokeModel(req -> req
+				.body(SdkBytes.fromUtf8String(request.toString()))
+				.modelId(modelId)
+				.contentType("application/json")
+				.accept("application/json"));
+
+		logger.info(response.body().asUtf8String());
+		// Decode the native response body.
+
+		JSONObject nativeResponse = new JSONObject(response.body().asUtf8String());
+
+		// Extract the content array
+		JSONArray contentArray = nativeResponse.getJSONArray("content");
+
+		// Extract the first object from the content array
+		JSONObject contentObject = contentArray.getJSONObject(0);
+
+		// Extract the text field from the content object
+		String textJson = contentObject.getString("text");
+
+		System.out.println(textJson);
+		return textJson;
 	}
 
 	private static String getMediaType(String imageType) {

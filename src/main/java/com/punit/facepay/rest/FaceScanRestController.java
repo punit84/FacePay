@@ -139,16 +139,13 @@ public class FaceScanRestController {
 	}
 	
 	@PostMapping("/kyc")
-	public Object kyc(@RequestParam MultipartFile myFile) throws IOException {
+	public ResponseEntity<String> kyc(@RequestParam MultipartFile myFile) throws IOException {
 		System.out.println("Fetcing document details"); //
 
-		String responsemSG=kycService.kycScan(myFile, " Fetch text from image");
+		String result = facepayService.kycScan(myFile, " Fetch text from image in json format");
 		
-        String result = responsemSG.replaceFirst(".*?:", "Image details by Amazon Bedrock/Claude:<br>").trim(); // Replace everything up to the first colon and trim it
-        System.out.println(result); // Output: Keep this text
+        System.out.println("final kyc doc details are: "+result); // Output: Keep this text
 		return ResponseEntity.ok(result);
 	}
-	
-
 
 }

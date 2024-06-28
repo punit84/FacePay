@@ -362,4 +362,14 @@ public class FaceScanService {
 		}
 		return faceDetails.toString();
 	}
+
+	public String kycScan(MultipartFile imageToSearch, String text) throws IOException {
+		logger.info("************ call claude ********");
+
+		byte[] bytes = imageToSearch.getBytes();
+		String base64Image = Base64.getEncoder().encodeToString(bytes);
+
+		return	bedrockUtil.invokeHaiku(base64Image, Configs.IMAGE_PROMPT + text );
+
+	}
 }

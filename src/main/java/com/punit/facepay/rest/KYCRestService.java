@@ -27,14 +27,13 @@ public class KYCRestService {
     private BedrockUtill bedrockUtil;
     final static Logger logger= LoggerFactory.getLogger(KYCRestService.class);
 
-    public String kycScan(MultipartFile imageToSearch, String text) throws IOException {
+    public Object kycScan(MultipartFile imageToSearch, String text) throws IOException {
         logger.info("************ call claude ********");
 
         byte[] bytes = imageToSearch.getBytes();
         String base64Image = Base64.getEncoder().encodeToString(bytes);
 
         return	bedrockUtil.invokeHaiku(base64Image, Configs.IMAGE_PROMPT + text );
-
 
     }
 
