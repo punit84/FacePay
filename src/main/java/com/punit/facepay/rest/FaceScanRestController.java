@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.punit.facepay.service.helper.PromptGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,11 @@ public class FaceScanRestController {
 	private static KYCRestService kycService;
 
 	final static Logger logger = LoggerFactory.getLogger(FaceScanRestController.class);
+	private final PromptGenerator promptGenerator;
 
-	public FaceScanRestController(FaceScanService awsRekognitionService) {
+	public FaceScanRestController(FaceScanService awsRekognitionService, PromptGenerator promptGenerator) {
 		this.facepayService = awsRekognitionService;
+		this.promptGenerator = promptGenerator;
 	}
 
 	@PostMapping("/facepay")
@@ -153,11 +156,6 @@ public class FaceScanRestController {
 
 	@GetMapping("/doctype")
 	public Map<String, Object> getDocumentTypes() {
-		Map<String, Object> documentData = new HashMap<>();
-		documentData.put("UpdateBankDetails", new String[]{"cheque", "Passbook", "Bank Statement"});
-		documentData.put("UpdateName", new String[]{"Passport", "Driving License", "Voter's ID card", "Pan Card", "Aadhaar Card", "NRGEA Job Card"});
-		documentData.put("UpdateAddress", new String[]{"Electricity Bill", "Gas Bill", "Bank Account Statement", "Landline Bill", "Life Insurance Policy", "Registered Lease/Rent Agreement"});
-
-		return documentData;
+		return PromptGenerator.getDocumentTypes();
 	}
 }
