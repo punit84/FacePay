@@ -1,6 +1,7 @@
 package com.punit.facepay.service;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -326,7 +327,6 @@ public class FaceScanService {
 		return "";
 		
 	}
-	
 
 	private String facejson(List<FaceDetail> faceDetails) {
 		// Create a sample DetectFacesResponse with all available parameters

@@ -16,12 +16,17 @@ import com.punit.facepay.service.Configs;
 import com.punit.facepay.service.FaceNotFoundException;
 import com.punit.facepay.service.FaceScanService;
 
+
+
 @RestController
 @RequestMapping("/api")
 public class FaceScanRestController {
 
 	@Autowired(required=true)
 	private static FaceScanService facepayService;
+
+	@Autowired(required=true)
+	private static KYCRestService kycService;
 
 	final static Logger logger = LoggerFactory.getLogger(FaceScanRestController.class);
 
@@ -133,5 +138,17 @@ public class FaceScanRestController {
 		return ResponseEntity.ok(result);
 	}
 	
+	@PostMapping("/kyc")
+	public Object kyc(@RequestParam MultipartFile myFile) throws IOException {
+		System.out.println("Fetcing document details"); //
+
+		String responsemSG=kycService.kycScan(myFile, " Fetch text from image");
+		
+        String result = responsemSG.replaceFirst(".*?:", "Image details by Amazon Bedrock/Claude:<br>").trim(); // Replace everything up to the first colon and trim it
+        System.out.println(result); // Output: Keep this text
+		return ResponseEntity.ok(result);
+	}
+	
+
 
 }
