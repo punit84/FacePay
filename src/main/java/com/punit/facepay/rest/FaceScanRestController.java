@@ -143,8 +143,11 @@ public class FaceScanRestController {
 		System.out.println("Fetcing document details"); //
 
 		String result = facepayService.kycScan(myFile, " Fetch text from image in json format");
-		
-        System.out.println("final kyc doc details are: "+result); // Output: Keep this text
+
+
+		result = result.replaceAll("\\bnull\\b", "\"NotFound\"");
+
+		System.out.println("final kyc doc details are: "+result); // Output: Keep this text
 		return ResponseEntity.ok(result);
 	}
 
