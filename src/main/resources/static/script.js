@@ -469,6 +469,7 @@ function redirectToKYC(evt) {
 
 // Function to parse JSON and render as key-value pairs
 function renderKeyValue(jsonResponse) {
+	// Assuming jsonResponse is an array and we're accessing the first object
 	var jsonContent = jsonResponse[0].text; // Assuming there's only one object in the array
 
 	// Parse the JSON content
@@ -477,17 +478,24 @@ function renderKeyValue(jsonResponse) {
 	// Prepare HTML for displaying key-value pairs
 	var html = "<h3>Key-Value Form:</h3>";
 	html += "<table>";
+
+	// Iterate through each key-value pair in parsedJson
 	for (var key in parsedJson) {
-		html += "<tr><th>" + key + "</th><td>" + parsedJson[key] + "</td></tr>";
+		// Check if the value is a boolean and convert to readable format
+		var value = parsedJson[key];
+		if (typeof value === 'boolean') {
+			value = value ? 'true' : 'false'; // Convert boolean to string representation
+		}
+
+		// Build HTML row for key-value pair
+		html += "<tr><th>" + key + "</th><td>" + value + "</td></tr>";
 	}
+
 	html += "</table>";
 
-	/* This event is raised when the server send back a response */
-	document.getElementById('bedrock').innerHTML = '<br>' + html + '<br><br>'
-	// Display HTML content
+	// Display HTML content in 'bedrock' element
 	document.getElementById("bedrock").innerHTML = html;
 }
-
 function redirectToPay(evt) {
 
 	/* This event is raised when the server send back a response */
