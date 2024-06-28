@@ -1,6 +1,9 @@
 package com.punit.facepay.service.helper;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -18,6 +21,61 @@ public class PromptGenerator {
         return documentData;
     }
 
+    public static JsonNode processJson(String jsonResponse) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        int falseCount = 0;
+
+        ObjectNode cleanedJson = objectMapper.createObjectNode();
+        final int[] trueCount = {0};
+        try {
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+            // Iterate through fields of rootNode
+            rootNode.fields().forEachRemaining(entry -> {
+                String fieldName = entry.getKey();
+                JsonNode node = entry.getValue();
+                if (node.isBoolean()) {
+                    if (node.asBoolean()) {
+                        ++trueCount[0];
+                    }
+                } else {
+                    cleanedJson.set(fieldName, node);
+                }
+            });
+
+            // Validate account number, account name, and IFSC code
+            if (rootNode.has("account_number") && !rootNode.get("account_number").asText().matches("\\d+")) {
+                System.out.println("Invalid account number");
+                ++falseCount;
+            }
+            if (rootNode.has("account_name") && rootNode.get("account_name").asText().isEmpty()) {
+                System.out.println("Account name is empty");
+                ++falseCount;
+
+            }
+            if (rootNode.has("ifsc_code") && rootNode.get("ifsc_code").asText().isEmpty()) {
+                System.out.println("IFSC code is empty");
+                ++falseCount;
+
+            }
+            System.out.println("true count " +trueCount[0]);
+            System.out.println("false count " +falseCount);
+
+            // Add a node indicating the number of true values if there are more than 3
+            if (trueCount[0] > 3 && falseCount ==0) {
+                cleanedJson.put("Valid Document", Boolean.TRUE);
+            }else{
+                cleanedJson.put("Valid Document", Boolean.FALSE);
+
+            }
+
+            System.out.println("Number of true values: " + trueCount);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return cleanedJson;
+    }
     public static String generateLLMPrompt(String requestType, String docType) {
         System.out.println(" request type is  " +requestType );
         System.out.println(" docType  is  " +docType );
@@ -46,6 +104,8 @@ public class PromptGenerator {
 // Additional criteria for bank cheque
         chequeValidation.append("• Valid for 3 Months: Check if the cheque contains the text 'valid for 3 months only'.\n");
         chequeValidation.append("• Keyword 'Bank': Verify if the cheque image contains the keyword 'bank'.\n");
+        chequeValidation.append("• Keyword 'Payble at Par': Verify if the cheque image contains the keyword 'Payble at Par'.\n");
+        chequeValidation.append("• Keyword 'Rupees': Verify if the cheque image contains the keyword 'Rupees'.\n");
 
 
         switch (requestType) {

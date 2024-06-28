@@ -23,6 +23,12 @@ import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelResponse;
 public class BedrockUtill {
 
 
+	private final PromptGenerator promptGenerator;
+
+	public BedrockUtill(PromptGenerator promptGenerator) {
+		this.promptGenerator = promptGenerator;
+	}
+
 	public static void main(String[] args) {
 
 		BedrockRuntimeClient client = BedrockRuntimeClient.builder()
@@ -216,16 +222,34 @@ public class BedrockUtill {
 		JSONObject nativeResponse = new JSONObject(response.body().asUtf8String());
 
 		// Extract the content array
-		JSONArray contentArray = nativeResponse.getJSONArray("content");
+		String contentText = nativeResponse.getJSONArray("content").getJSONObject(0).getString("text");
 
-		// Extract the first object from the content array
-		JSONObject contentObject = contentArray.getJSONObject(0);
+		System.out.println(contentText);
 
-		// Extract the text field from the content object
-		String textJson = contentObject.getString("text");
+		JSONObject usageJson = nativeResponse.getJSONObject("usage");
+		System.out.println(usageJson);
+
+		JSONObject contentJson = new JSONObject(contentText);
+		mergeJsonObjects(contentJson, usageJson);
+
+		System.out.println(contentJson);
+
+		String textJson= promptGenerator.processJson(contentJson.toString()).toString();
 
 		System.out.println(textJson);
 		return textJson;
+	}
+
+	/**
+	 * Merges two JSONObjects. Copies all key-value pairs from source to destination.
+	 *
+	 * @param destination The JSONObject to merge into
+	 * @param source      The JSONObject to merge from
+	 */
+	private static void mergeJsonObjects(JSONObject destination, JSONObject source) {
+		for (String key : source.keySet()) {
+			destination.put(key, source.get(key));
+		}
 	}
 
 	private static String getMediaType(String imageType) {

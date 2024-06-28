@@ -491,7 +491,7 @@ function renderKeyValue(jsonResponse) {
 		// Check if the value is a boolean and convert to readable format
 		var value = parsedJson[key];
 		if (typeof value === 'boolean') {
-			value = value ? 'true' : 'false'; // Convert boolean to string representation
+			value = value ? 'TRUE' : 'FALSE'; // Convert boolean to string representation
 		}
 
 		// Build HTML row for key-value pair
