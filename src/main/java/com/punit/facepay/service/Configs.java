@@ -59,7 +59,8 @@ public class Configs {
  	public static final String S3_FOLDER_SCAN = "scan/";
  	public static final String S3_FOLDER_REGISTER = "qart/";
 
- 	
+	public static final String S3_FOLDER_KYC = "kyc";
+
 //	
 //	public static final String S3_PATH_REGISTER = "/qart";
 //
