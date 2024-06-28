@@ -440,18 +440,26 @@ function redirectToKYC(evt) {
 		var jsonResponse = evt.target.responseText;
 		var parsedJson = JSON.parse(jsonResponse);
 
-		var html = "<h3>Key-Value Form:</h3><table>";
+		var html = "<h3>Document Information:</h3><table>";
 
-		// Assuming parsedJson is an array with a single object as per your example
-		var jsonData = parsedJson[0];
+		// Check if parsedJson is an array and get the first object
+		var jsonData = Array.isArray(parsedJson) ? parsedJson[0] : parsedJson;
 
-		for (var key in jsonData) {
-			if (jsonData.hasOwnProperty(key)) {
-				html += "<tr><th>" + key + "</th><td>" + jsonData[key] + "</td></tr>";
+		// Extract text content if present
+		var contentText = (jsonData.content && jsonData.content.length > 0 && jsonData.content[0].text) ? jsonData.content[0].text : null;
+
+		// Parse the inner JSON if contentText is valid JSON
+		var innerJsonData = contentText ? JSON.parse(contentText) : jsonData;
+
+		// Iterate over the innerJsonData object to display key-value pairs
+		for (var key in innerJsonData) {
+			if (innerJsonData.hasOwnProperty(key)) {
+				html += "<tr><th>" + key.replace(/_/g, ' ') + "</th><td>" + innerJsonData[key] + "</td></tr>";
 			}
 		}
 		html += "</table>";
 
+		// Display the HTML content in the 'bedrock' element
 		document.getElementById('bedrock').innerHTML = '<br>' + html + '<br><br>';
 	} catch (error) {
 		console.error("Error parsing or displaying JSON:", error);
