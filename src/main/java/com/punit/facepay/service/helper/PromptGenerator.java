@@ -4,6 +4,9 @@ package com.punit.facepay.service.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.punit.facepay.rest.FaceScanRestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -11,6 +14,7 @@ import java.util.Map;
 
 @Component
 public class PromptGenerator {
+    final static Logger logger = LoggerFactory.getLogger(PromptGenerator.class);
 
     public static Map<String, Object> getDocumentTypes() {
         Map<String, Object> documentData = new HashMap<>();
@@ -45,21 +49,21 @@ public class PromptGenerator {
 
             // Validate account number, account name, and IFSC code
             if (rootNode.has("account_number") && !rootNode.get("account_number").asText().matches("\\d+")) {
-                System.out.println("Invalid account number");
+                logger.info("Invalid account number");
                 ++falseCount;
             }
             if (rootNode.has("account_name") && rootNode.get("account_name").asText().isEmpty()) {
-                System.out.println("Account name is empty");
+                logger.info("Account name is empty");
                 ++falseCount;
 
             }
             if (rootNode.has("ifsc_code") && rootNode.get("ifsc_code").asText().isEmpty()) {
-                System.out.println("IFSC code is empty");
+                logger.info("IFSC code is empty");
                 ++falseCount;
 
             }
-            System.out.println("true count " +trueCount[0]);
-            System.out.println("false count " +falseCount);
+            logger.info("true count " +trueCount[0]);
+            logger.info("false count " +falseCount);
 
             // Add a node indicating the number of true values if there are more than 3
             if (trueCount[0] > 3 && falseCount ==0) {
@@ -69,7 +73,7 @@ public class PromptGenerator {
 
             }
 
-            System.out.println("Number of true values: " + trueCount);
+            logger.info("Number of true values: " + trueCount);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,17 +81,17 @@ public class PromptGenerator {
         return cleanedJson;
     }
     public static String generateLLMPrompt(String requestType, String docType) {
-        System.out.println(" request type is  " +requestType );
-        System.out.println(" docType  is  " +docType );
+        logger.info(" request type is  " +requestType );
+        logger.info(" docType  is  " +docType );
 
         if (requestType.contains(" ")){
             requestType="UpdateBankDetails";
-            System.out.println(" request type is  " +requestType );
+            logger.info(" request type is  " +requestType );
 
         }
         if (docType.contains(" ")) {
             docType="cheque";
-            System.out.println(" docType  is  " +docType );
+            logger.info(" docType  is  " +docType );
 
         }
 
@@ -214,7 +218,7 @@ public class PromptGenerator {
         String requestType = "UpdateBankDetails";
         String docType = "Checkbook";
         String llmPrompt = generateLLMPrompt(requestType, docType);
-        System.out.println(llmPrompt);
+        logger.info(llmPrompt);
     }
 
 }
