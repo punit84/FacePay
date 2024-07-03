@@ -86,15 +86,11 @@ public class PromptGenerator {
 
         if (requestType.contains(" ")){
             requestType="UpdateBankDetails";
+            docType="cheque";
+
             logger.info(" request type is  " +requestType );
 
         }
-        if (docType.contains(" ")) {
-            docType="cheque";
-            logger.info(" docType  is  " +docType );
-
-        }
-
         String criteria = "";
         String documentValidation = "";
         Map<String, String> outputFields = new HashMap<>();
