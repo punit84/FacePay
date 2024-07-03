@@ -136,7 +136,8 @@ public class PromptGenerator {
                         outputFields.put("ifsc_code", "");
                         break;
                     default:
-                        throw new IllegalArgumentException("Invalid document type for UpdateBankDetails: " + docType);
+                        requestType="UpdateBankDetails";
+                        docType ="Passbook";
                 }
                 break;
             case "UpdateAddress":
@@ -158,7 +159,8 @@ public class PromptGenerator {
                         outputFields.put("city", "");
                         break;
                     default:
-                        throw new IllegalArgumentException("Invalid document type for UpdateAddress: " + docType);
+                        requestType="UpdateAddress";
+                        docType ="Electricity Bill";
                 }
                 break;
             case "UpdateName":
@@ -178,11 +180,14 @@ public class PromptGenerator {
                         outputFields.put("sex", ""); // Assuming sex (gender) needs to be captured
                         break;
                     default:
-                        throw new IllegalArgumentException("Invalid document type for UpdateName: " + docType);
+                        requestType="UpdateName";
+                        docType ="Passport";
                 }
                 break;
             default:
-                throw new IllegalArgumentException("Unknown request type: " + requestType);
+                requestType="UpdateBankDetails";
+                docType ="Passport";
+
         }
 
         String prompt = "{\n" +
