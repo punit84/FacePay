@@ -184,60 +184,68 @@ public class BedrockUtill {
 
 	public String invokeHaiku(String imageBase64, String userMessage) {
 		// Create a Bedrock Runtime client in the AWS Region of your choice.
-		BedrockRuntimeClient client = BedrockRuntimeClient.builder()
-				.region(Region.AP_SOUTH_1)
-				.build();
+		try {
+			BedrockRuntimeClient client = BedrockRuntimeClient.builder()
+					.region(Region.AP_SOUTH_1)
+					.build();
 
-		// Set the model ID
-		String modelId = "anthropic.claude-3-haiku-20240307-v1:0";
+			// Set the model ID
+			String modelId = "anthropic.claude-3-haiku-20240307-v1:0";
 
-		// Create the JSON payload
-		JSONObject request = new JSONObject()
-				.put("anthropic_version", "bedrock-2023-05-31")
-				.put("max_tokens", 4000)
-				.put("messages", new JSONArray()
-						.put(new JSONObject()
-								.put("role", "user")
-								.put("content", new JSONArray()
-										.put(new JSONObject()
-												.put("type", "image")
-												.put("source", new JSONObject()
-														.put("type", "base64")
-														.put("media_type", "image/jpeg") // Adjust if needed
-														.put("data", imageBase64)))
-										.put(new JSONObject()
-												.put("type", "text")
-												.put("text", userMessage)))));
+			// Create the JSON payload
+			JSONObject request = new JSONObject()
+					.put("anthropic_version", "bedrock-2023-05-31")
+					.put("max_tokens", 10000)
+					.put("messages", new JSONArray()
+							.put(new JSONObject()
+									.put("role", "user")
+									.put("content", new JSONArray()
+											.put(new JSONObject()
+													.put("type", "image")
+													.put("source", new JSONObject()
+															.put("type", "base64")
+															.put("media_type", "image/jpeg") // Adjust if needed
+															.put("data", imageBase64)))
+											.put(new JSONObject()
+													.put("type", "text")
+													.put("text", userMessage)))));
 
-		// Encode and send the request.
-		var response = client.invokeModel(req -> req
-				.body(SdkBytes.fromUtf8String(request.toString()))
-				.modelId(modelId)
-				.contentType("application/json")
-				.accept("application/json"));
+			// Encode and send the request.
+			var response = client.invokeModel(req -> req
+					.body(SdkBytes.fromUtf8String(request.toString()))
+					.modelId(modelId)
+					.contentType("application/json")
+					.accept("application/json"));
 
-		logger.info(response.body().asUtf8String());
-		// Decode the native response body.
+			logger.info(response.body().asUtf8String());
+			// Decode the native response body.
 
-		JSONObject nativeResponse = new JSONObject(response.body().asUtf8String());
+			JSONObject nativeResponse = new JSONObject(response.body().asUtf8String());
 
-		// Extract the content array
-		String contentText = nativeResponse.getJSONArray("content").getJSONObject(0).getString("text");
+			// Extract the content array
+			String contentText = nativeResponse.getJSONArray("content").getJSONObject(0).getString("text");
 
-		System.out.println(contentText);
+			System.out.println(contentText);
 
-		JSONObject usageJson = nativeResponse.getJSONObject("usage");
-		System.out.println(usageJson);
+			JSONObject usageJson = nativeResponse.getJSONObject("usage");
+			System.out.println(usageJson);
 
-		JSONObject contentJson = new JSONObject(contentText);
-		mergeJsonObjects(contentJson, usageJson);
+			JSONObject contentJson = new JSONObject(contentText);
+			mergeJsonObjects(contentJson, usageJson);
 
-		System.out.println(contentJson);
+			System.out.println(contentJson);
 
-		String textJson= promptGenerator.processJson(contentJson.toString()).toString();
+			String textJson = promptGenerator.processJson(contentJson.toString()).toString();
 
-		System.out.println(textJson);
-		return textJson;
+			System.out.println(textJson);
+			return textJson;
+
+
+		}catch (Exception e) {
+			logger.error("Invocation to LLM failed with error " + e.getMessage());
+			return "{\"Next Step\":\"Please Contact Admin\",\"valid Document\":\"false\",\"error\":\""+e.getMessage()+"\"}\n";
+		}
+
 	}
 
 	/**
