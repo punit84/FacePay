@@ -77,13 +77,13 @@ public class PromptGenerator {
         outputJson.put("valid_document", "true/false");
         outputJson.put("document type", "");
         outputJson.put("invalid document reason", "");
+        outputJson.put("is " + docType , "true/false");
 
         switch (requestType) {
             case "UpdateBankDetails":
                 outputJson.put("account_number", "");
                 outputJson.put("account_name", "");
                 outputJson.put("ifsc_code", "");
-                outputJson.put("is Cheque", "true/false");
 
                 switch (docType) {
                     case "cheque":
