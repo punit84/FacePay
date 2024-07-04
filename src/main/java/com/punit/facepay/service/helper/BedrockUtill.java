@@ -142,11 +142,15 @@ public class BedrockUtill {
 		return generatedText;
 	}
 
-	public String invokeHaiku(String imageBase64, String prompt) {
+	public String invokeHaiku(String imageBase64, String prompt, String fileName) {
 		// Create a Bedrock Runtime client in the AWS Region of your choice.
 
-		Set<String> supportedFileTypes = new HashSet<>(Arrays.asList("doc", "docx", "pdf",  "gif", "jpeg", "png"));
+		String mediaType = getMediaTypeFromExtension(getFileExtension(fileName));
+		logger.info("file name is " + fileName );
 
+		logger.info("file extension is " + mediaType );
+
+		Set<String> supportedFileTypes = new HashSet<>(Arrays.asList("doc", "docx", "pdf",  "gif", "jpeg", "png"));
 		try {
 			BedrockRuntimeClient client = BedrockRuntimeClient.builder()
 					.region(Region.AP_SOUTH_1)
@@ -167,11 +171,13 @@ public class BedrockUtill {
 													.put("type", "image")
 													.put("source", new JSONObject()
 															.put("type", "base64")
-															.put("media_type", "image/jpeg") // Adjust if needed
+															.put("media_type", mediaType )
 															.put("data", imageBase64)))
 											.put(new JSONObject()
 													.put("type", "text")
 													.put("text", prompt)))));
+
+			request.put("file_types", new JSONArray(supportedFileTypes));
 
 			// Encode and send the request.
 			var response = client.invokeModel(req -> req
@@ -210,7 +216,27 @@ public class BedrockUtill {
 		}
 
 	}
-
+	public String getFileExtension(String fileName) {
+		if (fileName == null || fileName.isEmpty()) {
+			return "";
+		}
+		int dotIndex = fileName.lastIndexOf('.');
+		return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
+	}
+	private String getMediaTypeFromExtension(String extension) {
+		switch (extension.toLowerCase()) {
+			case "jpg":
+			case "jpeg":
+				return "image/jpeg";
+			case "png":
+				return "image/png";
+			case "pdf":
+				return "application/pdf";
+			// Add more cases for other file types as needed
+			default:
+				return "application/octet-stream";
+		}
+	}
 	/**
 	 * Merges two JSONObjects. Copies all key-value pairs from source to destination.
 	 *

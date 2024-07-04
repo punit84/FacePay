@@ -1,9 +1,9 @@
 package com.punit.facepay.rest;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
+import com.punit.facepay.service.KYCRestService;
 import com.punit.facepay.service.helper.PromptGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,8 +145,6 @@ public class FaceScanRestController {
 		System.out.println("Fetcing document details"); //
 
 		String result = facepayService.kycScan(myFile, requestType, docType, " Fetch text from image in json format");
-
-
 		result = result.replaceAll("\\bnull\\b", "\"NotFound\"");
 
 		System.out.println("final kyc doc details are: "+result); // Output: Keep this text

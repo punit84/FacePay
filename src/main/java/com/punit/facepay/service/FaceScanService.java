@@ -8,7 +8,10 @@ import com.punit.facepay.service.helper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -357,35 +360,9 @@ public class FaceScanService {
 		return faceDetails.toString();
 	}
 
-	public String getFileExtension(String fileName) {
-		if (fileName == null || fileName.isEmpty()) {
-			return "";
-		}
-		int dotIndex = fileName.lastIndexOf('.');
-		return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
-	}
-	private String getMediaTypeFromExtension(String extension) {
-		switch (extension.toLowerCase()) {
-			case "jpg":
-			case "jpeg":
-				return "image/jpeg";
-			case "png":
-				return "image/png";
-			case "pdf":
-				return "application/pdf";
-			// Add more cases for other file types as needed
-			default:
-				return "application/octet-stream";
-		}
-	}
 	public String kycScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException {
 		logger.info("************ call claude ********");
 		byte[] bytes = imageToSearch.getBytes();
-
-		String filExtension = getMediaTypeFromExtension(getFileExtension(imageToSearch.getOriginalFilename()));
-		logger.info("file name is " + imageToSearch.getOriginalFilename() );
-
-		logger.info("file extension is " + filExtension );
 
 		String prompt = PromptGenerator.generateLLMPrompt(requestType,docType);
 		String base64Image = Base64.getEncoder().encodeToString(bytes);
@@ -393,7 +370,7 @@ public class FaceScanService {
 		String s3filepath= Configs.S3_FOLDER_KYC ;
 		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
 
-		return	bedrockUtil.invokeHaiku(base64Image, prompt );
+		return	bedrockUtil.invokeHaiku(base64Image, prompt, imageToSearch.getOriginalFilename() );
 
 	}
 }
