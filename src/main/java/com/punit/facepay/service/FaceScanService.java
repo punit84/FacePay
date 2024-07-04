@@ -357,9 +357,36 @@ public class FaceScanService {
 		return faceDetails.toString();
 	}
 
+	public String getFileExtension(String fileName) {
+		if (fileName == null || fileName.isEmpty()) {
+			return "";
+		}
+		int dotIndex = fileName.lastIndexOf('.');
+		return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
+	}
+	private String getMediaTypeFromExtension(String extension) {
+		switch (extension.toLowerCase()) {
+			case "jpg":
+			case "jpeg":
+				return "image/jpeg";
+			case "png":
+				return "image/png";
+			case "pdf":
+				return "application/pdf";
+			// Add more cases for other file types as needed
+			default:
+				return "application/octet-stream";
+		}
+	}
 	public String kycScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException {
 		logger.info("************ call claude ********");
 		byte[] bytes = imageToSearch.getBytes();
+
+		String filExtension = getMediaTypeFromExtension(getFileExtension(imageToSearch.getOriginalFilename()));
+		logger.info("file name is " + imageToSearch.getOriginalFilename() );
+
+		logger.info("file extension is " + filExtension );
+
 		String prompt = PromptGenerator.generateLLMPrompt(requestType,docType);
 		String base64Image = Base64.getEncoder().encodeToString(bytes);
 

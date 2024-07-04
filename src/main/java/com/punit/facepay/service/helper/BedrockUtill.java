@@ -1,7 +1,10 @@
 package com.punit.facepay.service.helper;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -139,51 +142,11 @@ public class BedrockUtill {
 		return generatedText;
 	}
 
-	public static String invokeHaiku1( String imageBase64, String userMessage) {
+	public String invokeHaiku(String imageBase64, String prompt) {
 		// Create a Bedrock Runtime client in the AWS Region of your choice.
-		var client = BedrockRuntimeClient.builder()
-				.region(Region.AP_SOUTH_1)
-				.build();
 
-		// Set the model ID
-		var modelId = "anthropic.claude-3-haiku-20240307-v1:0";
+		Set<String> supportedFileTypes = new HashSet<>(Arrays.asList("doc", "docx", "pdf",  "gif", "jpeg", "png"));
 
-		// Create the JSON payload
-		var request = new JSONObject()
-				.put("anthropic_version", "bedrock-2023-05-31")
-				.put("max_tokens", 4000)
-				.put("messages", new JSONArray()
-						.put(new JSONObject()
-								.put("role", "user")
-								.put("content", new JSONArray()
-										.put(new JSONObject()
-												.put("type", "image")
-												.put("source", new JSONObject()
-														.put("type", "base64")
-														.put("media_type", ImageTypeDetector.getFileType(imageBase64))
-														.put("data", imageBase64)))
-										.put(new JSONObject()
-												.put("type", "text")
-												.put("text", userMessage)))));
-
-		// Encode and send the request.
-		var response = client.invokeModel(req -> req
-				.body(SdkBytes.fromUtf8String(request.toString()))
-				.modelId(modelId)
-				.contentType("application/json")
-				.accept("application/json"));
-
-		// Decode the native response body.
-		var nativeResponse = new JSONObject(response.body().asUtf8String());
-
-		// Extract and print the response text.
-		var responseText = nativeResponse.getString("result");
-		System.out.println(responseText);
-		return responseText;
-	}
-
-	public String invokeHaiku(String imageBase64, String userMessage) {
-		// Create a Bedrock Runtime client in the AWS Region of your choice.
 		try {
 			BedrockRuntimeClient client = BedrockRuntimeClient.builder()
 					.region(Region.AP_SOUTH_1)
@@ -195,7 +158,7 @@ public class BedrockUtill {
 			// Create the JSON payload
 			JSONObject request = new JSONObject()
 					.put("anthropic_version", "bedrock-2023-05-31")
-					.put("max_tokens", 10000)
+					.put("max_tokens", 4000)
 					.put("messages", new JSONArray()
 							.put(new JSONObject()
 									.put("role", "user")
@@ -208,7 +171,7 @@ public class BedrockUtill {
 															.put("data", imageBase64)))
 											.put(new JSONObject()
 													.put("type", "text")
-													.put("text", userMessage)))));
+													.put("text", prompt)))));
 
 			// Encode and send the request.
 			var response = client.invokeModel(req -> req
@@ -258,18 +221,5 @@ public class BedrockUtill {
 		for (String key : source.keySet()) {
 			destination.put(key, source.get(key));
 		}
-	}
-
-	private static String getMediaType(String imageType) {
-		switch (imageType.toLowerCase()) {
-			case "jpeg":
-			case "jpg":
-				return "image/jpeg";
-			case "png":
-				return "image/png";
-			default:
-				throw new IllegalArgumentException("Unsupported image type: " + imageType);
-		}
-
 	}
 }
