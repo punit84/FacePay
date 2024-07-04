@@ -27,6 +27,7 @@ public class BedrockUtill {
 
 
 	private final PromptGenerator promptGenerator;
+	final static Logger logger= LoggerFactory.getLogger(BedrockUtill.class);
 
 	public BedrockUtill(PromptGenerator promptGenerator) {
 		this.promptGenerator = promptGenerator;
@@ -45,7 +46,6 @@ public class BedrockUtill {
 
 	}
 
-	final static Logger logger = LoggerFactory.getLogger(FaceScanService.class);
 
 	public static String InvokeModelLama3(String userMessage) {
 
@@ -85,7 +85,7 @@ public class BedrockUtill {
 
 		// Extract and print the response text.
 		var responseText = nativeResponse.getString("generation");
-		System.out.println(responseText);
+		logger.info(responseText);
 		return responseText;
 
 	}
@@ -177,8 +177,8 @@ public class BedrockUtill {
 													.put("type", "text")
 													.put("text", prompt)))));
 
-			request.put("file_types", new JSONArray(supportedFileTypes));
 
+			printJsonbyMasking(request.toString());
 			// Encode and send the request.
 			var response = client.invokeModel(req -> req
 					.body(SdkBytes.fromUtf8String(request.toString()))
@@ -194,19 +194,19 @@ public class BedrockUtill {
 			// Extract the content array
 			String contentText = nativeResponse.getJSONArray("content").getJSONObject(0).getString("text");
 
-			System.out.println(contentText);
+			logger.info("\ncontentText: "+ contentText);
 
 			JSONObject usageJson = nativeResponse.getJSONObject("usage");
-			System.out.println(usageJson);
+			logger.info("\nusage: "+usageJson.toString());
 
 			JSONObject contentJson = new JSONObject(contentText);
 			mergeJsonObjects(contentJson, usageJson);
 
-			System.out.println(contentJson);
+			logger.info(contentJson.toString());
 
 			String textJson = promptGenerator.processJson(contentJson.toString()).toString();
 
-			System.out.println(textJson);
+			logger.info(textJson);
 			return textJson;
 
 
@@ -215,6 +215,21 @@ public class BedrockUtill {
 			return "{\"Next Step\":\"Please Contact Admin\",\"valid Document\":\"false\",\"error\":\""+e.getMessage()+"\"}\n";
 		}
 
+	}
+
+	public void printJsonbyMasking(String json){
+
+		// Print the JSON payload without the `data` field
+		JSONObject requestForPrint = new JSONObject(json);
+		JSONArray messages = requestForPrint.getJSONArray("messages");
+		JSONObject firstMessage = messages.getJSONObject(0);
+		JSONArray contentArray = firstMessage.getJSONArray("content");
+		JSONObject firstContent = contentArray.getJSONObject(0);
+		JSONObject source = firstContent.getJSONObject("source");
+
+		source.remove("data"); // Remove the `data` field
+
+		logger.info("Bedrock api request  " +requestForPrint.toString(4));
 	}
 	public String getFileExtension(String fileName) {
 		if (fileName == null || fileName.isEmpty()) {
