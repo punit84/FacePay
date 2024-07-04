@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.punit.facepay.rest.FaceScanRestController;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,18 @@ import java.util.Map;
 @Component
 public class PromptGenerator {
     final static Logger logger = LoggerFactory.getLogger(PromptGenerator.class);
+
+    String OUTPUT_JSON_BANK = "{\n" +
+            "    \"ifsc_code\": \"\",\n" +
+            "    \"account_number\": \"\",\n" +
+            "    \"account_name\": \"\",\n" +
+            "    \"output_tokens\": \"\",\n" +
+            "    \"input_tokens\": \"\",\n" +
+            "    \"Valid Document\": \"\"\n" +
+            "}";
+
+
+
 
     public static Map<String, Object> getDocumentTypes() {
         Map<String, Object> documentData = new HashMap<>();
@@ -83,7 +96,6 @@ public class PromptGenerator {
     public static String generateLLMPrompt(String requestType, String docType) {
         logger.info(" request type is  " +requestType );
         logger.info(" docType  is  " +docType );
-
         if (requestType.contains(" ")){
             requestType="UpdateBankDetails";
             docType="cheque";
@@ -91,49 +103,42 @@ public class PromptGenerator {
             logger.info(" request type is  " +requestType );
 
         }
-        String criteria = "";
-        String documentValidation = "";
-        Map<String, String> outputFields = new HashMap<>();
 
-        StringBuilder chequeValidation = new StringBuilder();
 
-        // Common evaluation criteria
-        chequeValidation.append("Evaluation Criteria:\n");
-        chequeValidation.append("• Document Valid: The image should clearly represent a bank cheque,contains the text 'valid for 3 month' and the keyword 'bank and also having details such as bank name, account number, account name, and IFSC code '.\n");
-
-// Additional criteria for bank cheque
-        chequeValidation.append("• Valid for 3 Months: Check if the cheque contains the text 'valid for 3 months only'.\n");
-        chequeValidation.append("• Keyword 'Bank': Verify if the cheque image contains the keyword 'bank'.\n");
-        chequeValidation.append("• Keyword 'Payble at Par': Verify if the cheque image contains the keyword 'Payble at Par'.\n");
-        chequeValidation.append("• Keyword 'Rupees': Verify if the cheque image contains the keyword 'Rupees'.\n");
+        StringBuilder documentValidation = new StringBuilder(); // Example additional criteria
+        documentValidation.append(  "Validation Criteria:\n" +
+        "  • Text Clarity: The text should be sharp and readable without needing zoom.\n" +
+        "  • Image Resolution: The resolution should be high enough that zooming in does not significantly pixelate the text.\n" +
+        "  • Document Completeness: All required information should be visible in the image without any parts being cut off. The document must be fully visible, with all edges (especially for cheques) intact and not cropped.\n" +
+        "  • Overall Cleanliness: The document should be clean and free from major stains, marks, or obstructions.\n");
+        JSONObject outputJson = new JSONObject();
+        String criteria="";
+        outputJson.put("valid document", "true/false");
 
 
         switch (requestType) {
             case "UpdateBankDetails":
+                outputJson.put("account_number", "");
+                outputJson.put("account_name", "");
+                outputJson.put("ifsc_code", "");
                 switch (docType) {
                     case "cheque":
-                        criteria = chequeValidation.toString() +"Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No.'\\n" +
+
+                        // Common evaluation criteria
+                        documentValidation.append("• Document Valid: The image should clearly represent a bank cheque,contains the text 'valid for 3 month' and the keyword 'bank and also having details such as bank name, account number, account name, and IFSC code '.\n");
+                        // Additional criteria for bank cheque
+                        documentValidation.append("• Valid Cheque contains the texts 'valid for 3 months only' and 'Bank' and 'Payable at Par' and  'RUPEES' and 'Please Sign'  \n");
+
+                        criteria = documentValidation.toString() +" Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No.'\\n" +
                                 "• Account Name: Check for the presence of the account holder's name.\\n" +
-                                "• IFSC Code: Confirm that the image displays the IFSC code.\\n";
-                        documentValidation = chequeValidation.toString();
-                        outputFields.put("valid document", docType);
-                        outputFields.put("document_type", docType);
-                        outputFields.put("account_number", "");
-                        outputFields.put("account_name", "");
-                        outputFields.put("ifsc_code", "");
+                                "• IFSC Code: Confirm that the image displays the IFSC code.\\n and ";
                         break;
 
                     case "Passbook":
                     case "Bank Statement":
-                        criteria = "• Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No.'\\n" +
+                        criteria = documentValidation.toString() +"• Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No.'\\n" +
                                 "• Account Name: Check for the presence of the account holder's name.\\n" +
                                 "• IFSC Code: Confirm that the image displays the IFSC code.\\n";
-                        documentValidation = "• Document Type Appropriateness: Strict Check if document is of type " + docType + ".\\n response document valid document flag should be true if given document is of doctype given else it should be false";
-                        outputFields.put("valid document", docType);
-                        outputFields.put("document_type", docType);
-                        outputFields.put("account_number", "");
-                        outputFields.put("account_name", "");
-                        outputFields.put("ifsc_code", "");
                         break;
                     default:
                         requestType="UpdateBankDetails";
@@ -148,15 +153,13 @@ public class PromptGenerator {
                     case "Landline Bill":
                     case "Life Insurance Policy":
                     case "Registered Lease/Rent Agreement":
-                        criteria = "• Complete Address: The address should include house number, building, pin code, state, and city.\\n";
-                        documentValidation = "• Document Type Appropriateness: The document type should be a valid " + docType + ".\\n";
-                        outputFields.put("valid document", docType);
-                        outputFields.put("document_type", docType);
-                        outputFields.put("house_number", "");
-                        outputFields.put("building", "");
-                        outputFields.put("pin_code", "");
-                        outputFields.put("state", "");
-                        outputFields.put("city", "");
+                        criteria = documentValidation.toString() +" Complete Address: The address should include house number, building, pin code, state, and city.\\n";
+                        outputJson.put("document_type", "");
+                        outputJson.put("house_number", "");
+                        outputJson.put("building", "");
+                        outputJson.put("pin_code", "");
+                        outputJson.put("state", "");
+                        outputJson.put("city", "");
                         break;
                     default:
                         requestType="UpdateAddress";
@@ -171,13 +174,11 @@ public class PromptGenerator {
                     case "Pan Card":
                     case "Aadhaar Card":
                     case "NRGEA Job Card":
-                        criteria = "• Name: Check for the presence of the first name and last name.\\n";
-                        documentValidation = "• Document Type Appropriateness: The document type should be a valid " + docType + ".\\n";
-                        outputFields.put("valid document", docType);
-                        outputFields.put("document_type", docType);
-                        outputFields.put("first_name", "");
-                        outputFields.put("last_name", "");
-                        outputFields.put("sex", ""); // Assuming sex (gender) needs to be captured
+                        criteria = documentValidation.toString() +" Name: Check for the presence of the first name and last name.\\n";
+                        outputJson.put("document_type", "");
+                        outputJson.put("first_name", "");
+                        outputJson.put("last_name", "");
+                        outputJson.put("sex", ""); // Assuming sex (gender) needs to be captured
                         break;
                     default:
                         requestType="UpdateName";
@@ -190,23 +191,11 @@ public class PromptGenerator {
 
         }
 
-        String prompt = "{\n" +
-                "  \"prompt\": \"Evaluation Criteria:\\n" +
-                "    • Text Clarity: The text should be sharp and readable without needing zoom.\\n" +
-                "    • Image Resolution: The resolution should be high enough that zooming in does not significantly pixelate the text.\\n" +
-                "    • Document Completeness: All required information should be visible in the image without any parts being cut off. The document must be fully visible, with all edges (especially for cheques) intact and not cropped.\\n" +
-                "    • Overall Cleanliness: The document should be clean and free from major stains, marks, or obstructions.\\n" +
-                documentValidation +
-                "    Result in JSON format as per given outputFields:\\n" +
-                "    • Valid document: If all the above criteria are met and the document type matches the selected document type (" + docType + "), the document quality is deemed good.\\n" +
-                "    • Invalid document: If any of the criteria are not met or the document type does not match the selected document type (" + docType + "), specify which criteria failed and why.\\n" +
-                "    Selected Request Type: " + requestType + "\\n" +
-                "    Selected Document Type: " + docType + "\\n" +
-                criteria +
-                "  \",\n" +
-                "  \"output_format\": \"json\"\n" +"only outputField should be in reponse json each in 5-20 words"+
-                "}";
 
+        String prompt = "You are an image classification and OCR expert, "
+                + "I am providing an Image or a PDF file. Please analyse or classify the image to find if this is valid document of Type (strict check): " + docType + ". Please refer validation criteria to decide if it is valid document or not \n: "
+                +" and " + criteria.toString()
+                + "and Finally Generate output JSON in format where every field value in less than 20 words \n" +outputJson.toString();
         return prompt;
     }
 
