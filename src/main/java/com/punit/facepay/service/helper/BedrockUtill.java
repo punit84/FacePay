@@ -203,8 +203,8 @@ public class BedrockUtill {
 			mergeJsonObjects(contentJson, usageJson);
 
 			logger.info(contentJson.toString());
-
-			String textJson = promptGenerator.processJson(contentJson.toString()).toString();
+			String textJson =contentJson.toString();
+			//String textJson = promptGenerator.processJson(contentJson.toString()).toString();
 
 			logger.info(textJson);
 			return textJson;

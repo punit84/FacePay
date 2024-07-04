@@ -27,8 +27,6 @@ public class PromptGenerator {
             "}";
 
 
-
-
     public static Map<String, Object> getDocumentTypes() {
         Map<String, Object> documentData = new HashMap<>();
         documentData.put("UpdateBankDetails", new String[]{"cheque", "Passbook", "Bank Statement"});
@@ -47,44 +45,6 @@ public class PromptGenerator {
         try {
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
 
-            // Iterate through fields of rootNode
-            rootNode.fields().forEachRemaining(entry -> {
-                String fieldName = entry.getKey();
-                JsonNode node = entry.getValue();
-                if (node.isBoolean()) {
-                    if (node.asBoolean()) {
-                        ++trueCount[0];
-                    }
-                } else {
-                    cleanedJson.set(fieldName, node);
-                }
-            });
-
-            // Validate account number, account name, and IFSC code
-            if (rootNode.has("account_number") && !rootNode.get("account_number").asText().matches("\\d+")) {
-                logger.info("Invalid account number");
-                ++falseCount;
-            }
-            if (rootNode.has("account_name") && rootNode.get("account_name").asText().isEmpty()) {
-                logger.info("Account name is empty");
-                ++falseCount;
-
-            }
-            if (rootNode.has("ifsc_code") && rootNode.get("ifsc_code").asText().isEmpty()) {
-                logger.info("IFSC code is empty");
-                ++falseCount;
-
-            }
-            logger.info("true count " +trueCount[0]);
-            logger.info("false count " +falseCount);
-
-            // Add a node indicating the number of true values if there are more than 3
-            if (trueCount[0] > 3 && falseCount ==0) {
-                cleanedJson.put("Valid Document", Boolean.TRUE);
-            }else{
-                cleanedJson.put("Valid Document", Boolean.FALSE);
-
-            }
 
             logger.info("Number of true values: " + trueCount);
         } catch (Exception e) {
@@ -93,56 +53,58 @@ public class PromptGenerator {
 
         return cleanedJson;
     }
+
     public static String generateLLMPrompt(String requestType, String docType) {
-        logger.info(" request type is  " +requestType );
-        logger.info(" docType  is  " +docType );
-        if (requestType.contains(" ")){
-            requestType="UpdateBankDetails";
-            docType="cheque";
+        logger.info("Request type is: " + requestType);
+        logger.info("DocType is: " + docType);
 
-            logger.info(" request type is  " +requestType );
-
+        if (requestType.contains(" ")) {
+            requestType = "UpdateBankDetails";
+            docType = "cheque";
+            logger.info("Updated request type is: " + requestType);
         }
 
+        StringBuilder documentValidation = new StringBuilder();
+        documentValidation.append("Validation Criteria:\n")
+                .append("  • Text Clarity: The text should be sharp and readable without needing zoom.\n")
+                .append("  • Image Resolution: The resolution should be high enough that zooming in does not significantly pixelate the text.\n")
+                .append("  • Document Completeness: All required information should be visible in the image without any parts being cut off. The document must be fully visible, with all edges (especially for cheques) intact and not cropped.\n")
+                .append("  • Overall Cleanliness: The document should be clean and free from major stains, marks, or obstructions.\n");
 
-        StringBuilder documentValidation = new StringBuilder(); // Example additional criteria
-        documentValidation.append(  "Validation Criteria:\n" +
-        "  • Text Clarity: The text should be sharp and readable without needing zoom.\n" +
-        "  • Image Resolution: The resolution should be high enough that zooming in does not significantly pixelate the text.\n" +
-        "  • Document Completeness: All required information should be visible in the image without any parts being cut off. The document must be fully visible, with all edges (especially for cheques) intact and not cropped.\n" +
-        "  • Overall Cleanliness: The document should be clean and free from major stains, marks, or obstructions.\n");
         JSONObject outputJson = new JSONObject();
-        String criteria="";
-        outputJson.put("valid document", "true/false");
+        String criteria = "";
 
+        outputJson.put("valid_document", "true/false");
+        outputJson.put("document type", "");
+        outputJson.put("invalid document reason", "");
 
         switch (requestType) {
             case "UpdateBankDetails":
                 outputJson.put("account_number", "");
                 outputJson.put("account_name", "");
                 outputJson.put("ifsc_code", "");
+                outputJson.put("is Cheque", "true/false");
+
                 switch (docType) {
                     case "cheque":
-
-                        // Common evaluation criteria
-                        documentValidation.append("• Document Valid: The image should clearly represent a bank cheque,contains the text 'valid for 3 month' and the keyword 'bank and also having details such as bank name, account number, account name, and IFSC code '.\n");
-                        // Additional criteria for bank cheque
-                        documentValidation.append("• Valid Cheque contains the texts 'valid for 3 months only' and 'Bank' and 'Payable at Par' and  'RUPEES' and 'Please Sign'  \n");
-
-                        criteria = documentValidation.toString() +" Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No.'\\n" +
-                                "• Account Name: Check for the presence of the account holder's name.\\n" +
-                                "• IFSC Code: Confirm that the image displays the IFSC code.\\n and ";
+                        documentValidation.append("• Document Valid: The image should clearly represent a bank cheque and contain details such as bank name, account number, account name, and IFSC code.\n")
+                                .append("• Valid Cheque contains the texts 'valid for 3 months only', 'Bank', 'Payable at Par', 'RUPEES', and 'Please Sign'.\n");
+                        criteria = documentValidation.toString() +
+                                "• Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No.'\n" +
+                                "• Account Name: Check for the presence of the account holder's name.\n" +
+                                "• IFSC Code: Confirm that the image displays the IFSC code.\n";
                         break;
-
                     case "Passbook":
                     case "Bank Statement":
-                        criteria = documentValidation.toString() +"• Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No.'\\n" +
-                                "• Account Name: Check for the presence of the account holder's name.\\n" +
-                                "• IFSC Code: Confirm that the image displays the IFSC code.\\n";
+                        criteria = documentValidation.toString() +
+                                "• Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No.'\n" +
+                                "• Account Name: Check for the presence of the account holder's name.\n" +
+                                "• IFSC Code: Confirm that the image displays the IFSC code.\n";
                         break;
                     default:
-                        requestType="UpdateBankDetails";
-                        docType ="Passbook";
+                        requestType = "UpdateBankDetails";
+                        docType = "Passbook";
+                        break;
                 }
                 break;
             case "UpdateAddress":
@@ -153,7 +115,8 @@ public class PromptGenerator {
                     case "Landline Bill":
                     case "Life Insurance Policy":
                     case "Registered Lease/Rent Agreement":
-                        criteria = documentValidation.toString() +" Complete Address: The address should include house number, building, pin code, state, and city.\\n";
+                        criteria = documentValidation.toString() +
+                                "• Complete Address: The address should include house number, building, pin code, state, and city.\n";
                         outputJson.put("document_type", "");
                         outputJson.put("house_number", "");
                         outputJson.put("building", "");
@@ -162,8 +125,9 @@ public class PromptGenerator {
                         outputJson.put("city", "");
                         break;
                     default:
-                        requestType="UpdateAddress";
-                        docType ="Electricity Bill";
+                        requestType = "UpdateAddress";
+                        docType = "Electricity Bill";
+                        break;
                 }
                 break;
             case "UpdateName":
@@ -174,36 +138,40 @@ public class PromptGenerator {
                     case "Pan Card":
                     case "Aadhaar Card":
                     case "NRGEA Job Card":
-                        criteria = documentValidation.toString() +" Name: Check for the presence of the first name and last name.\\n";
+                        criteria = documentValidation.toString() +
+                                "• Name: Check for the presence of the first name and last name.\n";
                         outputJson.put("document_type", "");
                         outputJson.put("first_name", "");
                         outputJson.put("last_name", "");
                         outputJson.put("sex", ""); // Assuming sex (gender) needs to be captured
                         break;
                     default:
-                        requestType="UpdateName";
-                        docType ="Passport";
+                        requestType = "UpdateName";
+                        docType = "Passport";
+                        break;
                 }
                 break;
             default:
-                requestType="UpdateBankDetails";
-                docType ="Passport";
-
+                requestType = "UpdateBankDetails";
+                docType = "Passport";
+                break;
         }
 
+        String prompt = "You are an image classification and OCR expert. " +
+                "I am providing an Image or a PDF file. Please analyse or classify the image to determine if this is a valid document of type: " + docType + ". " +
+                "Please refer to the following validation criteria to decide if it is a valid document or not:\n" + criteria
+                + "Finally  \"output_format\": \"json\"\n" +" Result in JSON format as per given outputJsonFormat in 5-20 words, keep NA for blank or null value.  outputJsonFormat: "+ outputJson.toString(4);
 
-        String prompt = "You are an image classification and OCR expert, "
-                + "I am providing an Image or a PDF file. Please analyse or classify the image to find if this is valid document of Type (strict check): " + docType + ". Please refer validation criteria to decide if it is valid document or not \n: "
-                +" and " + criteria.toString()
-                + "and Finally Generate output JSON in format where every field value in less than 20 words \n" +outputJson.toString();
         return prompt;
     }
 
+
     public static void main(String[] args) {
-        String requestType = "UpdateBankDetails";
-        String docType = "Checkbook";
-        String llmPrompt = generateLLMPrompt(requestType, docType);
-        logger.info(llmPrompt);
+        String requestType = "Example Request Type";
+        String docType = "Example Document Type";
+        String prompt = generateLLMPrompt(requestType, docType);
+        System.out.println(prompt);
     }
+
 
 }
