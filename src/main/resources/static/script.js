@@ -359,7 +359,7 @@ function fetchDocumentAPI(fd) {
 	var docType = document.getElementById('docType').value;
 	fd.append('requestType', requestType);
 	fd.append('docType', docType);
-
+	document.getElementById("docTypeLabel").innerHTML = "";
 
 	showLoadingOverlay();
 
@@ -461,15 +461,17 @@ function redirectToKYC(evt) {
 
 		var docTypeSelect = document.getElementById('docType').value;
 		// Iterate over the innerJsonData object to display key-value pairs
+
 		for (var key in innerJsonData) {
 			if (innerJsonData.hasOwnProperty(key)) {
 
-				if (key === docTypeSelect ){
+				if (key === docTypeSelect  ){
 					document.getElementById("docTypeLabel").innerHTML = "Is "+ docTypeSelect +" : "+ innerJsonData[key];
 					document.getElementById("docTypeLabel").style.color = "green"; // Change 'red' to any color you prefer
 					document.getElementById("docTypeLabel").style.fontSize = "30px"; // Change '20px' to any size you prefer
-					if (innerJsonData[key] === false || innerJsonData[key] === "false"){
+					if (innerJsonData[key] === false || innerJsonData[key] === "false" || innerJsonData[key] === "" ){
 						document.getElementById("docTypeLabel").style.color = "red"; // Change 'red' to any color you prefer
+						document.getElementById("docTypeLabel").innerHTML = "Is "+ docTypeSelect +" : false";
 					}
 
 				}
