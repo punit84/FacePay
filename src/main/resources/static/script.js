@@ -442,6 +442,7 @@ function profileDisplay(evt) {
 
 function redirectToKYC(evt) {
 	hideLoadingOverlay(); // Assuming hideLoadingOverlay() is defined elsewhere
+	document.getElementById("docTypeLabel").innerHTML = "";
 
 	try {
 		var jsonResponse = evt.target.responseText;
@@ -486,7 +487,6 @@ function redirectToKYC(evt) {
 
 	} catch (error) {
 		console.error("Error parsing or displaying JSON:", error);
-		document.getElementById("docTypeLabel").innerHTML = "";
 
 		// Handle error display or logging as needed
 	}
