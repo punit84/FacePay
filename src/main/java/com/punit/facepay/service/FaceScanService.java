@@ -363,14 +363,11 @@ public class FaceScanService {
 	public String kycScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException {
 		logger.info("************ call claude ********");
 		byte[] bytes = imageToSearch.getBytes();
-
 		String prompt = PromptGenerator.generateLLMPrompt(requestType,docType);
-		String base64Image = Base64.getEncoder().encodeToString(bytes);
-
 		String s3filepath= Configs.S3_FOLDER_KYC ;
 		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
 
-		return	bedrockUtil.invokeHaiku(base64Image, prompt, imageToSearch.getOriginalFilename() );
+		return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() );
 
 	}
 }
