@@ -459,9 +459,20 @@ function redirectToKYC(evt) {
 		// Parse the inner JSON if contentText is valid JSON
 		var innerJsonData = contentText ? JSON.parse(contentText) : jsonData;
 
+		var docTypeSelect = document.getElementById('docType').value;
 		// Iterate over the innerJsonData object to display key-value pairs
 		for (var key in innerJsonData) {
 			if (innerJsonData.hasOwnProperty(key)) {
+
+				if (key === docTypeSelect ){
+					document.getElementById("docTypeLabel").innerHTML = docTypeSelect +" : "+ innerJsonData[key];
+					document.getElementById("docTypeLabel").style.color = "green"; // Change 'red' to any color you prefer
+					document.getElementById("docTypeLabel").style.fontSize = "30px"; // Change '20px' to any size you prefer
+					if (innerJsonData[key] === false || innerJsonData[key] === "false"){
+						document.getElementById("docTypeLabel").style.color = "red"; // Change 'red' to any color you prefer
+					}
+
+				}
 				html += "<tr><th>" + key.replace(/_/g, ' ') + "</th><td>" + innerJsonData[key] + "</td></tr>";
 			}
 		}
@@ -469,6 +480,7 @@ function redirectToKYC(evt) {
 
 		// Display the HTML content in the 'bedrock' element
 		document.getElementById('bedrock').innerHTML = '<br>' + html + '<br><br>';
+
 	} catch (error) {
 		console.error("Error parsing or displaying JSON:", error);
 		// Handle error display or logging as needed

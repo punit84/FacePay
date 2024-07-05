@@ -145,10 +145,13 @@ public class BedrockUtill {
 	public String invokeHaiku(String imageBase64, String prompt, String fileName) {
 		// Create a Bedrock Runtime client in the AWS Region of your choice.
 
-		String mediaType = getMediaTypeFromExtension(getFileExtension(fileName));
+		String mediaTypeMime = getMediaTypeFromExtensionMIME(getFileExtension(fileName));
+
+		String mediaTypeString= getMediaTypeFromExtension(getFileExtension(fileName));
+
 		logger.info("file name is " + fileName );
 
-		logger.info("file extension is " + mediaType );
+		logger.info("file extension is " + mediaTypeMime );
 
 		Set<String> supportedFileTypes = new HashSet<>(Arrays.asList("doc", "docx", "pdf",  "gif", "jpeg", "png"));
 		try {
@@ -168,10 +171,10 @@ public class BedrockUtill {
 									.put("role", "user")
 									.put("content", new JSONArray()
 											.put(new JSONObject()
-													.put("type", "image")
+													.put("type", mediaTypeString)
 													.put("source", new JSONObject()
 															.put("type", "base64")
-															.put("media_type", mediaType )
+															.put("media_type", mediaTypeMime )
 															.put("data", imageBase64)))
 											.put(new JSONObject()
 													.put("type", "text")
@@ -238,7 +241,7 @@ public class BedrockUtill {
 		int dotIndex = fileName.lastIndexOf('.');
 		return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
 	}
-	private String getMediaTypeFromExtension(String extension) {
+	private String getMediaTypeFromExtensionMIME(String extension) {
 		switch (extension.toLowerCase()) {
 			case "jpg":
 			case "jpeg":
@@ -250,6 +253,20 @@ public class BedrockUtill {
 			// Add more cases for other file types as needed
 			default:
 				return "application/octet-stream";
+		}
+	}
+	private String getMediaTypeFromExtension(String extension) {
+		switch (extension.toLowerCase()) {
+			case "jpg":
+			case "jpeg":
+				return "image";
+			case "png":
+				return "image";
+			case "pdf":
+				return "document";
+			// Add more cases for other file types as needed
+			default:
+				return "document";
 		}
 	}
 	/**

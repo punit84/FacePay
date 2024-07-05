@@ -73,12 +73,10 @@ public class PromptGenerator {
 
         JSONObject outputJson = new JSONObject();
         String criteria = "";
-
+        outputJson.put( docType , "true/false");
         outputJson.put("valid_document", "true/false");
         outputJson.put("document type", "");
         outputJson.put("invalid document reason", "");
-        outputJson.put("is " + docType , "true/false");
-
         switch (requestType) {
             case "UpdateBankDetails":
                 outputJson.put("account_number", "");
