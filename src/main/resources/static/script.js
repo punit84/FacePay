@@ -465,7 +465,7 @@ function redirectToKYC(evt) {
 			if (innerJsonData.hasOwnProperty(key)) {
 
 				if (key === docTypeSelect ){
-					document.getElementById("docTypeLabel").innerHTML = docTypeSelect +" : "+ innerJsonData[key];
+					document.getElementById("docTypeLabel").innerHTML = "Is "+ docTypeSelect +" : "+ innerJsonData[key];
 					document.getElementById("docTypeLabel").style.color = "green"; // Change 'red' to any color you prefer
 					document.getElementById("docTypeLabel").style.fontSize = "30px"; // Change '20px' to any size you prefer
 					if (innerJsonData[key] === false || innerJsonData[key] === "false"){
