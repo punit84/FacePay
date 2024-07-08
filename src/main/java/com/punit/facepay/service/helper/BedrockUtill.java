@@ -187,7 +187,7 @@ public class BedrockUtill {
                 // Construct the document JSON object
                 JSONObject documentObject = new JSONObject()
                         .put("name", fileName)
-                        .put("format", "pdf")
+                        .put("format", "txt")
                         .put("source", new JSONObject()
                                 .put("bytes", fileBytes));
 
@@ -199,7 +199,7 @@ public class BedrockUtill {
                                         .put("role", "user")
                                         .put("content", new JSONArray()
                                                 .put(new JSONObject()
-                                                        .put("type", mediaTypeMime)
+                                                        .put("type", "text")
                                                         .put("document", documentObject))
                                                 .put(new JSONObject()
                                                         .put("type", "text")
