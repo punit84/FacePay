@@ -88,8 +88,8 @@ public class PromptGenerator {
                         documentValidation.append("• Document Valid: The image should clearly represent a bank cheque and contain details such as bank name, account number, account name, and IFSC code.\n")
                                 .append("• Valid Cheque contains the texts 'valid for 3 months only', 'Bank', 'Payable at Par', 'RUPEES', and 'Please Sign'.\n");
                         criteria = documentValidation.toString() +
-                                "• Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No., generally it is written in ractangle box'\n" +
-                                "• Account Name: Check for the presence of the account holder's name, generally it is written just above 'Please sign Above' similar text.\n" +
+                                "• Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No., generally it is written in ractangle box, SESHAASAI (K) or CTS-2010 can't be account name\n'\n" +
+                                "• Account Name: Check for the presence of the account holder's name, generally it is written just above 'Please sign Above' similar text. Do not take texts which is written in any corner of image\n" +
                                 "• IFSC Code: Confirm that the image displays the IFSC code.\n";
                         break;
                     case "Passbook":
