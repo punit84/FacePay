@@ -137,11 +137,19 @@ public class PromptGenerator {
                     case "Aadhaar Card":
                     case "NRGEA Job Card":
                         criteria = documentValidation.toString() +
-                                "• Name: Check for the presence of the first name and last name.\n";
+                                "• Name: Check for the presence of the first name and last name.\n"+
+                                "• Address: Extract the address from the following given image. The address might be in various formats, but it typically includes details like the name of the village, panchayat, block, district, and state. \n";
                         outputJson.put("document_type", "");
                         outputJson.put("first_name", "");
                         outputJson.put("last_name", "");
                         outputJson.put("sex", ""); // Assuming sex (gender) needs to be captured
+                        outputJson.put("house_number", "");
+                        outputJson.put("building", "");
+                        outputJson.put("pin_code", "");
+                        outputJson.put("state", "");
+                        outputJson.put("city", "");
+                        outputJson.put("Address", "");
+
                         break;
                     default:
                         requestType = "UpdateName";

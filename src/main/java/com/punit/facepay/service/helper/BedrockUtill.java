@@ -120,7 +120,7 @@ public class BedrockUtill {
         String payload = new JSONObject()
                 .put("prompt", enclosedPrompt)
                 .put("max_tokens_to_sample", 4096)
-                .put("temperature", 1)
+                .put("temperature", 0)
                 .put("stop_sequences", List.of("\n\nHuman:"))
                 .toString();
 
