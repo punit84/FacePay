@@ -51,6 +51,11 @@ public class FaceScanService {
 	@Autowired
 	DynamoDBUtil dbUtil;
 
+	@Autowired
+	TextractUtil ocrUtil;
+
+
+
 	//	@Autowired
 	//	private AsyncService asyncService;
 
@@ -368,6 +373,18 @@ public class FaceScanService {
 		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
 
 		return	bedrockUtil.invokeAnthropic(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_HAIKU);
+		//return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
+
+	}
+
+	public String ocrScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException, InterruptedException {
+		logger.info("************ call claude ********");
+		byte[] bytes = imageToSearch.getBytes();
+		String s3filepath= Configs.S3_FOLDER_OCR ;
+		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
+
+		String jobId = ocrUtil.startTextDetection(fileFinalPath);
+		return	ocrUtil.getJobResult(jobId);
 		//return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
 
 	}

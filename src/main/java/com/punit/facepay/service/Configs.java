@@ -67,6 +67,9 @@ public class Configs {
 
 	public static final String S3_FOLDER_KYC = "kyc";
 
+	public static final String S3_FOLDER_OCR = "textract";
+
+
 //	
 //	public static final String S3_PATH_REGISTER = "/qart";
 //
