@@ -9,6 +9,11 @@ public class Configs {
 	
 	
 //	public static final String MODEL_VERSION ="arn:aws:rekognition:ap-south-1:057641535369:project/logos_1/version/logos_1.2023-06-15T13.21.51/1686815511992";
+
+	public static final String MODEL_SONET = "anthropic.claude-3-sonnet-20240229-v1:0";
+
+	public static final String MODEL_HAIKU = "anthropic.claude-3-haiku-20240307-v1:0";
+
 	public static final String COLLECTION_ID = "AWSPeFaceCollection";
 	public static final Region REGION = Region.AP_SOUTH_1;
 	public static final String FACE_ID = "faceid";
@@ -17,7 +22,8 @@ public class Configs {
 	public static final String FACE_IMAGE = "image";
 	public static final String QART_MODEL = "qart-face-async-tile-canny-16-05-24-01-22-11";
 	
-	
+
+
 //	public static final String AI_PROMPT = "\"Please provide summary of the given face in format:\n"
 //			+ "\n"
 //			+ "<br>Age: [Age]\n"

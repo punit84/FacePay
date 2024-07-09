@@ -140,7 +140,8 @@ public class BedrockUtill {
         return generatedText;
     }
 
-    public String invokeHaiku(byte[] fileBytes, String prompt, String fileName) {
+
+    public String invokeAnthropic(byte[] fileBytes, String prompt, String fileName , String modelId) {
         // Create a Bedrock Runtime client in the AWS Region of your choice.
 
 
@@ -157,9 +158,6 @@ public class BedrockUtill {
             BedrockRuntimeClient client = BedrockRuntimeClient.builder()
                     .region(Region.AP_SOUTH_1)
                     .build();
-
-            // Set the model ID
-            String modelId = "anthropic.claude-3-haiku-20240307-v1:0";
             String base64Image = null;
             JSONObject request = null;
             if ("image".equals(mediaTypeString)) {
@@ -246,6 +244,8 @@ public class BedrockUtill {
         }
 
     }
+
+
 
     public void printJsonbyMasking(String json) {
 

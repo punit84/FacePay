@@ -367,7 +367,8 @@ public class FaceScanService {
 		String s3filepath= Configs.S3_FOLDER_KYC ;
 		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
 
-		return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() );
+		return	bedrockUtil.invokeAnthropic(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_HAIKU);
+		//return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
 
 	}
 }

@@ -19,6 +19,8 @@ public class KYCRestService {
     @Autowired
     private BedrockUtill bedrockUtil;
     final static Logger logger= LoggerFactory.getLogger(KYCRestService.class);
+    @Autowired
+    private Configs configs;
 
     public String kycScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException {
         logger.info("************ call claude ********");
@@ -28,7 +30,9 @@ public class KYCRestService {
 
         String s3filepath= Configs.S3_FOLDER_KYC ;
         String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
-        return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() );
+        return	bedrockUtil.invokeAnthropic(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_HAIKU);
+ //       return	bedrockUtil.invokeAnthropic(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
+
     }
 
 
