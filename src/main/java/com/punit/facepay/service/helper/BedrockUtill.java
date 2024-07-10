@@ -225,16 +225,27 @@ public class BedrockUtill {
 
             logger.info("\ncontentText: " + contentText);
 
+            // Find the start and end positions of the JSON content
+            int startIndex = contentText.indexOf("{");
+            int endIndex = contentText.lastIndexOf("}") + 1;
+            logger.info("Start index " + startIndex);
+            logger.info("end index " + endIndex );
+
+            if (startIndex != -1 && endIndex != -1 && startIndex !=0) {
+                // Extract the JSON conten
+                contentText = contentText.substring(startIndex, endIndex);
+                logger.info("Extracted JSON content:");
+                logger.info(contentText);
+            }
+
+
             JSONObject usageJson = nativeResponse.getJSONObject("usage");
-            logger.info("\nusage: " + usageJson.toString());
+            logger.info("\nusage: : \n" + usageJson.toString());
 
             JSONObject contentJson = new JSONObject(contentText);
-            mergeJsonObjects(contentJson, usageJson);
+            String textJson = mergeJsonObjects(contentJson, usageJson);
 
-            logger.info(contentJson.toString());
-            String textJson = contentJson.toString();
             //String textJson = promptGenerator.processJson(contentJson.toString()).toString();
-
             logger.info(textJson);
             return textJson;
 
@@ -306,9 +317,17 @@ public class BedrockUtill {
      * @param destination The JSONObject to merge into
      * @param source      The JSONObject to merge from
      */
-    private static void mergeJsonObjects(JSONObject destination, JSONObject source) {
-        for (String key : source.keySet()) {
-            destination.put(key, source.get(key));
+    private static String mergeJsonObjects(JSONObject destination, JSONObject source) {
+
+        try {
+            for (String key : source.keySet()) {
+                destination.put(key, source.get(key));
+            }
+        }catch (Exception ex){
+            logger.error("Error in merging json objects " + ex.getMessage());
         }
+
+        logger.info("Json after merge: \n" + destination.toString());
+        return destination.toString();
     }
 }
