@@ -223,18 +223,18 @@ public class BedrockUtill {
             // Extract the content array
             String contentText = nativeResponse.getJSONArray("content").getJSONObject(0).getString("text");
 
-            logger.info("\ncontentText: " + contentText);
+            // logger.info("\ncontentText: " + contentText);
 
             // Find the start and end positions of the JSON content
             int startIndex = contentText.indexOf("{");
             int endIndex = contentText.lastIndexOf("}") + 1;
-            logger.info("Start index " + startIndex);
-            logger.info("end index " + endIndex );
+            logger.info("Start index " + startIndex +"\n end index " + endIndex);
 
             if (startIndex != -1 && endIndex != -1 && startIndex !=0) {
                 // Extract the JSON conten
                 contentText = contentText.substring(startIndex, endIndex);
                 logger.info("Extracted JSON content:");
+                logger.info("\n ContentText:\n " + contentText);
                 logger.info(contentText);
             }
 

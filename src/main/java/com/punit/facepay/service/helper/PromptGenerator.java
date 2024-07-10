@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.punit.facepay.rest.FaceScanRestController;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class PromptGenerator {
@@ -64,15 +64,16 @@ public class PromptGenerator {
             logger.info("Updated request type is: " + requestType);
         }
 
-        StringBuilder documentValidation = new StringBuilder();
-        documentValidation.append("Validation Criteria:\n")
-                .append("  • Text Clarity: The text should be sharp and readable without needing zoom.\n")
+        StringBuilder criteria = new StringBuilder();
+        criteria.append("Valid "+docType+ " Document criteria :\n");
+        criteria.append("  • Text Clarity: The text should be sharp and readable without needing zoom.\n")
                 .append("  • Image Resolution: The resolution should be high enough that zooming in does not significantly pixelate the text.\n")
                 .append("  • Document Completeness: All required information should be visible in the image without any parts being cut off. The document must be fully visible, with all edges (especially for cheques) intact and not cropped.\n")
                 .append("  • Overall Cleanliness: The document should be clean and free from major stains, marks, or obstructions.\n");
 
         JSONObject outputJson = new JSONObject();
-        String criteria = "";
+
+
         outputJson.put( docType , "true/false");
         outputJson.put("valid_document", "true/false");
         outputJson.put("document type", "");
@@ -85,20 +86,15 @@ public class PromptGenerator {
 
                 switch (docType) {
                     case "cheque":
-                        documentValidation.append("• Document Valid: The image should clearly represent a bank cheque and contain details such as bank name, account number, account name, and IFSC code.\n")
-                                .append("• Valid Cheque contains the texts 'valid for 3 months only', 'Bank', 'Payable at Par', 'RUPEES', and 'Please Sign'.\n");
-                        criteria = documentValidation.toString() +
-                                "• Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No., generally it is written in ractangle box, SESHAASAI (K) or CTS-2010 can't be account name\n'\n" +
-                                "• Account Name: Check for the presence of the account holder's name, generally it is written just above 'Please sign Above' similar text. Do not take texts which is written in any corner of image\n" +
-                                "• IFSC Code: Confirm that the image displays the IFSC code.\n";
-                        break;
                     case "Passbook":
                     case "Bank Statement":
-                        criteria = documentValidation.toString() +
-                                "• Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No.'\n" +
-                                "• Account Name: Check for the presence of the account holder's name.\n" +
-                                "• IFSC Code: Confirm that the image displays the IFSC code.\n";
+                     criteria.append("  •important validation:  image should clearly represent a bank "+docType+" cheque and contain details such as bank name, account number, account name, and IFSC code.")
+                                .append("and image should also contains the exact keywords 'valid for 3 months only', 'Bank', 'Payable at Par', 'RUPEES', and 'Please Sign'.\n");
+                     criteria.append("  • Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No., generally it is written in ractangle box, SESHAASAI (K) or CTS-2010 can't be account name\n"
+                                + "  • Account Name: Check for the presence of the account holder's name, generally it is written just above 'Please sign Above' similar text. Do not take texts which is written in any corner of image\n"
+                                + "  • IFSC Code: Confirm that the image displays the IFSC code.\n");
                         break;
+
                     default:
                         requestType = "UpdateBankDetails";
                         docType = "Passbook";
@@ -113,8 +109,7 @@ public class PromptGenerator {
                     case "Landline Bill":
                     case "Life Insurance Policy":
                     case "Registered Lease/Rent Agreement":
-                        criteria = documentValidation.toString() +
-                                "• Complete Address: The address should include house number, building, pin code, state, and city.\n";
+                        criteria.append("  • Complete Address: The address should include house number, building, pin code, state, and city.\n");
                         outputJson.put("document_type", "");
                         outputJson.put("house_number", "");
                         outputJson.put("building", "");
@@ -136,9 +131,8 @@ public class PromptGenerator {
                     case "Pan Card":
                     case "Aadhaar Card":
                     case "NRGEA Job Card":
-                        criteria = documentValidation.toString() +
-                                "• Name: Check for the presence of the first name and last name.\n"+
-                                "• Address: Extract the address from the following given image. The address might be in various formats, but it typically includes details like the name of the village, panchayat, block, district, and state. \n";
+                        criteria.append("  • Name: Check for the presence of the first name and last name.\n"+
+                                "  • Address: Extract the address from the following given image. The address might be in various formats, but it typically includes details like the name of the village, panchayat, block, district, and state. \n");
                         outputJson.put("document_type", "");
                         outputJson.put("first_name", "");
                         outputJson.put("last_name", "");
@@ -163,18 +157,18 @@ public class PromptGenerator {
                 break;
         }
 
-        String prompt = "You are an image classification and OCR expert. " +
-                "I am providing an Image or a PDF file. Please analyse or classify the image to determine if this is a valid document of type: " + docType + ". " +
-                "Please refer to the following validation criteria to decide if it is a valid document or not:\n" + criteria
-                + "Finally  \"output_format\": \"json\"\n" +" Result in JSON format as per given outputJsonFormat in 5-20 words, keep NA for blank or null value.  outputJsonFormat: "+ outputJson.toString(4);
-
+        String prompt = "You are an image classification and image reconition , Optical Character Recognition (OCR) expert. " +
+                "I am providing an Image or a PDF file. Please describe and classify the image to determine if this is a valid document of type: " + docType + ". " +
+                "Please refer to the following criteria to decide if it is a valid document of given type or not:\n" + criteria
+                + "Finally  \"output_format\": \"json\"\n" +" Result in JSON format as per given outputJsonFormat in 5-20 words, keep NA for blank or null value.  outputJsonFormat: "+ outputJson.toString(4)
+                + " ensure if above criteria is successfull json field " + docType+ " should be true or false if criteria not met." ;
         return prompt;
     }
 
 
     public static void main(String[] args) {
-        String requestType = "Example Request Type";
-        String docType = "Example Document Type";
+        String requestType = "UpdateBankDetails";
+        String docType = "cheque";
         String prompt = generateLLMPrompt(requestType, docType);
         System.out.println(prompt);
     }
