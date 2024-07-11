@@ -448,7 +448,7 @@ function redirectToKYC(evt) {
 		var jsonResponse = evt.target.responseText;
 		var parsedJson = JSON.parse(jsonResponse);
 
-		var html = "<h3>Document Information:</h3><table>";
+		var html = "<h3>Document Information from Anthropic:</h3><table>";
 
 		// Check if parsedJson is an array and get the first object
 		var jsonData = Array.isArray(parsedJson) ? parsedJson[0] : parsedJson;
