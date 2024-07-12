@@ -24,7 +24,7 @@ public class CostCalculater {
 
         int inputTokens = usageJson.getInt("input_tokens");
         int outputTokens = usageJson.getInt("output_tokens");
-        String cost= "Rupees : "+ String.format("%.2f", convertUSDToINR(CostCalculater.calculateCostInUSD(model,inputTokens, outputTokens)));
+        String cost=  String.format("%.2f", convertUSDToINR(CostCalculater.calculateCostInUSD(model,inputTokens, outputTokens)))+" rupees" ;
         logger.info("Cost of this is " + cost);
         return cost;
     }

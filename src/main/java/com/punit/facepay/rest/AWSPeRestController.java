@@ -136,12 +136,12 @@ public class AWSPeRestController {
 		
 		return ResponseEntity.ok(result);
 	}
-	
+
 	@PostMapping("/kyc")
 	public ResponseEntity<String> kyc(@RequestParam MultipartFile myFile, @RequestParam String requestType , @RequestParam String docType) throws IOException {
 		System.out.println("Fetcing document details"); //
 
-		String result = facepayService.kycScan(myFile, requestType, docType, " Fetch text from image in json format");
+		String result = kycService.kycScan(myFile, requestType, docType, " Fetch text from image in json format");
 		result = result.replaceAll("\\bnull\\b", "\"NotFound\"");
 
 		System.out.println("final kyc doc details are: "+result); // Output: Keep this text

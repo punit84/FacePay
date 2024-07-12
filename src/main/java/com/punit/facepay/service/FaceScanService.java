@@ -51,10 +51,6 @@ public class FaceScanService {
 	@Autowired
 	DynamoDBUtil dbUtil;
 
-	@Autowired
-	TextractUtil ocrUtil;
-
-
 
 	//	@Autowired
 	//	private AsyncService asyncService;
@@ -72,15 +68,6 @@ public class FaceScanService {
 		return client;
 	}
 
-	private Image getImage(byte[] imageToCheck) throws IOException {
-
-		Image souImage = Image.builder()
-				.bytes(SdkBytes.fromByteArray(imageToCheck))
-				.build();
-		return souImage;
-	}
-
-
 	public String searcUserDetailsByFaceID(String faceid) {
 
 		return dbUtil.getFaceInfo(faceid);
@@ -95,7 +82,7 @@ public class FaceScanService {
 		Image souImage = null;
 		try {
 			imagebytes = imageToSearch.getBytes();
-			souImage = getImage(imagebytes);
+			souImage = ImageUtil.getImage(imagebytes);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -144,7 +131,7 @@ public class FaceScanService {
 		Image souImage = null;
 		try {
 			imagebytes = imageToSearch.getBytes();
-			souImage = getImage(imagebytes);
+			souImage = ImageUtil.getImage(imagebytes);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -211,7 +198,7 @@ public class FaceScanService {
 		imagebytes= myFile.getBytes();
 
 		String userID=	UPILinkUtil.getUrl(upiID);
-		Image souImage = getImage(imagebytes);
+		Image souImage = ImageUtil.getImage(imagebytes);
 
 		if ( !detectFace(souImage)) {
 			return null;			 			
@@ -307,7 +294,7 @@ public class FaceScanService {
 		RekognitionClient rekClient= getRekClient();
 
 		byte[] imagebytes= imageToSearch.getBytes();
-		Image souImage = getImage(imagebytes);
+		Image souImage = ImageUtil.getImage(imagebytes);
 
 		DetectFacesRequest facesRequest = DetectFacesRequest.builder()
 				.attributes(Attribute.ALL)
@@ -365,55 +352,4 @@ public class FaceScanService {
 		return faceDetails.toString();
 	}
 
-	public String kycScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException {
-		logger.info("************ call claude ********");
-		byte[] bytes = imageToSearch.getBytes();
-		String prompt = PromptGenerator.generateLLMPrompt(requestType,docType);
-		String s3filepath= Configs.S3_FOLDER_KYC ;
-		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
-
-		return	bedrockUtil.invokeAnthropic(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_HAIKU);
-		//return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
-
-	}
-
-	public String ocrScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException, InterruptedException {
-		logger.info("************ call claude ********");
-		byte[] bytes = imageToSearch.getBytes();
-		String s3filepath= Configs.S3_FOLDER_OCR ;
-		String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
-
-		String jobId = ocrUtil.startTextDetection(fileFinalPath);
-		return	ocrUtil.getJobResult(jobId);
-		//return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
-
-	}
-
-	public String kycReko(MultipartFile imageToSearch) throws IOException {
-
-		RekognitionClient rekClient= getRekClient();
-
-		byte[] imagebytes= imageToSearch.getBytes();
-		Image souImage = getImage(imagebytes);
-
-		DetectFacesRequest facesRequest = DetectFacesRequest.builder()
-				.attributes(Attribute.ALL)
-				.image(souImage)
-				.build();
-
-		DetectFacesResponse facesResponse = rekClient.detectFaces(facesRequest);
-		List<FaceDetail> faceDetails = facesResponse.faceDetails();
-		for (FaceDetail face : faceDetails) {
-			AgeRange ageRange = face.ageRange();
-			logger.info("The detected face is estimated to be between "
-					+ ageRange.low().toString() + " and " + ageRange.high().toString()
-					+ " years old.");
-			logger.info("There is a smile : "+face.smile().value().toString());
-			logger.info("************ detectFaceInCollection ********");
-			return	bedrockUtil.InvokeModelLama3(Configs.AI_PROMPT + face.toString());
-
-		}
-		return "";
-
-	}
 }
