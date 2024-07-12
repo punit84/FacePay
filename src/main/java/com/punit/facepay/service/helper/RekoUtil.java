@@ -2,9 +2,11 @@ package com.punit.facepay.service.helper;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,29 +16,21 @@ import com.punit.facepay.service.Configs;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
-import software.amazon.awssdk.services.rekognition.model.Attribute;
-import software.amazon.awssdk.services.rekognition.model.CreateCollectionRequest;
-import software.amazon.awssdk.services.rekognition.model.CreateCollectionResponse;
-import software.amazon.awssdk.services.rekognition.model.DeleteCollectionRequest;
-import software.amazon.awssdk.services.rekognition.model.DeleteCollectionResponse;
-import software.amazon.awssdk.services.rekognition.model.DescribeCollectionRequest;
-import software.amazon.awssdk.services.rekognition.model.DescribeCollectionResponse;
-import software.amazon.awssdk.services.rekognition.model.FaceRecord;
-import software.amazon.awssdk.services.rekognition.model.Image;
-import software.amazon.awssdk.services.rekognition.model.IndexFacesRequest;
-import software.amazon.awssdk.services.rekognition.model.IndexFacesResponse;
-import software.amazon.awssdk.services.rekognition.model.ListCollectionsRequest;
-import software.amazon.awssdk.services.rekognition.model.ListCollectionsResponse;
-import software.amazon.awssdk.services.rekognition.model.QualityFilter;
-import software.amazon.awssdk.services.rekognition.model.Reason;
-import software.amazon.awssdk.services.rekognition.model.RekognitionException;
-import software.amazon.awssdk.services.rekognition.model.UnindexedFace;
+import software.amazon.awssdk.services.rekognition.model.*;
 
 @Component
 public class RekoUtil {
 	final static Logger logger= LoggerFactory.getLogger(RekoUtil.class);
 
+	RekognitionClient rekClient = getRekClient();
+	private RekognitionClient getRekClient() {
 
+		RekognitionClient client = RekognitionClient.builder()
+				.region(Configs.REGION)
+				.credentialsProvider(DefaultCredentialsProvider.create())
+				.build();
+		return client;
+	}
 	
 	public static void main(String[] args) {
 		RekoUtil reko= new RekoUtil();
@@ -182,6 +176,70 @@ public class RekoUtil {
 		List<String> collectionIds = response.collectionIds();
 		return collectionIds;
 	}
+
+	public float getLabelDetails (byte[] imageBytes, String docType ) throws IOException {
+		Image souImage = ImageUtil.getImage(imageBytes);
+		return getDoctypeConfidence(souImage, docType);
+	}
+
+	public float getDoctypeConfidence(Image souImage, String docType) {
+
+		try {
+			List<Label> labels = getImageLabels(souImage);
+			logger.info("Detected labels for the given image:");
+			for (Label label : labels) {
+				if (label.name().equalsIgnoreCase(docType)) {
+					logger.info("Label: " + label.name() + " - Confidence: " + label.confidence().toString() + "%");
+					return label.confidence();
+				}
+			}
+
+		} catch (RekognitionException e) {
+			e.printStackTrace();
+			System.out.println("Label detection failed: " + e.getMessage());
+		}
+		return 0;
+	}
+
+	public List<Label>  getImageLabels(Image souImage) {
+
+			DetectLabelsRequest request = DetectLabelsRequest.builder()
+					.image(souImage)
+					.maxLabels(10)
+					.minConfidence(50F)
+					.build();
+
+			DetectLabelsResponse result = rekClient.detectLabels(request);
+			return result.labels();
+
+	}
+
+	public JSONObject getLabelDetails(Image souImage, String docType) {
+		JSONObject labelJson = new JSONObject();
+
+		try {
+			List<Label> labels = getImageLabels(souImage);
+
+			logger.info("Detected labels for the given image:");
+			for (Label label : labels) {
+				if (label.name().equalsIgnoreCase(docType)) {
+					labelJson.put ( docType, Boolean.TRUE );
+					labelJson.put ("Confidence " , label.confidence() );
+					break;
+				}
+			}
+			if (labelJson.length() == 0){
+				labelJson.put ( docType, Boolean.FALSE );
+				labelJson.put ("Possible Types ", labels.toString());
+			}
+		} catch (RekognitionException e) {
+			logger.error("Label detection failed: " + e.getMessage());
+		}
+		return labelJson;
+	}
+
+
+
 
 	public void describeColl(RekognitionClient rekClient, String collectionName) {
 

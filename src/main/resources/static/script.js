@@ -90,18 +90,12 @@ let fd = null;
 
 function updateFileDetails(file) {
 	var fileSize = 0;
-
 	if (file.size > 1024 * 1024)
-
 		fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
-
 	else
-
 		fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+	document.getElementById('details').innerHTML +=  'Size: ' + fileSize +'<br>';
 
-	document.getElementById('details').innerHTML += 'Name: ' + file.name + '<br>Size: ' + fileSize + '<br>Type: ' + file.type;
-
-	document.getElementById('details').innerHTML += '<p>';
 }
 
 function fileSelected() {
@@ -115,8 +109,6 @@ function fileSelected() {
 		fd = new FormData();
 		fd.append('myFile', file);
 		fd.append('device', device);
-
-
 		var reader = new FileReader();
 		reader.onload = function(e) {
 			document.getElementById('preview').setAttribute('src', e.target.result);
@@ -442,55 +434,57 @@ function profileDisplay(evt) {
 
 function redirectToKYC(evt) {
 	hideLoadingOverlay(); // Assuming hideLoadingOverlay() is defined elsewhere
-	document.getElementById("docTypeLabel").innerHTML = "";
-
 	try {
 		var jsonResponse = evt.target.responseText;
 		var parsedJson = JSON.parse(jsonResponse);
 
-		var html = "<h3>Document Information from Anthropic:</h3><table>";
-
-		// Check if parsedJson is an array and get the first object
-		var jsonData = Array.isArray(parsedJson) ? parsedJson[0] : parsedJson;
-
-		// Extract text content if present
-		var contentText = (jsonData.content && jsonData.content.length > 0 && jsonData.content[0].text) ? jsonData.content[0].text : null;
-
-		// Parse the inner JSON if contentText is valid JSON
-		var innerJsonData = contentText ? JSON.parse(contentText) : jsonData;
+		// Access the llmResponse and rekoResponse sub-JSON objects
+		var llmResponse = parsedJson.llmResponse || {};
+		var rekoResponse = parsedJson.rekoResponse || {};
 
 		var docTypeSelect = document.getElementById('docType').value;
-		// Iterate over the innerJsonData object to display key-value pairs
 
-		for (var key in innerJsonData) {
-			if (innerJsonData.hasOwnProperty(key)) {
+		// Create HTML tables for rekoResponse and llmResponse
+		var llmTable = createHtmlTable(llmResponse, "Document Classification via Anthropic LLM:");
+		var rekoTable = createHtmlTable(rekoResponse, "Document Classification via Amazon Recognition:");
 
-				if (key === docTypeSelect  ){
-					if (innerJsonData[key] === false || innerJsonData[key] === "false" || innerJsonData[key] === "" ){
-						document.getElementById("docTypeLabel").style.color = "red"; // Change 'red' to any color you prefer
-						document.getElementById("docTypeLabel").innerHTML = "Is "+ docTypeSelect +" : false";
-					}else{
-						document.getElementById("docTypeLabel").innerHTML = "Is "+ docTypeSelect +" : "+ innerJsonData[key];
-						document.getElementById("docTypeLabel").style.color = "green"; // Change 'red' to any color you prefer
-						document.getElementById("docTypeLabel").style.fontSize = "30px"; // Change '20px' to any size you prefer
-
-					}
-
-				}
-				html += "<tr><th>" + key.replace(/_/g, ' ') + "</th><td>" + innerJsonData[key] + "</td></tr>";
-			}
-		}
-		html += "</table>";
-
-		// Display the HTML content in the 'bedrock' element
-		document.getElementById('bedrock').innerHTML = '<br>' + html + '<br><br>';
+		// Display the HTML tables in the 'bedrock' element
+		document.getElementById('bedrock').innerHTML = '<br>' + rekoTable + '<br><br>' + llmTable + '<br><br>';
 
 	} catch (error) {
 		console.error("Error parsing or displaying JSON:", error);
-
 		// Handle error display or logging as needed
 	}
 }
+
+// Function to create HTML table from JSON object
+function createHtmlTable(data, title) {
+	var html = "<h3>" + title + "</h3>";
+	var htmlTable = "<table>";
+	var infoLabel = "<br>";
+	var docTypeSelect = document.getElementById('docType').value;
+
+	for (var key in data) {
+		if (data.hasOwnProperty(key)) {
+			if (key === docTypeSelect  ) {
+				if (data[docTypeSelect] === false || data[docTypeSelect] === "false" || data[docTypeSelect] === "") {
+					infoLabel += "<span style='color:red; font-size:20px;'>Is " + docTypeSelect + " = false</span>";
+				} else {
+					infoLabel += "<span style='color:green; font-size:20px;'>Is " + docTypeSelect + " = " + data[docTypeSelect] + "</span>";
+				}
+			}else{
+				htmlTable += "<tr><th>" + key.replace(/_/g, ' ') + "</th><td>" + data[key] + "</td></tr>";
+
+			}
+		}
+	}
+	htmlTable += "</table>";
+
+	html += infoLabel;
+	html += htmlTable;
+	return html;
+}
+
 // Function to parse JSON and render as key-value pairs
 function renderKeyValue(jsonResponse) {
 	// Assuming jsonResponse is an array and we're accessing the first object

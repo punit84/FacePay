@@ -7,10 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.punit.facepay.service.Configs;
-import com.punit.facepay.service.FaceScanService;
 
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
@@ -18,18 +18,17 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelRequest;
 import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelResponse;
-import software.amazon.awssdk.services.bedrockruntime.model.PayloadPart;
 
 @Component
-public class BedrockUtill {
+public class BedrockUtil {
 
+    @Autowired
+    private JsonUtil jsonUtil;
 
-    private final PromptGenerator promptGenerator;
-    final static Logger logger = LoggerFactory.getLogger(BedrockUtill.class);
+    @Autowired
+    private PromptGenerator promptGenerator;
 
-    public BedrockUtill(PromptGenerator promptGenerator) {
-        this.promptGenerator = promptGenerator;
-    }
+    final static Logger logger = LoggerFactory.getLogger(BedrockUtil.class);
 
     public static void main(String[] args) {
 
@@ -141,7 +140,7 @@ public class BedrockUtill {
     }
 
 
-    public String invokeAnthropic(byte[] fileBytes, String prompt, String fileName , String modelId) {
+    public JSONObject invokeAnthropic(byte[] fileBytes, String prompt, String fileName , String modelId) throws Exception {
         // Create a Bedrock Runtime client in the AWS Region of your choice.
 
         String mediaTypeMime = getMediaTypeFromExtensionMIME(getFileExtension(fileName));
@@ -151,125 +150,102 @@ public class BedrockUtill {
         logger.info("file extension is " + mediaTypeMime);
 
         Set<String> supportedFileTypes = new HashSet<>(Arrays.asList("doc", "docx", "pdf", "gif", "jpeg", "png"));
-        try {
-            BedrockRuntimeClient client = BedrockRuntimeClient.builder()
-                    .region(Region.AP_SOUTH_1)
-                    .build();
-            String base64Image = null;
-            JSONObject request = null;
-            if ("image".equals(mediaTypeString)) {
-                String imageBase64 = Base64.getEncoder().encodeToString(fileBytes);
-                // Create the JSON payload
-                request = new JSONObject()
-                        .put("anthropic_version", "bedrock-2023-05-31")
-                        .put("max_tokens", 4000)
-                        .put("messages", new JSONArray()
-                                .put(new JSONObject()
-                                        .put("role", "user")
-                                        .put("content", new JSONArray()
-                                                .put(new JSONObject()
-                                                        .put("type", mediaTypeString)
-                                                        .put("source", new JSONObject()
-                                                                .put("type", "base64")
-                                                                .put("media_type", mediaTypeMime)
-                                                                .put("data", imageBase64)))
-                                                .put(new JSONObject()
-                                                        .put("type", "text")
-                                                        .put("text", prompt)))));
-                printJsonbyMasking(request.toString());
-            } else {
+        BedrockRuntimeClient client = BedrockRuntimeClient.builder()
+                .region(Region.AP_SOUTH_1)
+                .build();
+        String base64Image = null;
+        JSONObject request = null;
+        if ("image".equals(mediaTypeString)) {
+            String imageBase64 = Base64.getEncoder().encodeToString(fileBytes);
+            // Create the JSON payload
+            request = new JSONObject()
+                    .put("anthropic_version", "bedrock-2023-05-31")
+                    .put("max_tokens", 4000)
+                    .put("messages", new JSONArray()
+                            .put(new JSONObject()
+                                    .put("role", "user")
+                                    .put("content", new JSONArray()
+                                            .put(new JSONObject()
+                                                    .put("type", mediaTypeString)
+                                                    .put("source", new JSONObject()
+                                                            .put("type", "base64")
+                                                            .put("media_type", mediaTypeMime)
+                                                            .put("data", imageBase64)))
+                                            .put(new JSONObject()
+                                                    .put("type", "text")
+                                                    .put("text", prompt)))));
+            jsonUtil.printJsonbyMasking(request.toString());
+        } else {
 
-                // Construct the document JSON object
-                JSONObject documentObject = new JSONObject()
-                        .put("name", fileName)
-                        .put("format", "txt")
-                        .put("source", new JSONObject()
-                                .put("bytes", fileBytes));
+            // Construct the document JSON object
+            JSONObject documentObject = new JSONObject()
+                    .put("name", fileName)
+                    .put("format", "txt")
+                    .put("source", new JSONObject()
+                            .put("bytes", fileBytes));
 
-                request = new JSONObject()
-                        .put("anthropic_version", "bedrock-2023-05-31")
-                        .put("max_tokens", 40000)
-                        .put("messages", new JSONArray()
-                                .put(new JSONObject()
-                                        .put("role", "user")
-                                        .put("content", new JSONArray()
-                                                .put(new JSONObject()
-                                                        .put("type", "text")
-                                                        .put("document", documentObject))
-                                                .put(new JSONObject()
-                                                        .put("type", "text")
-                                                        .put("text", prompt)
-										))));
+            request = new JSONObject()
+                    .put("anthropic_version", "bedrock-2023-05-31")
+                    .put("max_tokens", 40000)
+                    .put("messages", new JSONArray()
+                            .put(new JSONObject()
+                                    .put("role", "user")
+                                    .put("content", new JSONArray()
+                                            .put(new JSONObject()
+                                                    .put("type", "text")
+                                                    .put("document", documentObject))
+                                            .put(new JSONObject()
+                                                    .put("type", "text")
+                                                    .put("text", prompt)
+                                            ))));
 
-                //logger.info(request.toString());
-            }
-
-            final String requestString = request.toString();
-            // Encode and send the request.
-            var response = client.invokeModel(req -> req
-                    .body(SdkBytes.fromUtf8String(requestString))
-                    .modelId(modelId)
-                    .contentType("application/json")
-                    .accept("application/json"));
-
-            logger.info(response.body().asUtf8String());
-            // Decode the native response body.
-
-            JSONObject nativeResponse = new JSONObject(response.body().asUtf8String());
-
-            // Extract the content array
-            String contentText = nativeResponse.getJSONArray("content").getJSONObject(0).getString("text");
-
-            // logger.info("\ncontentText: " + contentText);
-
-            // Find the start and end positions of the JSON content
-            int startIndex = contentText.indexOf("{");
-            int endIndex = contentText.lastIndexOf("}") + 1;
-            logger.info("Start index " + startIndex +"\n end index " + endIndex);
-
-            if (startIndex != -1 && endIndex != -1 && startIndex !=0) {
-                // Extract the JSON conten
-                contentText = contentText.substring(startIndex, endIndex);
-                logger.info("Extracted JSON content:");
-                logger.info("\n ContentText:\n " + contentText);
-                logger.info(contentText);
-            }
-
-
-            JSONObject usageJson = nativeResponse.getJSONObject("usage");
-            logger.info("\nusage: : \n" + usageJson.toString());
-
-            JSONObject contentJson = new JSONObject(contentText);
-            String cost = CostCalculater.calculateCostInINR(modelId, usageJson);
-
-            String textJson = mergeJsonObjects(contentJson, usageJson , cost);
-
-            //String textJson = promptGenerator.processJson(contentJson.toString()).toString();
-            logger.info(textJson);
-            return textJson;
-
-        } catch (Exception e) {
-            logger.error("Invocation to LLM failed with error " + e.getMessage());
-            return "{\"Next Step\":\"Please Contact Admin\",\"valid Document\":\"false\",\"error\":\"" + e.getMessage() + "\"}\n";
+            //logger.info(request.toString());
         }
 
-    }
+        final String requestString = request.toString();
+        // Encode and send the request.
+        var response = client.invokeModel(req -> req
+                .body(SdkBytes.fromUtf8String(requestString))
+                .modelId(modelId)
+                .contentType("application/json")
+                .accept("application/json"));
+
+        logger.info(response.body().asUtf8String());
+        // Decode the native response body.
+
+        JSONObject nativeResponse = new JSONObject(response.body().asUtf8String());
+
+        // Extract the content array
+        String contentText = nativeResponse.getJSONArray("content").getJSONObject(0).getString("text");
+
+        // logger.info("\ncontentText: " + contentText);
+
+        // Find the start and end positions of the JSON content
+        int startIndex = contentText.indexOf("{");
+        int endIndex = contentText.lastIndexOf("}") + 1;
+        logger.info("Start index " + startIndex + "\n end index " + endIndex);
+
+        if (startIndex != -1 && endIndex != -1 && startIndex != 0) {
+            // Extract the JSON conten
+            contentText = contentText.substring(startIndex, endIndex);
+            logger.info("Extracted JSON content:");
+            logger.info("\n ContentText:\n " + contentText);
+            logger.info(contentText);
+        }
 
 
+        JSONObject usageJson = nativeResponse.getJSONObject("usage");
+        logger.info("\nusage: : \n" + usageJson.toString());
 
-    public void printJsonbyMasking(String json) {
+        JSONObject contentJson = new JSONObject(contentText);
+        String cost = CostCalculater.calculateCostInINR(modelId, usageJson);
 
-        // Print the JSON payload without the `data` field
-        JSONObject requestForPrint = new JSONObject(json);
-        JSONArray messages = requestForPrint.getJSONArray("messages");
-        JSONObject firstMessage = messages.getJSONObject(0);
-        JSONArray contentArray = firstMessage.getJSONArray("content");
-        JSONObject firstContent = contentArray.getJSONObject(0);
-        JSONObject source = firstContent.getJSONObject("source");
+        contentJson = jsonUtil.mergeJsonObjects(contentJson, usageJson, cost);
 
-        source.remove("data"); // Remove the `data` field
+        //String textJson = promptGenerator.processJson(contentJson.toString()).toString();
+        logger.info(contentJson.toString());
+        return contentJson;
 
-        logger.info("Bedrock api request  " + requestForPrint.toString(4));
     }
 
     public String getFileExtension(String fileName) {
@@ -310,24 +286,5 @@ public class BedrockUtill {
         }
     }
 
-    /**
-     * Merges two JSONObjects. Copies all key-value pairs from source to destination.
-     *
-     * @param destination The JSONObject to merge into
-     * @param source      The JSONObject to merge from
-     */
-    private static String mergeJsonObjects(JSONObject destination, JSONObject source, String cost) {
 
-        try {
-            for (String key : source.keySet()) {
-                destination.put(key, source.get(key));
-            }
-            destination.put("Cost" , cost);
-        }catch (Exception ex){
-            logger.error("Error in merging json objects " + ex.getMessage());
-        }
-
-        logger.info("Json after merge: \n" + destination.toString());
-        return destination.toString();
-    }
 }
