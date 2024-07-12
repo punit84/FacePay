@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.punit.facepay.service.KYCRestService;
-import com.punit.facepay.service.helper.PromptGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import com.punit.facepay.service.FaceScanService;
 
 @RestController
 @RequestMapping("/api")
-public class FaceScanRestController {
+public class AWSPeRestController {
 
 	@Autowired(required=true)
 	private static FaceScanService facepayService;
@@ -28,12 +27,11 @@ public class FaceScanRestController {
 	@Autowired(required=true)
 	private static KYCRestService kycService;
 
-	final static Logger logger = LoggerFactory.getLogger(FaceScanRestController.class);
-	private final PromptGenerator promptGenerator;
+	final static Logger logger = LoggerFactory.getLogger(AWSPeRestController.class);
 
-	public FaceScanRestController(FaceScanService awsRekognitionService, PromptGenerator promptGenerator) {
-		this.facepayService = awsRekognitionService;
-		this.promptGenerator = promptGenerator;
+	public AWSPeRestController(FaceScanService faceScanService, KYCRestService kycService) {
+		this.facepayService = faceScanService;
+		this.kycService = kycService;
 	}
 
 	@PostMapping("/facepay")
@@ -92,7 +90,6 @@ public class FaceScanRestController {
 		} catch (Exception e) {
 			logger.error("Server error " + e.getMessage());
 			return ResponseEntity.ok(Configs.SERVER_ERROR);
-
 		}
 
 		return ResponseEntity.ok(respString);
@@ -151,9 +148,20 @@ public class FaceScanRestController {
 		return ResponseEntity.ok(result);
 	}
 
+	@PostMapping("/kycReko")
+	public ResponseEntity<String> kycReko(@RequestParam MultipartFile myFile, @RequestParam String requestType , @RequestParam String docType) throws IOException {
+		System.out.println("Fetcing document details"); //
+
+		String result = kycService.kycScan(myFile, requestType, docType, " Fetch text from image in json format");
+		result = result.replaceAll("\\bnull\\b", "\"NotFound\"");
+
+		System.out.println("final kyc doc details are: "+result); // Output: Keep this text
+		return ResponseEntity.ok(result);
+	}
+
 
 	@GetMapping("/doctype")
 	public Map<String, Object> getDocumentTypes() {
-		return PromptGenerator.getDocumentTypes();
+		return kycService.getDocumentTypes();
 	}
 }

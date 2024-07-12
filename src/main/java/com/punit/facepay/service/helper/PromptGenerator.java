@@ -4,14 +4,10 @@ package com.punit.facepay.service.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.punit.facepay.rest.FaceScanRestController;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 @Component
 public class PromptGenerator {
@@ -25,16 +21,6 @@ public class PromptGenerator {
             "    \"input_tokens\": \"\",\n" +
             "    \"Valid Document\": \"\"\n" +
             "}";
-
-
-    public static Map<String, Object> getDocumentTypes() {
-        Map<String, Object> documentData = new HashMap<>();
-        documentData.put("UpdateBankDetails", new String[]{"cheque", "Passbook", "Bank Statement"});
-        documentData.put("UpdateName", new String[]{"Passport", "Driving License", "Voter's ID card", "Pan Card", "Aadhaar Card", "NRGEA Job Card"});
-        documentData.put("UpdateAddress", new String[]{"Electricity Bill", "Gas Bill", "Bank Account Statement", "Landline Bill", "Life Insurance Policy", "Registered Lease/Rent Agreement"});
-
-        return documentData;
-    }
 
     public static JsonNode processJson(String jsonResponse) {
         ObjectMapper objectMapper = new ObjectMapper();

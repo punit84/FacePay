@@ -278,6 +278,7 @@ public class FaceScanService {
 
 		RekognitionClient rekClient= getRekClient();
 
+
 		DetectFacesRequest facesRequest = DetectFacesRequest.builder()
 				.attributes(Attribute.ALL)
 				.image(souImage)
@@ -300,7 +301,6 @@ public class FaceScanService {
 		return true;
 
 	}
-
 
 	public String profile(MultipartFile imageToSearch) throws IOException {
 
@@ -325,9 +325,9 @@ public class FaceScanService {
 			logger.info("************ detectFaceInCollection ********");
 			return	bedrockUtil.InvokeModelLama3(Configs.AI_PROMPT + face.toString());
 
-		}	
+		}
 		return "";
-		
+
 	}
 
 	private String facejson(List<FaceDetail> faceDetails) {
@@ -386,6 +386,34 @@ public class FaceScanService {
 		String jobId = ocrUtil.startTextDetection(fileFinalPath);
 		return	ocrUtil.getJobResult(jobId);
 		//return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
+
+	}
+
+	public String kycReko(MultipartFile imageToSearch) throws IOException {
+
+		RekognitionClient rekClient= getRekClient();
+
+		byte[] imagebytes= imageToSearch.getBytes();
+		Image souImage = getImage(imagebytes);
+
+		DetectFacesRequest facesRequest = DetectFacesRequest.builder()
+				.attributes(Attribute.ALL)
+				.image(souImage)
+				.build();
+
+		DetectFacesResponse facesResponse = rekClient.detectFaces(facesRequest);
+		List<FaceDetail> faceDetails = facesResponse.faceDetails();
+		for (FaceDetail face : faceDetails) {
+			AgeRange ageRange = face.ageRange();
+			logger.info("The detected face is estimated to be between "
+					+ ageRange.low().toString() + " and " + ageRange.high().toString()
+					+ " years old.");
+			logger.info("There is a smile : "+face.smile().value().toString());
+			logger.info("************ detectFaceInCollection ********");
+			return	bedrockUtil.InvokeModelLama3(Configs.AI_PROMPT + face.toString());
+
+		}
+		return "";
 
 	}
 }

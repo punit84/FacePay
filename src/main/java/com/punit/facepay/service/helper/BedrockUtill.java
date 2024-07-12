@@ -144,14 +144,11 @@ public class BedrockUtill {
     public String invokeAnthropic(byte[] fileBytes, String prompt, String fileName , String modelId) {
         // Create a Bedrock Runtime client in the AWS Region of your choice.
 
-
         String mediaTypeMime = getMediaTypeFromExtensionMIME(getFileExtension(fileName));
 
         String mediaTypeString = getMediaTypeFromExtension(getFileExtension(fileName));
         logger.info("file name is " + fileName);
-
         logger.info("file extension is " + mediaTypeMime);
-
 
         Set<String> supportedFileTypes = new HashSet<>(Arrays.asList("doc", "docx", "pdf", "gif", "jpeg", "png"));
         try {
@@ -243,7 +240,9 @@ public class BedrockUtill {
             logger.info("\nusage: : \n" + usageJson.toString());
 
             JSONObject contentJson = new JSONObject(contentText);
-            String textJson = mergeJsonObjects(contentJson, usageJson);
+            String cost = CostCalculater.calculateCostInINR(modelId, usageJson);
+
+            String textJson = mergeJsonObjects(contentJson, usageJson , cost);
 
             //String textJson = promptGenerator.processJson(contentJson.toString()).toString();
             logger.info(textJson);
@@ -317,12 +316,13 @@ public class BedrockUtill {
      * @param destination The JSONObject to merge into
      * @param source      The JSONObject to merge from
      */
-    private static String mergeJsonObjects(JSONObject destination, JSONObject source) {
+    private static String mergeJsonObjects(JSONObject destination, JSONObject source, String cost) {
 
         try {
             for (String key : source.keySet()) {
                 destination.put(key, source.get(key));
             }
+            destination.put("Cost" , cost);
         }catch (Exception ex){
             logger.error("Error in merging json objects " + ex.getMessage());
         }

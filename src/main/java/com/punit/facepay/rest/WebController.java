@@ -70,4 +70,9 @@ public class WebController {
 		return "kyc";
 	}
 
+	@RequestMapping(value = "/kycReko")
+	public String kycReko() {
+		return "kycReko";
+	}
+
 }

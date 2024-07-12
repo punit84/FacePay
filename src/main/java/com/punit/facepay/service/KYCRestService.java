@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class KYCRestService {
@@ -25,7 +27,6 @@ public class KYCRestService {
     public String kycScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException {
         logger.info("************ call claude ********");
         byte[] bytes = imageToSearch.getBytes();
-
         String prompt = PromptGenerator.generateLLMPrompt(requestType,docType);
 
         String s3filepath= Configs.S3_FOLDER_KYC ;
@@ -33,6 +34,15 @@ public class KYCRestService {
         return	bedrockUtil.invokeAnthropic(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_HAIKU);
  //       return	bedrockUtil.invokeAnthropic(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
 
+    }
+
+    public static Map<String, Object> getDocumentTypes() {
+        Map<String, Object> documentData = new HashMap<>();
+        documentData.put("UpdateBankDetails", new String[]{"cheque", "Passbook", "Bank Statement"});
+        documentData.put("UpdateName", new String[]{"Passport", "Driving License", "Voter's ID card", "Pan Card", "Aadhaar Card", "NRGEA Job Card"});
+        documentData.put("UpdateAddress", new String[]{"Electricity Bill", "Gas Bill", "Bank Account Statement", "Landline Bill", "Life Insurance Policy", "Registered Lease/Rent Agreement"});
+
+        return documentData;
     }
 
 
