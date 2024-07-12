@@ -206,7 +206,7 @@ public class RekoUtil {
 			DetectLabelsRequest request = DetectLabelsRequest.builder()
 					.image(souImage)
 					.maxLabels(10)
-					.minConfidence(50F)
+					.minConfidence(65F)
 					.build();
 
 			DetectLabelsResponse result = rekClient.detectLabels(request);
@@ -216,25 +216,23 @@ public class RekoUtil {
 
 	public JSONObject getLabelDetails(Image souImage, String docType) {
 		JSONObject labelJson = new JSONObject();
+		JSONObject errorJson = new JSONObject();
+		List<Label> labels = getImageLabels(souImage);
 
-		try {
-			List<Label> labels = getImageLabels(souImage);
-
-			logger.info("Detected labels for the given image:");
-			for (Label label : labels) {
-				if (label.name().equalsIgnoreCase(docType)) {
-					labelJson.put ( docType, Boolean.TRUE );
-					labelJson.put ("Confidence " , label.confidence() );
-					break;
-				}
+		logger.info("Detected labels for the given image:");
+		for (Label label : labels) {
+			errorJson.put(label.name(), label.confidence());
+			if (label.name().equalsIgnoreCase(docType)) {
+				labelJson.put(docType, Boolean.TRUE);
+				labelJson.put("Confidence ", label.confidence());
+				break;
 			}
-			if (labelJson.length() == 0){
-				labelJson.put ( docType, Boolean.FALSE );
-				labelJson.put ("Possible Types ", labels.toString());
-			}
-		} catch (RekognitionException e) {
-			logger.error("Label detection failed: " + e.getMessage());
 		}
+		if (labelJson.length() == 0) {
+			errorJson.put(docType, Boolean.FALSE);
+			return errorJson;
+		}
+
 		return labelJson;
 	}
 
