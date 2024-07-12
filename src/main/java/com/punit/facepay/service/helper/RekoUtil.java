@@ -9,6 +9,7 @@ import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.punit.facepay.service.Configs;
@@ -21,8 +22,11 @@ import software.amazon.awssdk.services.rekognition.model.*;
 @Component
 public class RekoUtil {
 	final static Logger logger= LoggerFactory.getLogger(RekoUtil.class);
+	@Autowired
+	private JsonUtil jsonUtil;
 
 	RekognitionClient rekClient = getRekClient();
+
 	private RekognitionClient getRekClient() {
 
 		RekognitionClient client = RekognitionClient.builder()
@@ -206,7 +210,7 @@ public class RekoUtil {
 			DetectLabelsRequest request = DetectLabelsRequest.builder()
 					.image(souImage)
 					.maxLabels(10)
-					.minConfidence(65F)
+					.minConfidence(70F)
 					.build();
 
 			DetectLabelsResponse result = rekClient.detectLabels(request);
@@ -216,24 +220,26 @@ public class RekoUtil {
 
 	public JSONObject getLabelDetails(Image souImage, String docType) {
 		JSONObject labelJson = new JSONObject();
-		JSONObject errorJson = new JSONObject();
+		JSONObject finalJson = new JSONObject();
 		List<Label> labels = getImageLabels(souImage);
 
 		logger.info("Detected labels for the given image:");
 		for (Label label : labels) {
-			errorJson.put(label.name(), label.confidence());
 			if (label.name().equalsIgnoreCase(docType)) {
 				labelJson.put(docType, Boolean.TRUE);
-				labelJson.put("Confidence ", label.confidence());
-				break;
+				labelJson.put("is " +docType+" Confidence ", label.confidence());
+			}else{
+				finalJson.put(label.name(), label.confidence());
 			}
 		}
 		if (labelJson.length() == 0) {
-			errorJson.put(docType, Boolean.FALSE);
-			return errorJson;
+			finalJson.put(docType, Boolean.FALSE);
+			return finalJson;
 		}
 
-		return labelJson;
+
+		jsonUtil.mergeJsonObjects(finalJson,labelJson,"NA");
+		return finalJson;
 	}
 
 
