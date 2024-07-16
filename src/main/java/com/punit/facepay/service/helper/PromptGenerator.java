@@ -143,7 +143,7 @@ public class PromptGenerator {
                 break;
         }
 
-        String prompt = "You are an image classification and image reconition , Optical Character Recognition (OCR) expert. " +
+        String prompt = "You are an image classification and image recognition (OCR) expert. " +
                 "I am providing an Image or a PDF file. Please describe and classify the image to determine if this is a valid document of type: " + docType + ". " +
                 "Please refer to the following criteria to decide if it is a valid document of given type or not:\n" + criteria
                 + "Finally  \"output_format\": \"json\"\n" +" Result in JSON format as per given outputJsonFormat in 5-20 words, keep NA for blank or null value.  outputJsonFormat: "+ outputJson.toString(4)
