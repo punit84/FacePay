@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.textract.model.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -69,4 +70,64 @@ public class TextractUtil {
 
         return response;
     }
+
+    public String extractText( TextractRequest textractRequest) {
+        String rawText = "";
+
+        try {
+            // Create the document object to pass to Textract
+            Document document = Document.builder()
+                    .s3Object(S3Object.builder()
+                            .bucket(textractRequest.getBucketName())
+                            .name(textractRequest.getDocumentKey())
+                            .build())
+                    .build();
+
+            // Call Textract
+            DetectDocumentTextRequest detectDocumentTextRequest = DetectDocumentTextRequest.builder()
+                    .document(document)
+                    .build();
+
+            DetectDocumentTextResponse detectDocumentTextResponse = textractClient.detectDocumentText(detectDocumentTextRequest);
+
+            // Extract and concatenate the raw text
+            StringBuilder extractedText = new StringBuilder();
+            for (Block block : detectDocumentTextResponse.blocks()) {
+                if ("LINE".equals(block.blockTypeAsString())) {
+                    extractedText.append(block.text()).append("\n");
+                }
+            }
+            rawText = extractedText.toString();
+
+        } catch (TextractException e) {
+            e.printStackTrace();
+            return  "Failed to extract text: " + e.getMessage();
+        }
+
+        return  rawText;
+    }
+}
+
+class TextractRequest {
+    private String bucketName;
+    private String documentKey;
+
+    // Getters and Setters
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public String getDocumentKey() {
+        return documentKey;
+    }
+
+    public void setDocumentKey(String documentKey) {
+        this.documentKey = documentKey;
+    }
+
+
 }

@@ -242,6 +242,16 @@ public class BedrockUtil {
 
         contentJson = jsonUtil.mergeJsonObjects(contentJson, usageJson, cost);
 
+        String fulltext= contentJson.get("full text").toString();
+        logger.info("fulltext" + fulltext);
+
+       // String lenght= contentJson.get("text length").toString();
+
+
+        //logger.info(lenght);
+
+        String jsonfinal = ChequeValidator2.checkStringAndCalculateConfidence(fulltext,150).toString();
+        logger.info("validator resonse" + jsonfinal);
         //String textJson = promptGenerator.processJson(contentJson.toString()).toString();
         logger.info(contentJson.toString());
         return contentJson;

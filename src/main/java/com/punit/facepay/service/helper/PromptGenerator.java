@@ -61,6 +61,9 @@ public class PromptGenerator {
 
 
         outputJson.put( docType , "true/false");
+        outputJson.put( "full text" , "");
+        outputJson.put( "text lenght" , 0);
+
         outputJson.put("valid_document", "true/false");
         outputJson.put("document type", "");
         outputJson.put("invalid document reason", "");
@@ -144,7 +147,7 @@ public class PromptGenerator {
         }
 
         String prompt = "You are an image classification and image recognition (OCR) expert. " +
-                "I am providing an Image or a PDF file. Please describe and classify the image to determine if this is a valid document of type: " + docType + ". " +
+                "I am providing an Image or a PDF file. Kindly extract full text and length and udpate json also as Please describe and classify the image to determine if this is a valid document of type: " + docType + ". " +
                 "Please refer to the following criteria to decide if it is a valid document of given type or not:\n" + criteria
                 + "Finally  \"output_format\": \"json\"\n" +" Result in JSON format as per given outputJsonFormat in 5-20 words, keep NA for blank or null value.  outputJsonFormat: "+ outputJson.toString(4)
                 + " ensure if above criteria is successfull json field " + docType+ " should be true or false if criteria not met." ;
