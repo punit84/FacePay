@@ -11,6 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.punit.facepay.service.helper.s3Util;
 
+/**
+ * Service class for handling asynchronous operations in the facepay application.
+ * This service provides methods for executing tasks asynchronously using Spring's @Async functionality.
+ */
 @Service
 public class AsyncService {
 
@@ -19,7 +23,16 @@ public class AsyncService {
 	final static Logger logger= LoggerFactory.getLogger(AsyncService.class);
 
 
-	@Async
+	/**
+     * Performs an asynchronous task processing image data.
+     *
+     * @param path The path where the image needs to be processed
+     * @param imageToSearch The MultipartFile containing the image to be searched
+     * @param imagebytes The byte array representation of the image
+     * @param responseSTR The response string to be processed
+     * @return CompletableFuture<String> containing the result of the async operation
+     */
+    @Async
 	public CompletableFuture<String> performAsyncTask(String path, MultipartFile imageToSearch, byte[] imagebytes, String responseSTR) {
 		// Perform your asynchronous task here
 		// This could be a time-consuming operation, API call, or any other async logic

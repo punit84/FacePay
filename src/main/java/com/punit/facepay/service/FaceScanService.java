@@ -24,6 +24,10 @@ import software.amazon.awssdk.services.rekognition.model.DetectFacesResponse;
 import software.amazon.awssdk.services.rekognition.model.FaceDetail;
 import software.amazon.awssdk.services.rekognition.model.Image;
 
+/**
+ * Service class for handling face detection, recognition, and management operations.
+ * Provides functionality for searching, registering, and analyzing faces using AWS Rekognition.
+ */
 @Service
 public class FaceScanService {
 
@@ -54,6 +58,11 @@ public class FaceScanService {
 	final static Logger logger= LoggerFactory.getLogger(FaceScanService.class);
 
 
+	/**
+     * Creates and configures an AWS Rekognition client.
+     *
+     * @return configured RekognitionClient instance
+     */
 	private RekognitionClient getRekClient() {
 
 		RekognitionClient client = RekognitionClient.builder()
@@ -63,12 +72,26 @@ public class FaceScanService {
 		return client;
 	}
 
+	/**
+     * Searches for user details using a face ID.
+     *
+     * @param faceid the unique identifier of the face to search for
+     * @return user details as a JSON string
+     */
 	public String searcUserDetailsByFaceID(String faceid) {
 
 		return dbUtil.getFaceInfo(faceid);
 
 	}
 
+	/**
+     * Searches for user details using an image file.
+     *
+     * @param imageToSearch the image file containing the face to search for
+     * @return user details as a JSON string
+     * @throws IOException if there's an error processing the image
+     * @throws FaceNotFoundException if no face is found in the image
+     */
 	public String searchUserDetails(MultipartFile imageToSearch ) throws IOException, FaceNotFoundException{
 
 		RekognitionClient rekClient= getRekClient();
@@ -118,6 +141,14 @@ public class FaceScanService {
 
 	}
 
+	/**
+     * Searches for a face in the collection using an image file.
+     *
+     * @param imageToSearch the image file to search with
+     * @return search results as a JSON string
+     * @throws IOException if there's an error processing the image
+     * @throws FaceNotFoundException if no face is found in the image
+     */
 	public String searchImage(MultipartFile imageToSearch ) throws IOException, FaceNotFoundException{
 
 		RekognitionClient rekClient= getRekClient();
@@ -186,6 +217,16 @@ public class FaceScanService {
 	//		return null;
 	//	}
 
+	/**
+     * Registers a new face image with associated user details.
+     *
+     * @param myFile the image file containing the face to register
+     * @param upiID the UPI ID associated with the user
+     * @param email the email address of the user
+     * @param phone the phone number of the user
+     * @return registration result as a JSON string
+     * @throws IOException if there's an error processing the image
+     */
 	public String registerImage(MultipartFile myFile, String upiID,String email, String phone) throws IOException {
 
 		RekognitionClient rekClient= getRekClient();
@@ -256,6 +297,13 @@ public class FaceScanService {
 
 	}
 
+	/**
+     * Detects if there is a face in the provided image.
+     *
+     * @param souImage the image to analyze for face detection
+     * @return true if a face is detected, false otherwise
+     * @throws IOException if there's an error processing the image
+     */
 	public boolean detectFace(Image souImage) throws IOException {
 
 		RekognitionClient rekClient= getRekClient();
@@ -284,6 +332,13 @@ public class FaceScanService {
 
 	}
 
+	/**
+     * Generates a profile of facial attributes from the provided image.
+     *
+     * @param imageToSearch the image file to analyze
+     * @return profile details as a JSON string
+     * @throws IOException if there's an error processing the image
+     */
 	public String profile(MultipartFile imageToSearch) throws IOException {
 
 		RekognitionClient rekClient= getRekClient();
@@ -312,6 +367,12 @@ public class FaceScanService {
 
 	}
 
+	/**
+     * Converts face details to a JSON string representation.
+     *
+     * @param faceDetails list of face details from Rekognition
+     * @return JSON string containing face details
+     */
 	private String facejson(List<FaceDetail> faceDetails) {
 		// Create a sample DetectFacesResponse with all available parameters
 		DetectFacesResponse response = DetectFacesResponse.builder()

@@ -4,6 +4,10 @@ import org.springframework.stereotype.Component;
 
 import software.amazon.awssdk.regions.Region;
 
+/**
+ * Configuration component class that holds various configuration values for the facepay application.
+ * This class provides access to configuration properties used throughout the application.
+ */
 @Component
 public class Configs {
 	
