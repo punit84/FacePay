@@ -1,9 +1,5 @@
 package com.punit.facepay.service.helper;
 
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,153 +7,155 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PromptGenerator {
-    final static Logger logger = LoggerFactory.getLogger(PromptGenerator.class);
-
-    String OUTPUT_JSON_BANK = "{\n" +
-            "    \"ifsc_code\": \"\",\n" +
-            "    \"account_number\": \"\",\n" +
-            "    \"account_name\": \"\",\n" +
-            "    \"output_tokens\": \"\",\n" +
-            "    \"input_tokens\": \"\",\n" +
-            "    \"Valid Document\": \"\"\n" +
-            "}";
-
-    public static JsonNode processJson(String jsonResponse) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        int falseCount = 0;
-
-        ObjectNode cleanedJson = objectMapper.createObjectNode();
-        final int[] trueCount = {0};
-        try {
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
-
-
-            logger.info("Number of true values: " + trueCount);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return cleanedJson;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(PromptGenerator.class);
 
     public static String generateLLMPrompt(String requestType, String docType) {
-        logger.info("Request type is: " + requestType);
-        logger.info("DocType is: " + docType);
+        logger.info("Generating LLM prompt for requestType: {} and docType: {}", requestType, docType);
 
-        if (requestType.contains(" ")) {
-            requestType = "UpdateBankDetails";
-            docType = "cheque";
-            logger.info("Updated request type is: " + requestType);
-        }
+        // Normalize request type and document type
+        RequestConfig config = normalizeRequestConfig(requestType, docType);
+        requestType = config.requestType;
+        docType = config.docType;
 
-        StringBuilder criteria = new StringBuilder();
-        criteria.append("Valid "+docType+ " Document criteria :\n");
-        criteria.append("  • Text Clarity: The text should be sharp and readable without needing zoom.\n")
-                .append("  • Image Resolution: The resolution should be high enough that zooming in does not significantly pixelate the text.\n")
-                .append("  • Document Completeness: All required information should be visible in the image without any parts being cut off. The document must be fully visible, with all edges (especially for cheques) intact and not cropped.\n")
-                .append("  • Overall Cleanliness: The document should be clean and free from major stains, marks, or obstructions.\n");
+        // Build validation criteria
+        StringBuilder criteria = buildBaseCriteria(docType);
+        JSONObject outputSchema = buildBaseOutputSchema(docType);
 
-        JSONObject outputJson = new JSONObject();
-
-
-        outputJson.put( docType , "true/false");
-        outputJson.put("valid_document", "true/false");
-        outputJson.put("document type", "");
-        outputJson.put("invalid document reason", "");
+        // Add specific validation criteria and output schema based on request type
         switch (requestType) {
             case "UpdateBankDetails":
-                outputJson.put("account_number", "");
-                outputJson.put("account_name", "");
-                outputJson.put("ifsc_code", "");
-
-                switch (docType) {
-                    case "cheque":
-                    case "Passbook":
-                    case "Bank Statement":
-                     criteria.append("  •important validation:  image should clearly represent a bank "+docType+" cheque and contain details such as bank name, account number, account name, and IFSC code.")
-                                .append("and image should also contains the exact keywords 'valid for 3 months only', 'Bank', 'Payable at Par', 'RUPEES', and 'Please Sign'.\n");
-                     criteria.append("  • Account Number (or A/C No.): Verify if the image includes an account number or abbreviation such as 'A/C No., generally it is written in ractangle box, SESHAASAI (K) or CTS-2010 can't be account name\n"
-                                + "  • Account Name: Check for the presence of the account holder's name, generally it is written just above 'Please sign Above' similar text. Do not take texts which is written in any corner of image\n"
-                                + "  • IFSC Code: Confirm that the image displays the IFSC code.\n");
-                        break;
-
-                    default:
-                        requestType = "UpdateBankDetails";
-                        docType = "Passbook";
-                        break;
-                }
+                addBankDetailsValidation(criteria, outputSchema, docType);
                 break;
             case "UpdateAddress":
-                switch (docType) {
-                    case "Electricity Bill":
-                    case "Gas Bill":
-                    case "Bank Account Statement":
-                    case "Landline Bill":
-                    case "Life Insurance Policy":
-                    case "Registered Lease/Rent Agreement":
-                        criteria.append("  • Complete Address: The address should include house number, building, pin code, state, and city.\n");
-                        outputJson.put("document_type", "");
-                        outputJson.put("house_number", "");
-                        outputJson.put("building", "");
-                        outputJson.put("pin_code", "");
-                        outputJson.put("state", "");
-                        outputJson.put("city", "");
-                        break;
-                    default:
-                        requestType = "UpdateAddress";
-                        docType = "Electricity Bill";
-                        break;
-                }
+                addAddressValidation(criteria, outputSchema, docType);
                 break;
             case "UpdateName":
-                switch (docType) {
-                    case "Passport":
-                    case "Driving License":
-                    case "Voter's ID card":
-                    case "Pan Card":
-                    case "Aadhaar Card":
-                    case "NRGEA Job Card":
-                        criteria.append("  • Name: Check for the presence of the first name and last name.\n"+
-                                "  • Address: Extract the address from the following given image. The address might be in various formats, but it typically includes details like the name of the village, panchayat, block, district, and state. \n");
-                        outputJson.put("document_type", "");
-                        outputJson.put("first_name", "");
-                        outputJson.put("last_name", "");
-                        outputJson.put("sex", ""); // Assuming sex (gender) needs to be captured
-                        outputJson.put("house_number", "");
-                        outputJson.put("building", "");
-                        outputJson.put("pin_code", "");
-                        outputJson.put("state", "");
-                        outputJson.put("city", "");
-                        outputJson.put("Address", "");
-
-                        break;
-                    default:
-                        requestType = "UpdateName";
-                        docType = "Passport";
-                        break;
-                }
+                addNameValidation(criteria, outputSchema, docType);
                 break;
             default:
-                requestType = "UpdateBankDetails";
-                docType = "Passport";
-                break;
+                throw new IllegalArgumentException("Unsupported request type: " + requestType);
         }
 
-        String prompt = "You are an image classification and image recognition (OCR) expert. " +
-                "I am providing an Image or a PDF file. Please describe and classify the image to determine if this is a valid document of type: " + docType + ". " +
-                "Please refer to the following criteria to decide if it is a valid document of given type or not:\n" + criteria
-                + "Finally  \"output_format\": \"json\"\n" +" Result in JSON format as per given outputJsonFormat in 5-20 words, keep NA for blank or null value.  outputJsonFormat: "+ outputJson.toString(4)
-                + " ensure if above criteria is successfull json field " + docType+ " should be true or false if criteria not met." ;
-        return prompt;
+        // Build enhanced prompt
+        return buildEnhancedPrompt(docType, criteria.toString(), outputSchema.toString());
     }
 
-
-    public static void main(String[] args) {
-        String requestType = "UpdateBankDetails";
-        String docType = "cheque";
-        String prompt = generateLLMPrompt(requestType, docType);
-        System.out.println(prompt);
+    private static RequestConfig normalizeRequestConfig(String requestType, String docType) {
+        if (requestType.contains(" ")) {
+            logger.warn("Request type contains spaces, normalizing to default values");
+            return new RequestConfig("UpdateBankDetails", "cheque");
+        }
+        return new RequestConfig(requestType, docType);
     }
 
+    private static StringBuilder buildBaseCriteria(String docType) {
+        StringBuilder criteria = new StringBuilder();
+        criteria.append("Valid ").append(docType).append(" Document criteria:\n")
+               .append("1. Image Quality Requirements:\n")
+               .append("   • Text Clarity: Text must be sharp, clear, and readable without zooming\n")
+               .append("   • Resolution: Minimum 300 DPI recommended, no significant pixelation when zoomed\n")
+               .append("   • Lighting: Even lighting without glare or shadows\n")
+               .append("   • Focus: Document must be in sharp focus throughout\n\n")
+               .append("2. Document Orientation and Layout:\n")
+               .append("   • Orientation: Document may be rotated; analyze text orientation and process accordingly\n")
+               .append("   • Layout Recognition: Identify and extract information regardless of rotation angle\n")
+               .append("   • Text Direction: Account for text flow direction when extracting information\n\n")
+               .append("3. Document Integrity:\n")
+               .append("   • Completeness: All required information must be fully visible\n")
+               .append("   • No Obstruction: Free from fingers, watermarks, or other objects covering text\n")
+               .append("   • Physical Condition: No tears, major creases, or damage affecting readability\n")
+               .append("   • Cleanliness: Free from significant stains, marks, or smudges\n\n")
+               .append("4. Authentication Elements:\n")
+               .append("   • Official Markings: Required stamps, seals, or watermarks must be visible\n")
+               .append("   • Document Format: Must match standard government/institutional format\n\n");
+        return criteria;
+    }
 
+    private static JSONObject buildBaseOutputSchema(String docType) {
+        JSONObject schema = new JSONObject();
+        schema.put(docType.toLowerCase(), "true/false")
+              .put("valid_document", "true/false")
+              .put("document_type", "")
+              .put("invalid_document_reason", "")
+              .put("confidence_score", "0.0 to 1.0")
+              .put("validation_timestamp", "ISO-8601 timestamp");
+        return schema;
+    }
+
+    private static void addBankDetailsValidation(StringBuilder criteria, JSONObject schema, String docType) {
+        criteria.append("4. Banking Document Specific Requirements:\n")
+               .append("   • Bank Identifiers: Clear bank name, branch details, and logo\n")
+               .append("   • Account Details: Complete and legible account number and IFSC code\n")
+               .append("   • Security Features: Visible security patterns, microprint (if applicable)\n")
+               .append("   • Document Currency: Must be dated within last 3 months\n");
+
+        schema.put("account_number", "")
+              .put("account_name", "")
+              .put("ifsc_code", "")
+              .put("bank_name", "")
+              .put("branch_name", "")
+              .put("document_date", "");
+    }
+
+    private static void addAddressValidation(StringBuilder criteria, JSONObject schema, String docType) {
+        criteria.append("4. Address Document Specific Requirements:\n")
+               .append("   • Address Completeness: Must include all address components\n")
+               .append("   • Proof Currency: Document must be dated within last 3 months\n")
+               .append("   • Issuer Details: Clear identification of issuing authority\n");
+
+        schema.put("address_components", new JSONObject()
+                .put("house_number", "")
+                .put("building", "")
+                .put("street", "")
+                .put("locality", "")
+                .put("city", "")
+                .put("state", "")
+                .put("pin_code", ""))
+              .put("issuer_details", "")
+              .put("issue_date", "");
+    }
+
+    private static void addNameValidation(StringBuilder criteria, JSONObject schema, String docType) {
+        criteria.append("4. Identity Document Specific Requirements:\n")
+               .append("   • Name Format: Full name in standard format\n")
+               .append("   • Photo Quality: Clear, recent photograph (if applicable)\n")
+               .append("   • ID Numbers: All identification numbers clearly visible\n");
+
+        schema.put("personal_details", new JSONObject()
+                .put("first_name", "")
+                .put("middle_name", "")
+                .put("last_name", "")
+                .put("date_of_birth", "")
+                .put("gender", ""))
+              .put("id_number", "")
+              .put("issue_date", "")
+              .put("expiry_date", "");
+    }
+
+    private static String buildEnhancedPrompt(String docType, String criteria, String outputSchema) {
+        return String.format(
+            "You are an advanced document analysis and verification expert specialized in OCR and image classification. " +
+            "Task: Analyze the provided image/PDF to verify if it is a valid %s and extract required information.\n\n" +
+            "Validation Criteria:\n%s\n" +
+            "Instructions:\n" +
+            "1. First determine the document orientation and rotate mentally if needed\n" +
+            "2. Analyze the document thoroughly against all provided criteria\n" +
+            "3. Extract all relevant information as per the output schema, accounting for any rotation\n" +
+            "4. Provide confidence scores for key extracted fields\n" +
+            "5. Include detailed reasoning for any validation failures\n" +
+            "6. If document is rotated, mention the approximate rotation angle in the response\n\n" +
+            "Required Output Schema:\n%s\n" +
+            "Note: Ensure all responses are in valid JSON format. Include 'valid_document' as false if ANY criteria fails.",
+            docType, criteria, outputSchema);
+    }
+
+    private static class RequestConfig {
+        final String requestType;
+        final String docType;
+
+        RequestConfig(String requestType, String docType) {
+            this.requestType = requestType;
+            this.docType = docType;
+        }
+    }
 }
