@@ -65,9 +65,19 @@ public class WebController {
 		return "document";
 	}
 
+	@RequestMapping(value = "/chat")
+	public String chat() {
+		return "chat";
+	}
+
 	@RequestMapping(value = "/kyc")
 	public String kyc() {
 		return "kyc";
+	}
+	
+	@RequestMapping(value = "/textgen")
+	public String textgen() {
+		return "textgen";
 	}
 
 	@RequestMapping(value = "/kycReko")
