@@ -2,7 +2,7 @@ package com.punit.facepay.service.helper;
 
 import com.punit.facepay.service.Configs;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -17,17 +17,14 @@ import java.util.UUID;
 @Component
 public class TextractUtil {
     private final Configs configs;
-
-
-    //create constructor
-
-    TextractClient textractClient = TextractClient.builder()
-            .region(Configs.REGION)
-            .credentialsProvider(ProfileCredentialsProvider.create())
-            .build();
+    private final TextractClient textractClient;
 
     public TextractUtil(Configs configs) {
         this.configs = configs;
+        this.textractClient = TextractClient.builder()
+                .region(Configs.REGION)
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
     }
 
 

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="CodeHim">
+    <!-- Google Fonts CSS -->
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=font1|font2|etc" type="text/css">
+    <!-- Font Awesome Kit -->
+    <script src="https://kit.fontawesome.com/2c7fc28a2f.js"></script>
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Demo CSS (No need to include it into your project) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles1.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>AWSPe</title>
+    <style>
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            max-width: 250px;
+            margin: auto;
+            text-align: center;
+            font-family: arial;
+        }
+
+        button {
+            border: none;
+            outline: 0;
+            display: inline-block;
+            padding: 8px;
+            color: white;
+            background-color: #000;
+            text-align: center;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+        }
+
+        a {
+            text-decoration: none;
+            font-size: 18px;
+            color: blue;
+        }
+
+        button:hover,
+        a:hover {
+            opacity: 0.7;
+        }
+
+        #requestType {
+            width: 300px; /* Adjust width as needed */
+            padding: 10px; /* Add padding for better visibility */
+            font-size: 16px; /* Increase font size for readability */
+            border: 1px solid #ccc; /* Add a border for clarity */
+            border-radius: 4px; /* Optional: Rounded corners */
+        }
+        #docType {
+            width: 300px; /* Adjust width as needed */
+            padding: 10px; /* Add padding for better visibility */
+            font-size: 16px; /* Increase font size for readability */
+            border: 1px solid #ccc; /* Add a border for clarity */
+            border-radius: 4px; /* Optional: Rounded corners */
+        }
+
+    </style>
+</head>
+
+<header>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="index">AWSPe</a></li>
+                <li><a href="qart">Qart</a></li>
+                <li><a href="admin">Enroll</a></li>
+                <li><a href="kyc">KYC</a></li>
+                <li><a href="support">support</a></li>
+                <li><a href="contact">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<body>
+<div>
+    <h3>Support</h3>
+</div>
+<br>
+    <div class="chat-container">
+        <div class="language-selector">
+            <label for="language">Select Language:</label>
+            <select id="language">
+                <option value="en-IN">English</option>
+                <option value="hi-IN">Hindi</option>
+                <option value="ta-IN">Tamil</option>
+                <option value="te-IN">Telugu</option>
+                <option value="mr-IN">Marathi</option>
+            </select>
+        </div>
+        
+        <div class="chat-box" id="chatBox"></div>
+        
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Type your message...">
+            <button id="recordButton">🎤</button>
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let isRecording = false;
+        let mediaRecorder;
+        let audioChunks = [];
+        let ws;
+
+        // Initialize WebSocket connection
+        function connectWebSocket() {
+            ws = new WebSocket('ws://' + window.location.host + '/support/chat');
+            
+            ws.onmessage = function(event) {
+                const response = JSON.parse(event.data);
+                if (response.type === 'text') {
+                    addMessage(response.content, 'bot');
+                } else if (response.type === 'audio') {
+                    // Play audio response
+                    const audio = new Audio('data:audio/mp3;base64,' + response.content);
+                    audio.play();
+                }
+            };
+        }
+
+        function addMessage(text, sender) {
+            const chatBox = document.getElementById('chatBox');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.textContent = text;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        document.getElementById('sendButton').onclick = function() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (message) {
+                addMessage(message, 'user');
+                ws.send(JSON.stringify({
+                    type: 'text',
+                    content: message,
+                    language: document.getElementById('language').value
+                }));
+                input.value = '';
+            }
+        };
+
+        document.getElementById('recordButton').onclick = async function() {
+            if (!isRecording) {
+                // Start recording
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = () => {
+                        const base64Audio = reader.result.split(',')[1];
+                        ws.send(JSON.stringify({
+                            type: 'audio',
+                            content: base64Audio,
+                            language: document.getElementById('language').value
+                        }));
+                    };
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                this.textContent = '⏹️';
+                this.classList.add('recording');
+            } else {
+                // Stop recording
+                mediaRecorder.stop();
+                isRecording = false;
+                this.textContent = '🎤';
+                this.classList.remove('recording');
+            }
+        };
+
+        // Connect WebSocket when page loads
+        connectWebSocket();
+    </script>
+</body>
+</html>

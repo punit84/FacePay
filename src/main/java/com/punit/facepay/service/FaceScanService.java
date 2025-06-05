@@ -1,13 +1,16 @@
 package com.punit.facepay.service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import com.punit.facepay.service.helper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,14 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
-import software.amazon.awssdk.services.rekognition.model.AgeRange;
-import software.amazon.awssdk.services.rekognition.model.Attribute;
-import software.amazon.awssdk.services.rekognition.model.Beard;
-import software.amazon.awssdk.services.rekognition.model.BoundingBox;
-import software.amazon.awssdk.services.rekognition.model.DetectFacesRequest;
-import software.amazon.awssdk.services.rekognition.model.DetectFacesResponse;
-import software.amazon.awssdk.services.rekognition.model.FaceDetail;
-import software.amazon.awssdk.services.rekognition.model.Image;
+import software.amazon.awssdk.services.rekognition.model.*;
 
 /**
  * Service class for handling face detection, recognition, and management operations.
@@ -31,193 +27,146 @@ import software.amazon.awssdk.services.rekognition.model.Image;
 @Service
 public class FaceScanService {
 
-	//	String modelversion = "arn:aws:rekognition:ap-south-1:057641535369:project/logos_2/version/logos_2.2023-06-19T23.41.34/1687198294871";
+    @Autowired
+    private FaceImageCollectionUtil fiUtil;
+    
+    @Autowired
+    private RekoUtil reko;
 
-	@Autowired
-	private FaceImageCollectionUtil fiUtil;
-	@Autowired
-	private RekoUtil reko;
+    @Autowired
+    private S3Utility s3Util;
+    
+    @Autowired
+    private BedrockUtil bedrockUtil;
 
-	@Autowired
-	private s3Util s3Util;
-	
-	@Autowired
-	private BedrockUtil bedrockUtil;
+    @Autowired
+    private QArtQueue qartQueue;
 
-	@Autowired
-	private QArtQueue qartQueue;
+    @Autowired
+    private DynamoDBUtil dbUtil;
 
-	@Autowired
-	DynamoDBUtil dbUtil;
+    private final static Logger logger = LoggerFactory.getLogger(FaceScanService.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-
-	//	@Autowired
-	//	private AsyncService asyncService;
-
-
-	final static Logger logger= LoggerFactory.getLogger(FaceScanService.class);
-
-
-	/**
+    /**
      * Creates and configures an AWS Rekognition client.
      *
      * @return configured RekognitionClient instance
      */
-	private RekognitionClient getRekClient() {
+    private RekognitionClient getRekClient() {
+        return RekognitionClient.builder()
+                .region(Configs.REGION)
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
+    }
 
-		RekognitionClient client = RekognitionClient.builder()
-				.region(Configs.REGION)
-				.credentialsProvider(DefaultCredentialsProvider.create())
-				.build();
-		return client;
-	}
-
-	/**
+    /**
      * Searches for user details using a face ID.
      *
      * @param faceid the unique identifier of the face to search for
      * @return user details as a JSON string
      */
-	public String searcUserDetailsByFaceID(String faceid) {
+    public String searcUserDetailsByFaceID(String faceid) {
+        if (!StringUtils.hasText(faceid)) {
+            logger.warn("Face ID is null or empty");
+            return null;
+        }
+        return dbUtil.getFaceInfo(faceid);
+    }
 
-		return dbUtil.getFaceInfo(faceid);
-
-	}
-
-	/**
+    /**
      * Searches for user details using an image file.
      *
      * @param imageToSearch the image file containing the face to search for
      * @return user details as a JSON string
      * @throws IOException if there's an error processing the image
      * @throws FaceNotFoundException if no face is found in the image
+     * @throws IllegalArgumentException if the input is invalid
      */
-	public String searchUserDetails(MultipartFile imageToSearch ) throws IOException, FaceNotFoundException{
+    public String searchUserDetails(MultipartFile imageToSearch) throws IOException, FaceNotFoundException {
+        validateImageFile(imageToSearch);
 
-		RekognitionClient rekClient= getRekClient();
+        RekognitionClient rekClient = getRekClient();
+        byte[] imagebytes = imageToSearch.getBytes();
+        Image souImage = ImageUtil.getImage(imagebytes);
 
-		byte[] imagebytes = null;
-		Image souImage = null;
-		try {
-			imagebytes = imageToSearch.getBytes();
-			souImage = ImageUtil.getImage(imagebytes);
+        try {
+            List<FaceObject> faceObjList = fiUtil.searchFaceQART(rekClient, Configs.COLLECTION_ID, souImage);
+            faceObjList = faceObjList != null ? faceObjList : Collections.emptyList();
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            for (FaceObject faceObject : faceObjList) {
+                if (faceObject != null) {
+                    logger.info("Face match found: {}", faceObject.printValue());
+                    return faceObject.getFaceURL();
+                }
+            }
 
-		logger.info("************ searchFaceInCollection ********");
+            // If we get here, no valid face was found
+            if (!detectFace(souImage)) {
+                throw new FaceNotFoundException("No human face found in the image");
+            }
 
-		try {
+            // Store the unmatched face image
+            s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, null, "0%");
+            return null;
 
-			List<FaceObject> faceObjList= fiUtil.searchFaceQART(rekClient, Configs.COLLECTION_ID, souImage);
+        } catch (FaceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error searching user details", e);
+            s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, null, "0%");
+            throw new IOException("Failed to search user details", e);
+        }
+    }
 
-			String  responseSTR = null;
-
-			for (FaceObject faceObject : faceObjList) {
-				if(faceObject == null) {
-					logger.info("no matching User found");
-					s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, responseSTR, "0%");
-
-				}else {
-
-					logger.info("Printing face " +  faceObject.printValue());
-					return faceObject.getFaceURL();
-
-				}
-			}
-
-			if (responseSTR == null && !detectFace(souImage)) {
-				throw new FaceNotFoundException("No human face found");			 			
-			}
-
-			return responseSTR;
-
-		}catch (Exception e) {
-			s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, null, "0%");
-			throw e;
-		}
-
-	}
-
-	/**
+    /**
      * Searches for a face in the collection using an image file.
      *
      * @param imageToSearch the image file to search with
      * @return search results as a JSON string
      * @throws IOException if there's an error processing the image
      * @throws FaceNotFoundException if no face is found in the image
+     * @throws IllegalArgumentException if the input is invalid
      */
-	public String searchImage(MultipartFile imageToSearch ) throws IOException, FaceNotFoundException{
+    public String searchImage(MultipartFile imageToSearch) throws IOException, FaceNotFoundException {
+        validateImageFile(imageToSearch);
 
-		RekognitionClient rekClient= getRekClient();
+        RekognitionClient rekClient = getRekClient();
+        byte[] imagebytes = imageToSearch.getBytes();
+        Image souImage = ImageUtil.getImage(imagebytes);
 
-		byte[] imagebytes = null;
-		Image souImage = null;
-		try {
-			imagebytes = imageToSearch.getBytes();
-			souImage = ImageUtil.getImage(imagebytes);
+        try {
+            List<FaceObject> faceObjList = fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
+            faceObjList = faceObjList != null ? faceObjList : Collections.emptyList();
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            for (FaceObject faceObject : faceObjList) {
+                if (faceObject != null) {
+                    logger.info("Face match found: {}", faceObject.printValue());
+                    s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, 
+                            faceObject.getFaceid(), String.valueOf(faceObject.getScore()));
+                    return UPILinkUtil.getUrl(faceObject.getFaceURL());
+                }
+            }
 
-		logger.info("************ searchFaceInCollection ********");
+            // If we get here, no valid face was found
+            if (!detectFace(souImage)) {
+                throw new FaceNotFoundException("No human face found in the image");
+            }
 
-		//FaceMatch face = fiUtil.searchFaceInCollection(rekClient, Configs.COLLECTION_ID, souImage);
-		try {
+            // Store the unmatched face image
+            s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, null, "0%");
+            return null;
 
-			List<FaceObject> faceObjList= fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
+        } catch (FaceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error searching image", e);
+            s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, null, "0%");
+            throw new IOException("Failed to search image", e);
+        }
+    }
 
-			String  responseSTR = null;
-
-			for (FaceObject faceObject : faceObjList) {
-				if(faceObject == null) {
-					logger.info("no matching User found");
-
-					s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, responseSTR, "0%");
-
-				}else {
-
-					logger.info("Printing face " +  faceObject.printValue());
-
-					s3Util.storeinS3(Configs.S3_BUCKET,imageToSearch, imagebytes, faceObject.getFaceid(),""+faceObject.getScore()  );
-					return UPILinkUtil.getUrl(faceObject.getFaceURL());
-
-				}
-			}
-
-			if (responseSTR == null && !detectFace(souImage)) {
-				throw new FaceNotFoundException("No human face found");			 			
-			}
-
-			return responseSTR;
-
-		}catch (Exception e) {
-			s3Util.storeinS3(Configs.S3_BUCKET, imageToSearch, imagebytes, null, "0%");
-			throw e;
-		}
-
-	}
-
-
-
-	//	private String addImage(Image souImage) {
-	//
-	//		RekognitionClient rekClient= getRekClient();		
-	//
-	//		//CreateCollectionResponse collectionResponse= reko.createMyCollection(rekClient, collectionId);
-	//
-	//		fiUtil.listAllCollections(rekClient);
-	//		fiUtil.listFacesCollection(rekClient, Configs.COLLECTION_ID);
-	//		//indexImagesInFolder(imageFolder, collectionId, rekClient);
-	//
-	//		return null;
-	//	}
-
-	/**
+    /**
      * Registers a new face image with associated user details.
      *
      * @param myFile the image file containing the face to register
@@ -226,186 +175,173 @@ public class FaceScanService {
      * @param phone the phone number of the user
      * @return registration result as a JSON string
      * @throws IOException if there's an error processing the image
+     * @throws IllegalArgumentException if any required input is invalid
      */
-	public String registerImage(MultipartFile myFile, String upiID,String email, String phone) throws IOException {
+    public String registerImage(MultipartFile myFile, String upiID, String email, String phone) throws IOException {
+        validateImageFile(myFile);
+        if (!StringUtils.hasText(upiID)) {
+            throw new IllegalArgumentException("UPI ID is required");
+        }
 
-		RekognitionClient rekClient= getRekClient();
-		byte[] imagebytes = null;
-		imagebytes= myFile.getBytes();
+        RekognitionClient rekClient = getRekClient();
+        byte[] imagebytes = myFile.getBytes();
+        String userID = UPILinkUtil.getUrl(upiID);
+        Image souImage = ImageUtil.getImage(imagebytes);
 
-		String userID=	UPILinkUtil.getUrl(upiID);
-		Image souImage = ImageUtil.getImage(imagebytes);
+        if (!detectFace(souImage)) {
+            logger.warn("No face detected in the registration image");
+            return null;
+        }
 
-		if ( !detectFace(souImage)) {
-			return null;			 			
-		}
+        List<FaceObject> faceObjList = fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
+        faceObjList = faceObjList != null ? faceObjList : Collections.emptyList();
 
-		List<FaceObject> faceObjList= fiUtil.searchFace(rekClient, Configs.COLLECTION_ID, souImage);
+        String returnMessage = Configs.FACE_ALREADY_EXIST;
+        String faceID = null;
 
-		String  responseSTR = null;
+        if (faceObjList.isEmpty()) {
+            // No matching face found, register new face
+            faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
+            if (faceID != null) {
+                String s3filepath = Configs.S3_FOLDER_REGISTER + upiID;
+                String fileFinalPath = s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
+                returnMessage = faceID;
+                dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
 
-		String  faceID =  null;
-		String returnmessage =Configs.FACE_ALREADY_EXIST;
+                if (userID.contains("upi://")) {
+                    logger.info("Generating QART for UPI ID");
+                    qartQueue.sendRequest(userID, fileFinalPath);
+                } else {
+                    logger.info("Skipping QART generation - not a UPI ID");
+                }
+            }
+        } else {
+            // Update existing face registration
+            for (FaceObject faceObject : faceObjList) {
+                if (faceObject != null) {
+                    faceID = faceObject.getFaceid();
+                    logger.info("Updating existing face: {}", faceObject.printValue());
+                    
+                    String s3filepath = Configs.S3_FOLDER_REGISTER + upiID;
+                    String fileFinalPath = s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
+                    returnMessage = faceID;
+                    dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
+                    logger.info("Skipping QART generation for existing face");
+                    break;
+                }
+            }
+        }
 
-		if (faceObjList.isEmpty()) {
+        return returnMessage;
+    }
 
-			logger.info("no matching User found");
-
-			faceID = fiUtil.addToCollection(rekClient, Configs.COLLECTION_ID, souImage);
-			String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
-
-			String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
-			returnmessage =  faceID;
-			dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
-
-			if (userID.contains("upi://")) {
-				logger.info("Generating QART ");
-				qartQueue.sendRequest(userID, fileFinalPath);
-			}else {
-				logger.info("skipping QART generation");
-			}
-		}else {
-
-			//find face id
-
-			for (FaceObject faceObject : faceObjList) {
-				if(faceObject == null) {
-					logger.info("no matching User found");
-				}else {
-					faceID = faceObject.getFaceid();
-					logger.info("Printing face " +  faceObject.printValue());
-					
-					String s3filepath= Configs.S3_FOLDER_REGISTER + upiID;
-					String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, imagebytes);
-					returnmessage =faceID ;
-					dbUtil.putFaceIDInDB(faceID, userID, email, phone, fileFinalPath);
-
-//					if (userID.contains("upi://")) {
-//						logger.info("Generating QART ");
-//						qartQueue.sendRequest(userID, fileFinalPath);
-//					}
-					logger.info("skipping QART generation");
-					
-					return returnmessage;
-				}
-			}
-					
-		}
-
-		return returnmessage;
-
-
-	}
-
-	/**
+    /**
      * Detects if there is a face in the provided image.
      *
      * @param souImage the image to analyze for face detection
      * @return true if a face is detected, false otherwise
      * @throws IOException if there's an error processing the image
      */
-	public boolean detectFace(Image souImage) throws IOException {
+    public boolean detectFace(Image souImage) throws IOException {
+        if (souImage == null) {
+            return false;
+        }
 
-		RekognitionClient rekClient= getRekClient();
+        RekognitionClient rekClient = getRekClient();
+        DetectFacesRequest facesRequest = DetectFacesRequest.builder()
+                .attributes(Attribute.ALL)
+                .image(souImage)
+                .build();
 
+        DetectFacesResponse facesResponse = rekClient.detectFaces(facesRequest);
+        List<FaceDetail> faceDetails = facesResponse.faceDetails();
 
-		DetectFacesRequest facesRequest = DetectFacesRequest.builder()
-				.attributes(Attribute.ALL)
-				.image(souImage)
-				.build();
+        if (faceDetails == null || faceDetails.isEmpty()) {
+            return false;
+        }
 
-		DetectFacesResponse facesResponse = rekClient.detectFaces(facesRequest);
-		List<FaceDetail> faceDetails = facesResponse.faceDetails();
+        for (FaceDetail face : faceDetails) {
+            AgeRange ageRange = face.ageRange();
+            if (ageRange != null) {
+                logger.info("Detected face estimated age: {} to {} years old",
+                        ageRange.low(), ageRange.high());
+            }
+            if (face.smile() != null) {
+                logger.info("Smile detected: {}", face.smile().value());
+            }
+        }
 
-		if (null == faceDetails || faceDetails.isEmpty() ) {
-			return false;
-		}
-		for (FaceDetail face : faceDetails) {
-			AgeRange ageRange = face.ageRange();
-			logger.info("The detected face is estimated to be between "
-					+ ageRange.low().toString() + " and " + ageRange.high().toString()
-					+ " years old.");
-			logger.info("There is a smile : "+face.smile().value().toString());
-		}
+        return true;
+    }
 
-		return true;
-
-	}
-
-	/**
+    /**
      * Generates a profile of facial attributes from the provided image.
      *
      * @param imageToSearch the image file to analyze
      * @return profile details as a JSON string
      * @throws IOException if there's an error processing the image
+     * @throws IllegalArgumentException if the input is invalid
      */
-	public String profile(MultipartFile imageToSearch) throws IOException {
+    public String profile(MultipartFile imageToSearch) throws IOException {
+        validateImageFile(imageToSearch);
 
-		RekognitionClient rekClient= getRekClient();
+        RekognitionClient rekClient = getRekClient();
+        byte[] imagebytes = imageToSearch.getBytes();
+        Image souImage = ImageUtil.getImage(imagebytes);
 
-		byte[] imagebytes= imageToSearch.getBytes();
-		Image souImage = ImageUtil.getImage(imagebytes);
+        DetectFacesRequest facesRequest = DetectFacesRequest.builder()
+                .attributes(Attribute.ALL)
+                .image(souImage)
+                .build();
 
-		DetectFacesRequest facesRequest = DetectFacesRequest.builder()
-				.attributes(Attribute.ALL)
-				.image(souImage)
-				.build();
+        DetectFacesResponse facesResponse = rekClient.detectFaces(facesRequest);
+        List<FaceDetail> faceDetails = facesResponse.faceDetails();
 
-		DetectFacesResponse facesResponse = rekClient.detectFaces(facesRequest);
-		List<FaceDetail> faceDetails = facesResponse.faceDetails();
-		for (FaceDetail face : faceDetails) {
-			AgeRange ageRange = face.ageRange();
-			logger.info("The detected face is estimated to be between "
-					+ ageRange.low().toString() + " and " + ageRange.high().toString()
-					+ " years old.");
-			logger.info("There is a smile : "+face.smile().value().toString());
-			logger.info("************ detectFaceInCollection ********");
-			return	bedrockUtil.InvokeModelLama3(Configs.AI_PROMPT + face.toString());
+        if (faceDetails != null && !faceDetails.isEmpty()) {
+            FaceDetail face = faceDetails.get(0);
+            AgeRange ageRange = face.ageRange();
+            if (ageRange != null) {
+                logger.info("Detected face estimated age: {} to {} years old",
+                        ageRange.low(), ageRange.high());
+            }
+            if (face.smile() != null) {
+                logger.info("Smile detected: {}", face.smile().value());
+            }
+            logger.info("Generating AI profile description");
+            return bedrockUtil.InvokeModelLama3(Configs.AI_PROMPT + face.toString());
+        }
 
-		}
-		return "";
+        return "";
+    }
 
-	}
-
-	/**
+    /**
      * Converts face details to a JSON string representation.
      *
      * @param faceDetails list of face details from Rekognition
      * @return JSON string containing face details
      */
-	private String facejson(List<FaceDetail> faceDetails) {
-		// Create a sample DetectFacesResponse with all available parameters
-		DetectFacesResponse response = DetectFacesResponse.builder()
-				.faceDetails(
-						FaceDetail.builder()
-						.ageRange(AgeRange.builder().low(20).high(30).build())
-						.beard(Beard.builder().value(true).confidence(0.95f).build())
-						.boundingBox(BoundingBox.builder().width(0.3f).height(0.4f).left(0.2f).top(0.1f).build())
-						// Add more parameters as needed
-						.build(),
-						FaceDetail.builder()
-						.ageRange(AgeRange.builder().low(25).high(35).build())
-						.beard(Beard.builder().value(false).confidence(0.85f).build())
-						.boundingBox(BoundingBox.builder().width(0.2f).height(0.5f).left(0.1f).top(0.3f).build())
-						// Add more parameters as needed
-						.build()
-						)
-				.build();
+    private String facejson(List<FaceDetail> faceDetails) {
+        if (faceDetails == null || faceDetails.isEmpty()) {
+            return "[]";
+        }
 
-		faceDetails.addAll(response.faceDetails());
+        try {
+            return objectMapper.writeValueAsString(faceDetails);
+        } catch (JsonProcessingException e) {
+            logger.error("Error converting face details to JSON", e);
+            return "[]";
+        }
+    }
 
-		// Create an instance of ObjectMapper
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		try {
-			// Convert the List<FaceDetail> to JSON string
-			String json = objectMapper.writeValueAsString(faceDetails);
-			logger.info(json);
-			return json;
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return faceDetails.toString();
-	}
-
+    /**
+     * Validates that an image file is present and not empty.
+     *
+     * @param imageFile the image file to validate
+     * @throws IllegalArgumentException if the image file is invalid
+     */
+    private void validateImageFile(MultipartFile imageFile) {
+        if (imageFile == null || imageFile.isEmpty()) {
+            throw new IllegalArgumentException("Image file is required and must not be empty");
+        }
+    }
 }

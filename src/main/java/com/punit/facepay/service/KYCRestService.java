@@ -21,12 +21,12 @@ import java.util.Map;
 public class KYCRestService {
 
     @Autowired
-    private com.punit.facepay.service.helper.s3Util s3Util;
+    private S3Utility s3Util;
 
     @Autowired
     private BedrockUtil bedrockUtil;
 
-    final static Logger logger= LoggerFactory.getLogger(KYCRestService.class);
+    final static Logger logger = LoggerFactory.getLogger(KYCRestService.class);
 
     @Autowired
     TextractUtil ocrUtil;
@@ -36,7 +36,6 @@ public class KYCRestService {
 
     @Autowired
     private JsonUtil jsonUtil;
-
 
     /**
      * Retrieves a mapping of supported document types and their configurations.
@@ -64,15 +63,13 @@ public class KYCRestService {
      * @throws InterruptedException if the scanning process is interrupted
      */
     public String ocrScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException, InterruptedException {
-        logger.info("************ call claude ********");
+        logger.info("Starting OCR scan for document type: {}", docType);
         byte[] bytes = imageToSearch.getBytes();
-        String s3filepath= Configs.S3_FOLDER_OCR ;
-        String fileFinalPath=s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
+        String s3filepath = Configs.S3_FOLDER_OCR;
+        String fileFinalPath = s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
 
         String jobId = ocrUtil.startTextDetection(fileFinalPath);
-        return	ocrUtil.getJobResult(jobId);
-        //return	bedrockUtil.invokeHaiku(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
-
+        return ocrUtil.getJobResult(jobId);
     }
 
     /**
@@ -86,39 +83,36 @@ public class KYCRestService {
      * @throws IOException if there's an error processing the image
      */
     public String kycScan(MultipartFile imageToSearch, String requestType, String docType, String text) throws IOException {
-        logger.info("************ call claude ********");
+        logger.info("Starting KYC scan for document type: {}", docType);
         byte[] bytes = imageToSearch.getBytes();
-        JSONObject jsonFromLLM = null;
-        JSONObject jsonFromReko = null;
+        JSONObject jsonFromLLM = new JSONObject();
+        JSONObject jsonFromReko;
 
         String prompt = PromptGenerator.generateLLMPrompt(requestType, docType);
         String s3filepath = Configs.S3_FOLDER_KYC;
         String fileFinalPath = s3Util.storeAdminImageAsync(Configs.S3_BUCKET, s3filepath, bytes);
 
         // Create the main JSON object
-        JSONObject finalJsonReponse = new JSONObject();
+        JSONObject finalJsonResponse = new JSONObject();
 
         try {
             jsonFromLLM = bedrockUtil.invokeAnthropic(bytes, prompt, imageToSearch.getOriginalFilename(), Configs.MODEL_HAIKU);
-
-            // Add sub-JSON objects to the main JSON object
-
-
         } catch (Exception e) {
-            logger.error("Invocation to LLM failed with error " + e.getMessage());
-            jsonFromLLM.put("Next Step", "Please Contact Admin");
+            logger.error("LLM invocation failed", e);
+            jsonFromLLM.put("status", "error");
+            jsonFromLLM.put("message", "LLM processing failed");
+            jsonFromLLM.put("nextStep", "Please contact admin");
             jsonFromLLM.put(docType, "false");
         }
 
-        finalJsonReponse.put("llmResponse", jsonFromLLM);
+        finalJsonResponse.put("llmResponse", jsonFromLLM);
 
-        jsonFromReko =  labelCheckFromRekognition(imageToSearch, docType);
-        finalJsonReponse.put("rekoResponse", jsonFromReko);
-        logger.info("Final json response: " +finalJsonReponse.toString());
-        return finalJsonReponse.toString();
-        //       return	bedrockUtil.invokeAnthropic(bytes, prompt, imageToSearch.getOriginalFilename() , Configs.MODEL_SONET);
+        jsonFromReko = labelCheckFromRekognition(imageToSearch, docType);
+        finalJsonResponse.put("rekoResponse", jsonFromReko);
+        
+        logger.info("KYC scan completed for document type: {}", docType);
+        return finalJsonResponse.toString();
     }
-
 
     /**
      * Checks image labels using AWS Rekognition to verify document type.
@@ -128,26 +122,26 @@ public class KYCRestService {
      * @return JSONObject containing the label verification results
      */
     public JSONObject labelCheckFromRekognition(MultipartFile imageToSearch, String docType) {
-        byte[] imagebytes= null;
         JSONObject jsonFromReko = new JSONObject();
+        
         try {
-            imagebytes = imageToSearch.getBytes();
-            Image souImage = ImageUtil.getImage(imagebytes);
-            jsonFromReko = rekoUtil.getLabelDetails(souImage, docType);
+            byte[] imagebytes = imageToSearch.getBytes();
+            Image sourceImage = ImageUtil.getImage(imagebytes);
+            jsonFromReko = rekoUtil.getLabelDetails(sourceImage, docType);
 
-            if (jsonFromReko.length() == 0){
-                jsonFromReko.put("valid Document", "false");
+            if (jsonFromReko.length() == 0) {
+                jsonFromReko.put("valid", false);
                 jsonFromReko.put("error", "No labels found");
+                jsonFromReko.put("nextStep", "Please try again with a clearer image");
             }
         } catch (IOException e) {
-            logger.error("Invocation to Rekognition failed with error " + e.getMessage());
-            jsonFromReko.put("Next Step", "Please Contact Admin");
+            logger.error("Rekognition processing failed", e);
+            jsonFromReko.put("status", "error");
+            jsonFromReko.put("message", "Image processing failed");
+            jsonFromReko.put("nextStep", "Please contact admin");
             jsonFromReko.put(docType, "false");
         }
 
-            //* Label detection in rekognition */
         return jsonFromReko;
     }
-
-
 }

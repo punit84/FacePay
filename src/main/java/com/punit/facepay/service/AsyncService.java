@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.punit.facepay.service.helper.s3Util;
+import com.punit.facepay.service.helper.S3Utility;
 
 /**
  * Service class for handling asynchronous operations in the facepay application.
@@ -18,12 +18,12 @@ import com.punit.facepay.service.helper.s3Util;
 @Service
 public class AsyncService {
 
-	@Autowired
-	private s3Util s3Util;
-	final static Logger logger= LoggerFactory.getLogger(AsyncService.class);
+    @Autowired
+    private S3Utility s3Util;
+    
+    final static Logger logger = LoggerFactory.getLogger(AsyncService.class);
 
-
-	/**
+    /**
      * Performs an asynchronous task processing image data.
      *
      * @param path The path where the image needs to be processed
@@ -33,19 +33,16 @@ public class AsyncService {
      * @return CompletableFuture<String> containing the result of the async operation
      */
     @Async
-	public CompletableFuture<String> performAsyncTask(String path, MultipartFile imageToSearch, byte[] imagebytes, String responseSTR) {
-		// Perform your asynchronous task here
-		// This could be a time-consuming operation, API call, or any other async logic
+    public CompletableFuture<String> performAsyncTask(String path, MultipartFile imageToSearch, byte[] imagebytes,
+            String responseSTR) {
+        try {
+            logger.info("Storing file in S3");
+            s3Util.storeinS3(path, imageToSearch, imagebytes, responseSTR, "100%");
+        } catch (Exception e) {
+            logger.error("Error performing async task", e);
+            return CompletableFuture.failedFuture(e);
+        }
 
-		// Simulating a delay of 5 seconds
-		try {
-			logger.info("Storing file in s3");
-			s3Util.storeinS3(path, imageToSearch, imagebytes, responseSTR, "100%");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return CompletableFuture.completedFuture("Async task completed");
-	}
+        return CompletableFuture.completedFuture("Async task completed");
+    }
 }

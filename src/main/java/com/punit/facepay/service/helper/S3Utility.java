@@ -17,9 +17,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Component
-public class s3Util {
+public class S3Utility {
 
-	final static Logger logger= LoggerFactory.getLogger(s3Util.class);
+	final static Logger logger= LoggerFactory.getLogger(S3Utility.class);
 
 	//DynamoDbClient dbClient = DynamoDbClient.builder()
 	//		.region(Configs.REGION)

@@ -1,10 +1,41 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      java: corretto17
+  
+  pre_build:
+    commands:
+      - echo "Starting pre-build phase..."
+      - mvn clean
+  
   build:
     commands:
-      - mvn clean install
+      - echo "Starting build phase..."
+      - mvn compile
+      - mvn test
+      - mvn jacoco:report
+  
+  post_build:
+    commands:
+      - echo "Starting post-build phase..."
+      - mvn package
+      - echo "Build completed successfully!"
+      - echo "Test coverage report generated in target/site/jacoco"
 
 artifacts:
   files:
     - target/*.jar
+    - target/site/jacoco/**/*
+  discard-paths: no
+
+reports:
+  test_reports:
+    files:
+      - 'target/surefire-reports/*.xml'
+    file-format: JUNITXML
+  coverage_reports:
+    files:
+      - 'target/site/jacoco/jacoco.xml'
+    file-format: JACOCOXML

@@ -75,4 +75,9 @@ public class WebController {
 		return "kycReko";
 	}
 
+	@RequestMapping(value = "/support")
+	public String support() {
+		return "support";
+	}
+
 }
