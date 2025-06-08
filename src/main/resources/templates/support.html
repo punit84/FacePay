@@ -28,14 +28,21 @@
             border: none;
             outline: 0;
             display: inline-block;
-            padding: 8px;
+            padding: 8px 16px;
             color: white;
-            background-color: #000;
+            background-color: darkslategrey;
             text-align: center;
             cursor: pointer;
-            width: 100%;
+            min-width: 20%;
             font-size: 18px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: fit-content;
+            height: auto;
+            line-height: 1.5;
         }
+
 
         a {
             text-decoration: none;
@@ -62,6 +69,14 @@
             border: 1px solid #ccc; /* Add a border for clarity */
             border-radius: 4px; /* Optional: Rounded corners */
         }
+        /* For smaller screens */
+        @media screen and (max-width: 768px) {
+            button {
+                min-width: 40%;
+                padding: 6px 12px;
+                font-size: 16px;
+            }
+        }
 
     </style>
 </head>
@@ -74,7 +89,7 @@
                 <li><a href="qart">Qart</a></li>
                 <li><a href="admin">Enroll</a></li>
                 <li><a href="kyc">KYC</a></li>
-                <li><a href="support">support</a></li>
+                <li><a href="support">Support</a></li>
                 <li><a href="contact">Contact</a></li>
             </ul>
         </nav>
@@ -100,8 +115,10 @@
         <div class="chat-box" id="chatBox"></div>
         
         <div class="input-area">
-            <input type="text" id="messageInput" placeholder="Type your message...">
+            <input type="text" id="messageInput" placeholder="Type your message..." size="300" maxlength="500">
             <button id="recordButton">🎤</button>
+            <div id="transcriptionText" style="margin: 10px 0; font-style: italic; color: #666;"></div>
+            <br>
             <button id="sendButton">Send</button>
         </div>
     </div>
@@ -124,6 +141,14 @@
                     // Play audio response
                     const audio = new Audio('data:audio/mp3;base64,' + response.content);
                     audio.play();
+                } else if (response.type === 'transcription') {
+                    // Show transcribed text
+                    document.getElementById('transcriptionText').textContent = response.content;
+                    // If transcription is final, add it to chat and clear
+                    if (response.final) {
+                        addMessage(response.content, 'user');
+                        document.getElementById('transcriptionText').textContent = '';
+                    }
                 }
             };
         }

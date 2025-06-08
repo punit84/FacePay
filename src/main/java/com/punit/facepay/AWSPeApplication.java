@@ -7,12 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class AWSPeApplication {
-	
-	final static Logger logger= LoggerFactory.getLogger(AWSPeApplication.class);
+        
+        final static Logger logger= LoggerFactory.getLogger(AWSPeApplication.class);
 
 
     public static void main(String[] args) {
-    	logger.info("Starting application FacePayApplication ********** ");
+        logger.info("Starting application AWSPeApplication ********** ");
         SpringApplication.run(AWSPeApplication.class, args);
     }
 }

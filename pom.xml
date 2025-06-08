@@ -65,7 +65,6 @@
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>
                         <artifactId>polly</artifactId>
-                        <version>2.21.0</version> <!-- or your current version -->
                 </dependency>
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>

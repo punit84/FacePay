@@ -18,6 +18,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(supportWebSocketHandler, "/support/chat")
-               .setAllowedOrigins("*");
+               .setAllowedOrigins("${app.websocket.allowed-origins:http://localhost:8080}");
     }
 }

@@ -295,7 +295,8 @@ public class SupportService {
     private String getBedrockResponse(String input) {
         try {
             String promptText = String.format(
-                "{\"prompt\": \"Human: %s\\nAssistant:\", \"max_tokens_to_sample\": 300}", 
+                "{\"prompt\": \"Human: %s\\nAssistant: I am a helpful customer support assistant. I will help you with your query.\\nHuman: %s\\nAssistant:\", \"max_tokens_to_sample\": 500, \"temperature\": 0.7, \"top_p\": 0.9}", 
+                input.replace("\"", "\\\""),
                 input.replace("\"", "\\\"")
             );
 
