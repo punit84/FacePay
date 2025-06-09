@@ -191,8 +191,17 @@ public class SupportService {
         }
 
         // Process audio with proper resource management
-        try (ByteArrayInputStream audioStream = new ByteArrayInputStream(audioData);
-             AudioStreamPublisher publisher = new AudioStreamPublisher(audioStream)) {
+        try {
+            AudioStreamPublisher publisher = new AudioStreamPublisher();
+            ByteArrayInputStream audioStream = new ByteArrayInputStream(audioData);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+//            while ((bytesRead = audioStream.read(buffer)) != -1) {
+//                ByteBuffer audioBuffer = ByteBuffer.allocate(bytesRead);
+//                audioBuffer.put(buffer, 0, bytesRead);
+//                audioBuffer.flip();
+//                publisher.addAudioChunk(audioBuffer);
+//            }
 
             logger.info("Processing audio message in language: {}", language);
 
@@ -351,9 +360,12 @@ public class SupportService {
                     .outputFormat(OutputFormat.MP3)
                     .engine("neural") // Use neural engine for better quality
                     .build();
-//todo punit
-            //return pollyClient.synthesizeSpeech(request).responseInputStream().readAllBytes();
-return null;
+            var responseStream = pollyClient.synthesizeSpeech(request);
+            if (responseStream == null || responseStream.response() == null) {
+                logger.error("Error synthesizing speech: null response from Polly");
+                return new byte[0];
+            }
+            return responseStream.readAllBytes();
         } catch (Exception e) {
             logger.error("Error synthesizing speech: {}", e.getMessage());
             return new byte[0];

@@ -6,6 +6,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import com.punit.facepay.websocket.SupportWebSocketHandler;
+import com.punit.facepay.websocket.VoiceChatWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Configuration
@@ -15,9 +16,15 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Autowired
     private SupportWebSocketHandler supportWebSocketHandler;
 
+    @Autowired
+    private VoiceChatWebSocketHandler voiceChatWebSocketHandler;
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(supportWebSocketHandler, "/support/chat")
+               .setAllowedOrigins("${app.websocket.allowed-origins:http://localhost:8080}");
+        
+        registry.addHandler(voiceChatWebSocketHandler, "/voice/chat")
                .setAllowedOrigins("${app.websocket.allowed-origins:http://localhost:8080}");
     }
 }

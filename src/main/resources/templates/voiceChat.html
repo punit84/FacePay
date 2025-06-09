@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Chat Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .connected {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .disconnected {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .recording {
+            background-color: #fcf8e3;
+            color: #8a6d3b;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        #startButton {
+            background-color: #5cb85c;
+            color: white;
+        }
+        #startButton:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #transcript {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Voice Chat Bot</h1>
+    <div id="status" class="disconnected">Disconnected</div>
+    <button id="startButton" disabled>Start Speaking</button>
+    <div id="transcript"></div>
+
+    <script>
+        let websocket;
+        let mediaRecorder;
+        let audioContext;
+        let isRecording = false;
+        const startButton = document.getElementById('startButton');
+        const status = document.getElementById('status');
+        const transcript = document.getElementById('transcript');
+
+        // Initialize WebSocket connection
+        function connect() {
+            websocket = new WebSocket('ws://localhost:8080/voice/chat');
+            
+            websocket.onopen = () => {
+                status.textContent = 'Connected';
+                status.className = 'connected';
+                startButton.disabled = false;
+            };
+
+            websocket.onclose = () => {
+                status.textContent = 'Disconnected';
+                status.className = 'disconnected';
+                startButton.disabled = true;
+            };
+
+            websocket.onmessage = async (event) => {
+                // Convert the binary audio data to audio buffer and play it
+                const audioData = await event.data.arrayBuffer();
+                playAudioResponse(audioData);
+            };
+        }
+
+        // Initialize audio recording
+        async function initializeAudio() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new AudioContext();
+                
+                // Create a MediaRecorder that captures audio in 10-second chunks
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+
+                mediaRecorder.ondataavailable = async (event) => {
+                    if (event.data.size > 0 && websocket.readyState === WebSocket.OPEN) {
+                        // Convert audio to raw PCM format
+                        const audioBuffer = await event.data.arrayBuffer();
+                        const audioContext = new AudioContext();
+                        const audioData = await audioContext.decodeAudioData(audioBuffer);
+                        
+                        // Convert to 16-bit PCM at 16kHz
+                        const pcmData = convertToPCM(audioData);
+                        websocket.send(pcmData);
+                    }
+                };
+
+                startButton.onclick = toggleRecording;
+            } catch (err) {
+                console.error('Error initializing audio:', err);
+                status.textContent = 'Error: ' + err.message;
+                status.className = 'disconnected';
+            }
+        }
+
+        function toggleRecording() {
+            if (!isRecording) {
+                mediaRecorder.start(10000); // Capture in 10-second chunks
+                startButton.textContent = 'Stop Speaking';
+                status.textContent = 'Recording...';
+                status.className = 'recording';
+            } else {
+                mediaRecorder.stop();
+                startButton.textContent = 'Start Speaking';
+                status.textContent = 'Connected';
+                status.className = 'connected';
+            }
+            isRecording = !isRecording;
+        }
+
+        // Convert audio buffer to 16-bit PCM at 16kHz
+        function convertToPCM(audioBuffer) {
+            const numChannels = 1; // Mono
+            const sampleRate = 16000;
+            const bytesPerSample = 2;
+            
+            // Resample if necessary
+            let samples = audioBuffer.getChannelData(0);
+            if (audioBuffer.sampleRate !== sampleRate) {
+                samples = resampleAudio(samples, audioBuffer.sampleRate, sampleRate);
+            }
+            
+            const buffer = new ArrayBuffer(samples.length * bytesPerSample);
+            const view = new DataView(buffer);
+            
+            for (let i = 0; i < samples.length; i++) {
+                const s = Math.max(-1, Math.min(1, samples[i]));
+                view.setInt16(i * bytesPerSample, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+            }
+            
+            return buffer;
+        }
+
+        // Simple linear resampling
+        function resampleAudio(audioData, oldSampleRate, newSampleRate) {
+            const ratio = oldSampleRate / newSampleRate;
+            const newLength = Math.round(audioData.length / ratio);
+            const result = new Float32Array(newLength);
+            
+            for (let i = 0; i < newLength; i++) {
+                const oldIndex = Math.floor(i * ratio);
+                result[i] = audioData[oldIndex];
+            }
+            
+            return result;
+        }
+
+        // Play audio response from the server
+        async function playAudioResponse(audioData) {
+            try {
+                const audioContext = new AudioContext();
+                const audioBuffer = await audioContext.decodeAudioData(audioData);
+                const source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+            } catch (err) {
+                console.error('Error playing audio response:', err);
+            }
+        }
+
+        // Initialize everything when the page loads
+        window.onload = () => {
+            connect();
+            initializeAudio();
+        };
+    </script>
+</body>
+</html>

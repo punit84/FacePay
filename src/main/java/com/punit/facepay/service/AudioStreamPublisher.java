@@ -6,28 +6,63 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.transcribestreaming.model.AudioEvent;
 import software.amazon.awssdk.services.transcribestreaming.model.AudioStream;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class AudioStreamPublisher implements Publisher<AudioStream>, AutoCloseable {
-    private final InputStream inputStream;
     private final ExecutorService executor;
     private static final int CHUNK_SIZE_IN_BYTES = 1024 * 1;
     private final AtomicLong demand = new AtomicLong(0);
     private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final LinkedBlockingQueue<ByteBuffer> audioQueue;
+    private Subscriber<? super AudioStream> subscriber;
 
-    public AudioStreamPublisher(InputStream inputStream) {
-        if (inputStream == null) {
-            throw new IllegalArgumentException("InputStream cannot be null");
-        }
-        this.inputStream = inputStream;
+    public AudioStreamPublisher() {
         this.executor = Executors.newFixedThreadPool(1);
+        this.audioQueue = new LinkedBlockingQueue<>();
+    }
+
+    public AudioStreamPublisher(java.io.InputStream inputStream) {
+        this();
+        // Start a thread to read from the input stream
+        executor.submit(() -> {
+            try {
+                byte[] buffer = new byte[CHUNK_SIZE_IN_BYTES];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1 && !closed.get()) {
+                    if (bytesRead > 0) {
+                        ByteBuffer audioBuffer = ByteBuffer.allocate(bytesRead);
+                        audioBuffer.put(buffer, 0, bytesRead);
+                        audioBuffer.flip();
+                        addAudioChunk(audioBuffer);
+                    }
+                }
+            } catch (Exception e) {
+                if (subscriber != null) {
+                    subscriber.onError(e);
+                }
+            } finally {
+                try {
+                    inputStream.close();
+                } catch (Exception e) {
+                    // Ignore close errors
+                }
+            }
+        });
+    }
+
+    public void addAudioChunk(ByteBuffer audioData) {
+        if (!closed.get()) {
+            audioQueue.offer(audioData.duplicate());
+            if (subscriber != null && demand.get() > 0) {
+                processNextChunk();
+            }
+        }
     }
 
     @Override
@@ -37,6 +72,7 @@ public class AudioStreamPublisher implements Publisher<AudioStream>, AutoCloseab
             return;
         }
 
+        this.subscriber = s;
         s.onSubscribe(new org.reactivestreams.Subscription() {
             @Override
             public void request(long n) {
@@ -51,25 +87,7 @@ public class AudioStreamPublisher implements Publisher<AudioStream>, AutoCloseab
                 }
 
                 demand.addAndGet(n);
-                executor.submit(() -> {
-                    try {
-                        while (demand.get() > 0 && !closed.get()) {
-                            ByteBuffer audioBuffer = readNextChunk();
-                            if (audioBuffer.remaining() > 0) {
-                                AudioEvent audioEvent = AudioEvent.builder()
-                                        .audioChunk(SdkBytes.fromByteBuffer(audioBuffer))
-                                        .build();
-                                s.onNext(audioEvent);
-                                demand.decrementAndGet();
-                            } else {
-                                s.onComplete();
-                                break;
-                            }
-                        }
-                    } catch (Exception e) {
-                        s.onError(e);
-                    }
-                });
+                processNextChunk();
             }
 
             @Override
@@ -79,33 +97,33 @@ public class AudioStreamPublisher implements Publisher<AudioStream>, AutoCloseab
         });
     }
 
-    private ByteBuffer readNextChunk() throws IOException {
-        if (closed.get()) {
-            throw new IOException("Stream is closed");
-        }
-
-        byte[] audioChunk = new byte[CHUNK_SIZE_IN_BYTES];
-        int len;
-        try {
-            len = inputStream.read(audioChunk);
-        } catch (IOException e) {
-            close();
-            throw e;
-        }
-
-        if (len <= 0) {
-            return ByteBuffer.allocate(0);
-        }
-        return ByteBuffer.wrap(audioChunk, 0, len);
+    private void processNextChunk() {
+        executor.submit(() -> {
+            try {
+                while (demand.get() > 0 && !closed.get()) {
+                    ByteBuffer audioBuffer = audioQueue.poll();
+                    if (audioBuffer != null && audioBuffer.remaining() > 0) {
+                        AudioEvent audioEvent = AudioEvent.builder()
+                                .audioChunk(SdkBytes.fromByteBuffer(audioBuffer))
+                                .build();
+                        subscriber.onNext(audioEvent);
+                        demand.decrementAndGet();
+                    } else {
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
     }
 
     @Override
     public void close() {
         if (closed.compareAndSet(false, true)) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                // Log error but continue with cleanup
+            audioQueue.clear();
+            if (subscriber != null) {
+                subscriber.onComplete();
             }
             
             executor.shutdown();

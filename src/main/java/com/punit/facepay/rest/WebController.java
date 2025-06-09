@@ -80,4 +80,9 @@ public class WebController {
 		return "support";
 	}
 
+	@RequestMapping(value = "/voice")
+	public String voice() {
+		return "voiceChat";
+	}
+
 }
