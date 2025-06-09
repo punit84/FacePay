@@ -76,7 +76,7 @@ public class LLMGuardrails {
                 .type(HATE).inputStrength(HIGH).outputStrength(HIGH)
                 .type(SEXUAL).inputStrength(HIGH).outputStrength(HIGH)
                 .type(VIOLENCE).inputStrength(HIGH).outputStrength(HIGH)
-                .type(PROMPT_ATTACK).inputStrength(HIGH).outputStrength(NONE);
+                .type(PROMPT_ATTACK).inputStrength(HIGH).outputStrength(GuardrailFilterStrength.NONE);
     }
 
     /**

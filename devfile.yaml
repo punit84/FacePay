@@ -7,7 +7,7 @@ commands:
   - id: install
     exec:
       component: dev
-      commandLine: "mvn dependency:go-offline"
+      commandLine: "mvn dependency:resolve"
   - id: build
     exec:
       component: dev
