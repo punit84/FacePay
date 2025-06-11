@@ -19,13 +19,14 @@
         </parent>
 
         <properties>
-                <java.version>17</java.version>
                 <spring-boot.version>3.0.0</spring-boot.version>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-                <aws.sdk.version>2.31.60</aws.sdk.version>
-                <maven.compiler.source>${java.version}</maven.compiler.source>
-                <maven.compiler.target>${java.version}</maven.compiler.target>
+                <aws.sdk.version>2.31.38</aws.sdk.version>
+                <jetty.version>11.0.25</jetty.version>
+                <maven.compiler.source>17</maven.compiler.source>
+                <maven.compiler.target>17</maven.compiler.target>
+                <jackson.version>2.15.2</jackson.version>
         </properties>
 
         <dependencyManagement>
@@ -50,12 +51,8 @@
 
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>
-                        <artifactId>textract</artifactId>
-                </dependency>
-                <dependency>
-                        <groupId>software.amazon.awssdk</groupId>
                         <artifactId>bedrockruntime</artifactId>
-                        <version>2.31.60</version> <!-- Replace with latest version if needed -->
+                        <version>2.31.38</version> <!-- Replace with latest version if needed -->
                 </dependency>
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>
@@ -68,6 +65,10 @@
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>
                         <artifactId>polly</artifactId>
+                </dependency>
+                <dependency>
+                        <groupId>software.amazon.awssdk</groupId>
+                        <artifactId>textract</artifactId>
                 </dependency>
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>
@@ -115,29 +116,35 @@
                         <artifactId>spring-boot-starter-validation</artifactId>
                 </dependency>
                 <!-- Jetty Server -->
+                <!-- Jetty Server -->
                 <dependency>
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-server</artifactId>
-                        <version>11.0.25</version>
+                        <version>${jetty.version}</version>
                 </dependency>
+                <dependency>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-servlet</artifactId>
+                        <version>${jetty.version}</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.eclipse.jetty.websocket</groupId>
+                        <artifactId>websocket-jetty-server</artifactId>
+                        <version>${jetty.version}</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-webapp</artifactId>
+                        <version>${jetty.version}</version>
+                </dependency>
+
                 <dependency>
                         <groupId>com.google.guava</groupId>
                         <artifactId>guava</artifactId>
                         <version>33.1.0-jre</version> <!-- Use the latest stable version -->
                 </dependency>
                 <!-- Jetty Servlet -->
-                <dependency>
-                        <groupId>org.eclipse.jetty</groupId>
-                        <artifactId>jetty-servlet</artifactId>
-                        <version>11.0.25</version>
-                </dependency>
 
-                <!-- Jetty WebSocket Server -->
-                <dependency>
-                        <groupId>org.eclipse.jetty.websocket</groupId>
-                        <artifactId>websocket-jetty-server</artifactId>
-                        <version>11.0.25</version>
-                </dependency>
 
                 <!-- Utility Dependencies -->
                 <dependency>
@@ -148,7 +155,7 @@
                 <dependency>
                         <groupId>com.fasterxml.jackson.core</groupId>
                         <artifactId>jackson-databind</artifactId>
-                        <version>2.15.2</version>
+                        <version>${jackson.version}</version>
                 </dependency>
                 <dependency>
                         <groupId>org.json</groupId>
