@@ -27,26 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-
-@Getter
-public class ChatTurn {
-    private final String role;
-    private final String content;
-
-    public ChatTurn(String role, String content) {
-        this.role = role;
-        this.content = content;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public String getContent() {
-        return content;
-    }
-}
-
 public class OutputEventsInteractObserver implements InteractObserver<String> {
     private static final Logger log = LoggerFactory.getLogger(OutputEventsInteractObserver.class);
     private final ObjectMapper objectMapper;
