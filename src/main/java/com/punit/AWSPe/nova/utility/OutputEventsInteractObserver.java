@@ -16,6 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.WebSocketMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.time.*;
@@ -30,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class OutputEventsInteractObserver implements InteractObserver<String> {
     private static final Logger log = LoggerFactory.getLogger(OutputEventsInteractObserver.class);
     private final ObjectMapper objectMapper;
-    private final Session session;
+    private final WebSocketSession session;
     private final List<ChatTurn> localChatHistory;
     private String promptId = "";
     @Setter
@@ -41,7 +43,7 @@ public class OutputEventsInteractObserver implements InteractObserver<String> {
     AtomicReference<String> role = new AtomicReference<>("");
     AtomicReference<String> generationStage = new AtomicReference<>("");
 
-    public OutputEventsInteractObserver(Session session) {
+    public OutputEventsInteractObserver(WebSocketSession session) {
         this.session = session;
         this.objectMapper = new ObjectMapper();
         this.localChatHistory = new ArrayList<>();
@@ -335,7 +337,8 @@ public class OutputEventsInteractObserver implements InteractObserver<String> {
     private void sendToUI(String msg) {
         try {
             if (session.isOpen()) {
-                session.getRemote().sendString(msg);
+                //session.sendMessage(new WebSocketMessage(msg) {
+                //});
             } else {
                 log.debug("Ignoring as session is already closed");
             }
@@ -361,7 +364,8 @@ public class OutputEventsInteractObserver implements InteractObserver<String> {
     public void onComplete() {
         log.info("Output complete");
         try {
-            session.close(1000, "Output complete");
+            session.close();
+//            session.close(1000, "Output complete");
         } catch (Exception e) {
             log.error("Error closing session", e);
         }
@@ -371,7 +375,9 @@ public class OutputEventsInteractObserver implements InteractObserver<String> {
     public void onError(Exception error) {
         log.error("Error occurred", error);
         try {
-            session.close(1011, "Error occurred: " + error.getMessage());
+            session.close();
+
+            // session.close(1011, "Error occurred: " + error.getMessage());
         } catch (Exception e) {
             log.error("Error closing session", e);
         }

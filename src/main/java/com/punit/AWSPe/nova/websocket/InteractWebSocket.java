@@ -7,28 +7,29 @@ import com.punit.AWSPe.nova.utility.NovaSonicBedrockInteractClient;
 import com.punit.AWSPe.nova.utility.OutputEventsInteractObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class InteractWebSocket implements WebSocketListener {
+public class InteractWebSocket extends BinaryWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(InteractWebSocket.class);
 
     private final NovaSonicBedrockInteractClient interactClient;
     private AtomicBoolean expectedInitialRequest = new AtomicBoolean(true);
-    private Session session;
+    private WebSocketSession session;
     private InteractObserver<String> inputObserver;
 
     public InteractWebSocket(NovaSonicBedrockInteractClient interactClient) {
         this.interactClient = interactClient;
     }
 
-    @Override
-    public void onWebSocketConnect(Session session) {
+    public void onWebSocketConnect(WebSocketSession session) {
         log.info("Web socket connected session={}", session);
         this.session = session;
     }
 
-    @Override
+
     public void onWebSocketText(String jsonText) {
         if (expectedInitialRequest.compareAndSet(true, false)) {
             handleInitialRequest(jsonText);
@@ -59,18 +60,18 @@ public class InteractWebSocket implements WebSocketListener {
         }
     }
 
-    @Override
+  //  @Override
     public void onWebSocketBinary(byte[] payload, int offset, int len) {
         throw new UnsupportedOperationException("Binary websocket not yet implemented");
     }
 
-    @Override
+  //  @Override
     public void onWebSocketError(Throwable t) {
         log.error("WebSocket error", t);
         throw new RuntimeException("WebSocket error", t);
     }
 
-    @Override
+  //  @Override
     public void onWebSocketClose(int statusCode, String reason) {
         log.info("onWebSocketClose: code={} reason={}", statusCode, reason);
         if (inputObserver != null) {
