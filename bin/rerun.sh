@@ -41,3 +41,18 @@ fi
 echo "Starting bin/qart.py..."
 
 nohup python3 -u bin/qart.py > logs/qart.log 2>&1 &
+
+
+echo  "Find the process ID (PID) of main.py"
+PID=$(ps -ef | grep 'main.py' | grep -v grep | awk '{print $2}')
+
+if [ -z "$PID" ]; then
+  echo "main.py is not running."
+else
+  echo "Killing main.py process (PID: $PID)..."
+  kill $PID
+fi
+
+# Run qart.py again in the background
+
+nohup streamlit run main.py > logs/voice.log 2>&1 &

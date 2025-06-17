@@ -6,7 +6,8 @@ import Configs
 
 KB_ID = Configs.CONFIG['sonic']['kb_id']
 KB_REGION = 'us-east-1'
-bedrock_agent_runtime = boto3.client('bedrock-agent-runtime', region_name=KB_REGION, aws_access_key_id=Configs.CONFIG['aws']['access_key_id'],aws_secret_access_key=Configs.CONFIG['aws']['secret_access_key'])
+#bedrock_agent_runtime = boto3.client('bedrock-agent-runtime', region_name=KB_REGION, aws_access_key_id=Configs.CONFIG['aws']['access_key_id'],aws_secret_access_key=Configs.CONFIG['aws']['secret_access_key'])
+bedrock_agent_runtime = boto3.client('bedrock-agent-runtime', region_name='us-east-1')
 
 
 def retrieve_kb(query):

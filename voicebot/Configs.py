@@ -2,8 +2,6 @@ import pyaudio
 
 CONFIG = {
     "aws":{
-        "access_key_id": "A..FA",
-        "secret_access_key": "iW..pK",
         "region": "us-east-1",
     },
     "audio":{

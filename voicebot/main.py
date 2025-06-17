@@ -11,6 +11,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import wave
 import io
+from botocore.config import Config
 import traceback
 from aws_sdk_bedrock_runtime.client import BedrockRuntimeClient, InvokeModelWithBidirectionalStreamOperationInput
 from aws_sdk_bedrock_runtime.models import InvokeModelWithBidirectionalStreamInputChunk, BidirectionalInputPayloadPart
@@ -658,9 +659,9 @@ async def main():
 
 if __name__ == "__main__":
 
-    os.environ['AWS_ACCESS_KEY_ID'] = Configs.CONFIG['aws']['access_key_id']
-    os.environ['AWS_SECRET_ACCESS_KEY'] = Configs.CONFIG['aws']['secret_access_key']
-    os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
+    #os.environ['AWS_ACCESS_KEY_ID'] = Configs.CONFIG['aws']['access_key_id']
+    #s.environ['AWS_SECRET_ACCESS_KEY'] = Configs.CONFIG['aws']['secret_access_key']
+    #os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
     os.environ['KB_ID'] = Configs.CONFIG['sonic']['kb_id']
 
     # Streamlit stuff
