@@ -1,2 +1,2 @@
-Main-Class: com.punit.facepay.AWSPeApplication
+Main-Class: com.punit.AWSPe.AWSPeApplication
 

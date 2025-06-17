@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Chat</title>
+    <style>
+        .controls {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button id="startButton">Start Voice Chat</button>
+        <button id="stopButton" disabled>Stop Voice Chat</button>
+        <div id="status">Not connected</div>
+    </div>
+
+    <script>
+        let websocket = null;
+        let mediaRecorder = null;
+        let audioContext = null;
+        let isRecording = false;
+
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const statusDiv = document.getElementById('status');
+
+        async function initializeAudio() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new AudioContext();
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0 && websocket && websocket.readyState === WebSocket.OPEN) {
+                        websocket.send(event.data);
+                    }
+                };
+
+                return true;
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                statusDiv.textContent = 'Error: Could not access microphone';
+                return false;
+            }
+        }
+
+        function connectWebSocket() {
+            try {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                // For localhost testing, use explicit port if not present in window.location.host
+                const host = window.location.host || 'localhost:8080';
+                const wsUrl = `${protocol}//${host}/voice`;
+                
+                console.log('Attempting to connect to WebSocket at:', wsUrl);
+                websocket = new WebSocket(wsUrl);
+                
+                websocket.onopen = () => {
+                    console.log('WebSocket connection established');
+                    statusDiv.textContent = 'Connected';
+                    startButton.disabled = true;
+                    stopButton.disabled = false;
+                    startRecording();
+                };
+
+            websocket.onclose = () => {
+                statusDiv.textContent = 'Disconnected';
+                startButton.disabled = false;
+                stopButton.disabled = true;
+                stopRecording();
+            };
+
+            websocket.onmessage = async (event) => {
+                // Handle incoming voice data
+                const blob = event.data;
+                const arrayBuffer = await blob.arrayBuffer();
+                const audioContext = new AudioContext();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                
+                const source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContext.destination);
+                source.start();
+            };
+
+            websocket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                statusDiv.textContent = 'Error: WebSocket connection failed. Check if the server is running on ' + host;
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            };
+        } catch (error) {
+            console.error('Error creating WebSocket:', error);
+            statusDiv.textContent = 'Error: Could not create WebSocket connection';
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+        }
+
+        function startRecording() {
+            if (mediaRecorder && !isRecording) {
+                mediaRecorder.start(100); // Capture data every 100ms
+                isRecording = true;
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+            }
+        }
+
+        startButton.onclick = async () => {
+            if (await initializeAudio()) {
+                connectWebSocket();
+            }
+        };
+
+        stopButton.onclick = () => {
+            if (websocket) {
+                websocket.close();
+            }
+            stopRecording();
+        };
+    </script>
+</body>
+</html>
