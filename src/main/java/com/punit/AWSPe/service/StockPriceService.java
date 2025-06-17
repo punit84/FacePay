@@ -40,7 +40,7 @@ public class StockPriceService {
             String companyName = extractCompanyName(query);
             String symbol = findSymbol(companyName);
             if (symbol == null) {
-                StockResponse res= new StockResponse(companyName, symbol, "Current price: NA");
+                StockResponse res= new StockResponse(companyName, "NA", "Company name not found");
                 return   mapper.writeValueAsString(res);
             }
             double price = fetchPrice(symbol);
