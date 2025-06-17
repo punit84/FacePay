@@ -165,7 +165,6 @@ public class AWSPeRestController {
 		try {
 
 			 respString= stockService.handleQuery(stock);
-
 			logger.info(" final response is "+respString);
 		} catch (Exception e) {
 			logger.error("Server error " + e.getMessage());
