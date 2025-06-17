@@ -2,6 +2,7 @@ package com.punit.AWSPe.service.helper;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,12 +13,15 @@ import org.springframework.stereotype.Component;
 
 import com.punit.AWSPe.service.Configs;
 
+import org.springframework.web.client.RestTemplate;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeAsyncClient;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
-import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelRequest;
-import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelResponse;
+import software.amazon.awssdk.services.bedrockruntime.model.*;
 
 @Component
 public class BedrockUtil {
@@ -27,21 +31,28 @@ public class BedrockUtil {
 
     @Autowired
     private PromptGenerator promptGenerator;
+    BedrockRuntimeClient client;
 
     final static Logger logger = LoggerFactory.getLogger(BedrockUtil.class);
 
-    public static void main(String[] args) {
-
-        BedrockRuntimeClient client = BedrockRuntimeClient.builder()
-                .region(Configs.REGION)
+    public BedrockUtil() {
+        this.client = BedrockRuntimeClient.builder()
+                .region(Region.US_EAST_1)
                 .credentialsProvider(ProfileCredentialsProvider.create())
-
                 .build();
-        //		BedrockUtill.invokeClaude("provide 4-5 line summary of  given face detail and predict humand details \n"
-        //				+ "[FaceDetail(BoundingBox=BoundingBox(Width=0.25544488, Height=0.3909185, Left=0.35042447, Top=0.19347797), AgeRange=AgeRange(Low=31, High=39), Smile=Smile(Value=false, Confidence=88.38633), Eyeglasses=Eyeglasses(Value=false, Confidence=99.916435), Sunglasses=Sunglasses(Value=false, Confidence=99.99473), Gender=Gender(Value=Male, Confidence=99.22574), Beard=Beard(Value=true, Confidence=98.61274), Mustache=Mustache(Value=true, Confidence=70.31538), EyesOpen=EyeOpen(Value=true, Confidence=98.19997), MouthOpen=MouthOpen(Value=false, Confidence=99.52749), Emotions=[Emotion(Type=CALM, Confidence=100.0), Emotion(Type=HAPPY, Confidence=0.0060796738), Emotion(Type=FEAR, Confidence=2.9206276E-4), Emotion(Type=DISGUSTED, Confidence=2.3245811E-4), Emotion(Type=SAD, Confidence=1.7881393E-4), Emotion(Type=SURPRISED, Confidence=4.4703484E-5), Emotion(Type=ANGRY, Confidence=1.1920929E-5), Emotion(Type=CONFUSED, Confidence=1.1920929E-5)], Landmarks=[Landmark(Type=eyeLeft, X=0.43098167, Y=0.33953437), Landmark(Type=eyeRight, X=0.5416262, Y=0.3586149), Landmark(Type=mouthLeft, X=0.4224637, Y=0.46836543), Landmark(Type=mouthRight, X=0.5148277, Y=0.4842749), Landmark(Type=nose, X=0.48030612, Y=0.41992703), Landmark(Type=leftEyeBrowLeft, X=0.39201882, Y=0.30190095), Landmark(Type=leftEyeBrowRight, X=0.46026522, Y=0.30661464), Landmark(Type=leftEyeBrowUp, X=0.42843854, Y=0.293875), Landmark(Type=rightEyeBrowLeft, X=0.5235607, Y=0.3175142), Landmark(Type=rightEyeBrowRight, X=0.58431613, Y=0.33481872), Landmark(Type=rightEyeBrowUp, X=0.55592674, Y=0.31576887), Landmark(Type=leftEyeLeft, X=0.41069523, Y=0.33515522), Landmark(Type=leftEyeRight, X=0.45245424, Y=0.34440225), Landmark(Type=leftEyeUp, X=0.43160564, Y=0.3331868), Landmark(Type=leftEyeDown, X=0.43048057, Y=0.34521276), Landmark(Type=rightEyeLeft, X=0.51924324, Y=0.35591522), Landmark(Type=rightEyeRight, X=0.56063044, Y=0.36091897), Landmark(Type=rightEyeUp, X=0.5426872, Y=0.35231575), Landmark(Type=rightEyeDown, X=0.5400754, Y=0.36405468), Landmark(Type=noseLeft, X=0.45483372, Y=0.42841393), Landmark(Type=noseRight, X=0.4957919, Y=0.43539867), Landmark(Type=mouthUp, X=0.47147122, Y=0.46236923), Landmark(Type=mouthDown, X=0.46552765, Y=0.5001743), Landmark(Type=leftPupil, X=0.43098167, Y=0.33953437), Landmark(Type=rightPupil, X=0.5416262, Y=0.3586149), Landmark(Type=upperJawlineLeft, X=0.35867757, Y=0.32551366), Landmark(Type=midJawlineLeft, X=0.36294374, Y=0.46749434), Landmark(Type=chinBottom, X=0.45471728, Y=0.5645863), Landmark(Type=midJawlineRight, X=0.5587331, Y=0.50070554), Landmark(Type=upperJawlineRight, X=0.5998669, Y=0.36667028)], Pose=Pose(Roll=7.7445073, Yaw=0.9672852, Pitch=1.5708907), Quality=ImageQuality(Brightness=87.34692, Sharpness=92.22801), Confidence=99.99985, FaceOccluded=FaceOccluded(Value=false, Confidence=99.93733), EyeDirection=EyeDirection(Yaw=-4.984548, Pitch=-11.698688, Confidence=99.988754))]");
-        //
 
+        // Step 1: Create the Amazon Bedrock runtime client
+        // The runtime client handles the communication with AI models on Amazon Bedrock
+//        BedrockRuntimeClient client = BedrockRuntimeClient.builder()
+//                .credentialsProvider(DefaultCredentialsProvider.create())
+//                .region(Region.US_EAST_1)
+//                .build();
     }
+//    public BedrockUtil() {
+//        this.client =  BedrockRuntimeClient.builder()
+//                .region(Configs.REGION)
+//                .credentialsProvider(ProfileCredentialsProvider.create())
+//    }
 
 
     public static String InvokeModelLama3(String userMessage) {
@@ -84,6 +95,84 @@ public class BedrockUtil {
         var responseText = nativeResponse.getString("generation");
         logger.info(responseText);
         return responseText;
+
+    }
+
+
+    public String converse(String prompt) {
+
+        // Step 2: Specify which model to use
+        // Available Amazon Nova models and their characteristics:
+        // - Amazon Nova Micro: Text-only model optimized for lowest latency and cost
+        // - Amazon Nova Lite:  Fast, low-cost multimodal model for image, video, and text
+        // - Amazon Nova Pro:   Advanced multimodal model balancing accuracy, speed, and cost
+        //
+        // For the latest available models, see:
+        // https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html
+        String modelId = "amazon.nova-lite-v1:0";
+
+        // Step 3: Create the message
+        // The message includes the text prompt and specifies that it comes from the user
+        var message = Message.builder()
+                .content(ContentBlock.fromText(prompt))
+                .role(ConversationRole.USER)
+                .build();
+
+        // Step 4: Configure the request
+        // Optional parameters to control the model's response:
+        // - maxTokens: maximum number of tokens to generate
+        // - temperature: randomness (max: 1.0, default: 0.7)
+        //   OR
+        // - topP: diversity of word choice (max: 1.0, default: 0.9)
+        // Note: Use either temperature OR topP, but not both
+        ConverseRequest request = ConverseRequest.builder()
+                .modelId(modelId)
+                .messages(message)
+                .inferenceConfig(config -> config
+                                .maxTokens(50)     // The maximum response length
+                                .temperature(0.5F)  // Using temperature for randomness control
+                        //.topP(0.9F)       // Alternative: use topP instead of temperature
+                ).build();
+
+        // Step 5: Send and process the request
+        // - Send the request to the model
+        // - Extract and return the generated text from the response
+        try {
+            ConverseResponse response = client.converse(request);
+            return response.output().message().content().get(0).text();
+
+        } catch (SdkClientException e) {
+            System.err.printf("ERROR: Can't invoke '%s'. Reason: %s", modelId, e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+    public String invokeNovaPro(String prompt) {
+
+        if (client == null){
+             client = BedrockRuntimeClient.builder()
+                    .region(Region.AP_SOUTH_1)
+                    .build();
+        }
+        // Set the model ID, e.g., Llama 3 8B Instruct.
+        String novaModel = "amazon.nova-pro-v1:0";
+
+
+        System.out.println(prompt.toString());
+        InvokeModelRequest request = InvokeModelRequest.builder()
+                .modelId(novaModel) // Use amazon.nova-chat or amazon.nova-pro depending on your access
+                .contentType("application/json")
+                .accept("application/json")
+                .body(SdkBytes.fromUtf8String(prompt))
+                .build();
+
+
+        System.out.println(request.toString());
+
+        InvokeModelResponse response = client.invokeModel(request);
+        System.out.println(response.body().asUtf8String());
+
+
+        return response.body().asUtf8String();
 
     }
 

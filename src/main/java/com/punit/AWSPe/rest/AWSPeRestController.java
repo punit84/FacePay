@@ -3,18 +3,13 @@ package com.punit.AWSPe.rest;
 import java.io.IOException;
 import java.util.Map;
 
+import com.punit.AWSPe.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.punit.AWSPe.service.Configs;
-import com.punit.AWSPe.service.FaceNotFoundException;
-import com.punit.AWSPe.service.FaceScanService;
-import com.punit.AWSPe.service.KYCRestService;
-
 
 
 @RestController
@@ -27,11 +22,16 @@ public class AWSPeRestController {
 	@Autowired(required=true)
 	private static KYCRestService kycService;
 
-	final static Logger logger = LoggerFactory.getLogger(AWSPeRestController.class);
+	@Autowired(required=true)
+	private static StockPriceService stockService;
 
-	public AWSPeRestController(FaceScanService faceScanService, KYCRestService kycService) {
+	final static Logger logger = LoggerFactory.getLogger(AWSPeRestController.class);
+	private final StockPriceService stockPriceService;
+
+	public AWSPeRestController(FaceScanService faceScanService, KYCRestService kycService, StockPriceService stockPriceService) {
 		this.facepayService = faceScanService;
 		this.kycService = kycService;
+		this.stockPriceService = stockPriceService;
 	}
 
 	@PostMapping("/facepay")
@@ -159,6 +159,25 @@ public class AWSPeRestController {
 		return ResponseEntity.ok(result);
 	}
 
+
+	@GetMapping ("/stockprice")
+	public Object stockprice( @RequestParam String stock) throws IOException {
+		String respString = null;
+		try {
+
+			respString = stockService.getprice(stock);
+
+			logger.info(" final response is "+respString);
+			System.out.println(" final response is "+respString);
+			if (respString == null) {
+				return ResponseEntity.ok(Configs.FACE_NOTFOUND);
+			}
+		} catch (Exception e) {
+			logger.error("Server error " + e.getMessage());
+			return ResponseEntity.ok(Configs.SERVER_ERROR);
+		}
+		return ResponseEntity.ok(respString);
+	}
 
 	@GetMapping("/doctype")
 	public Map<String, Object> getDocumentTypes() {
