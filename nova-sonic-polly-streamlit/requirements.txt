@@ -1,0 +1,8 @@
+Pillow
+pyaudio
+boto3
+streamlit
+aws-sdk-bedrock-runtime
+smithy-aws-core
+pytz
+requests
