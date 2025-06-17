@@ -1,0 +1,3 @@
+- Python version required : Python 3.13.5
+- requirements.txt has all the dependencies
+- To run : streamlit run main.py
