@@ -22,8 +22,7 @@ public class AWSPeRestController {
 	@Autowired(required=true)
 	private static KYCRestService kycService;
 
-	@Autowired(required=true)
-	private static StockPriceService stockService;
+	private static StockPriceService stockService = new StockPriceService();
 
 	final static Logger logger = LoggerFactory.getLogger(AWSPeRestController.class);
 	private final StockPriceService stockPriceService;
@@ -160,18 +159,14 @@ public class AWSPeRestController {
 	}
 
 
-	@GetMapping ("/stockprice")
+	@GetMapping ("/price")
 	public Object stockprice( @RequestParam String stock) throws IOException {
 		String respString = null;
 		try {
 
-			respString = stockService.getprice(stock);
+			 respString= stockService.handleQuery(stock);
 
 			logger.info(" final response is "+respString);
-			System.out.println(" final response is "+respString);
-			if (respString == null) {
-				return ResponseEntity.ok(Configs.FACE_NOTFOUND);
-			}
 		} catch (Exception e) {
 			logger.error("Server error " + e.getMessage());
 			return ResponseEntity.ok(Configs.SERVER_ERROR);
