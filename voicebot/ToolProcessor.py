@@ -45,7 +45,6 @@ class ToolProcessor:
             if task_id in self.tasks:
                 del self.tasks[task_id]
 
-
     async def _run_tool(self, tool_name, tool_content):
         """Internal method to execute the tool logic"""
         print(f"== Processing tool: {tool_name}")

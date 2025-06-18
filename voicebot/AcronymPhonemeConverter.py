@@ -14,7 +14,12 @@ class AcronymPhonemeConverter:
             "MTU": "ˌɛm.tiːˈjuː",
             "PPSL": "ˌpiː.piː.ɛsˈɛl",
             "Paytm": "ˈpeɪ.tiː.ɛm",
-            "EBITDA": "ˈiː.bɪt.dɑː"
+            "EBITDA": "ˈiː.bɪt.dɑː",
+            "mutabik": "muːˈt̪aː.bɪk",
+            "QoQ": "ˌkjuː.əʊˈkjuː",
+            "MoM": "ˌɛm.əʊˈɛm",
+            "YoY": "ˌwaɪ.əʊˈwaɪ"
+
         }
 
         # Precompile regex pattern

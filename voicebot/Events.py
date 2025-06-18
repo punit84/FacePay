@@ -156,7 +156,7 @@ def start_prompt(self):
         "properties": {
             "query": {
                 "type": "string",
-                "description": "The search query to find relevant information"
+                "description": "Search the company knowledge base for past transaction history or information on key financial metrics of Paytm and Mobikwik"
             }
         },
         "required": ["query"]
@@ -182,22 +182,25 @@ def start_prompt(self):
                     "mediaType": "application/json"
                 },
                 "toolConfiguration": {
+                    "toolChoice": {
+                        "auto": {}
+                    },
                     "tools": [
+                        {
+                            "toolSpec": {
+                                "name": "knowledgeBase",
+                                "description": "Search the company knowledge base for past transaction history or information on key financial metrics of Paytm and Mobikwik",
+                                "inputSchema": {
+                                    "json": get_kb_schema
+                                }
+                            }
+                        },
                         {
                             "toolSpec": {
                                 "name": "getDateAndTimeTool",
                                 "description": "get information about the current date and time",
                                 "inputSchema": {
                                     "json": get_default_tool_schema
-                                }
-                            }
-                        },
-                        {
-                            "toolSpec": {
-                                "name": "trackPaymentTool",
-                                "description": "Retrieves real-time information and detailed status updates for customer UPI payment by UPI ID. Provides estimated completion dates. Use this tool when customers ask about their UPI payment status or completion timeline.",
-                                "inputSchema": {
-                                    "json": get_payment_tracking_schema
                                 }
                             }
                         },
@@ -212,10 +215,10 @@ def start_prompt(self):
                         },
                         {
                             "toolSpec": {
-                                "name": "knowledgeBase",
-                                "description": "Search the company knowledge base for information",
+                                "name": "trackPaymentTool",
+                                "description": "Retrieves real-time information and detailed status updates for customer UPI payment by UPI ID. Provides estimated completion dates. Use this tool when customers ask about their UPI payment status or completion timeline.",
                                 "inputSchema": {
-                                    "json": get_kb_schema
+                                    "json": get_payment_tracking_schema
                                 }
                             }
                         }

@@ -146,6 +146,8 @@ class SimpleNovaSonic:
         # Add tracking for in-progress tool calls
         self.pending_tool_tasks = {}
 
+        self.bot_speaking = False
+
     def _initialize_client(self):
         """Initialize the Bedrock client."""
         config = Config(
@@ -280,10 +282,8 @@ class SimpleNovaSonic:
         try:
             while self.is_active:
                 try:
-
                     output = await self.stream.await_output()
                     result = await output[1].receive()
-
                     if result is not None:
                         if result.value and result.value.bytes_:
                             response_data = result.value.bytes_.decode('utf-8')
@@ -380,8 +380,8 @@ class SimpleNovaSonic:
                                             self.handle_tool_request(self.toolName, self.toolUseContent, self.toolUseId)
                                             print("Processing tool use asynchronously")
 
-                                        #elif 'contentEnd' in json_data['event']:
-                                        #    print("Content end")
+                                #elif 'contentEnd' in json_data['event']:
+                                #    print("Content end")
 
                                 elif 'completionEnd' in json_data['event']:
                                             print("End of response sequence")
@@ -393,6 +393,10 @@ class SimpleNovaSonic:
 
                 except Exception as e:
                     print(f"Found Error processing responses, skipping & proceeding to next event: {e}")
+                    # Invalid event bytes.
+                    # The system encountered an unexpected error during processing. Try your request again.
+                    # Timed out waiting for input events
+                    # Checksum mismatch: expected 0x4d6d466d, calculated 0xa3a39e81
                     continue
 
         except Exception as e:
@@ -487,8 +491,10 @@ class SimpleNovaSonic:
             try:
                 while self.is_active:
                     audio_data = await self.audio_queue.get()
+                    self.bot_speaking =  True
                     stream.write(audio_data)
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(0.1)
+                self.bot_speaking = False
             except Exception as e:
                 print(f"Error playing audio: {e}")
             finally:
@@ -512,11 +518,14 @@ class SimpleNovaSonic:
                                                         channels=Configs.CONFIG['audio']['channels'],
                                                         sample_width=2)  # Usually 2 for 16-bit audio
                         # stream.write(audio_data)
+                        self.bot_speaking = True
                         playback_task = asyncio.to_thread(stream.write, audio_data)
+
                         with placeholder:
                             self.render_waveform(b64_audio)
                         await playback_task
-                        await asyncio.sleep(0.05)  # Slight delay to allow render
+                        await asyncio.sleep(0.1)  # Slight delay to allow render
+                        self.bot_speaking = False
                 except Exception as e:
                     print(f"Error playing audio: {e}")
                 finally:
@@ -611,10 +620,12 @@ class SimpleNovaSonic:
 
         try:
             while self.is_active:
+                if self.bot_speaking:
+                    await asyncio.sleep(1)
+                    continue
                 audio_data = stream.read(Configs.CONFIG['audio']['chunk_size'], exception_on_overflow=False)
                 await self.send_audio_chunk(audio_data)
                 await asyncio.sleep(0.01)
-
         except Exception as e:
             print(f"Error capturing audio: {e}")
         finally:
@@ -671,15 +682,25 @@ if __name__ == "__main__":
         "[Model architecture](https://docs.aws.amazon.com/nova/latest/userguide/speech.html#speech-architecture)"
         "[Sample code](https://github.com/aws-samples/amazon-nova-samples/tree/main/speech-to-speech)"
         st.write("FAQs:")
-        st.code("time kya hua hai", language=None)
-        st.code("meraa payment fail ho gayaa", language=None)
-        st.code("मुझे मेरे upi पेमेंट के बारे में जानना है ", language=None)
-        st.code("paytm ke revenue ke baare men bataao", language=None)
-        st.code("paytm ke paas monetization ke vikalp hei", language=None)
+        st.code("haan ji aap meree keisee saahataa kar sakte ho", language=None)
+        st.code("mujhe upi ke baare mein bataao", language=None)
+        st.code("kyaa upi reliable hei", language=None)
+        st.code("upi ke top apps kaun hai", language=None)
+
+        st.code("meraa payment fail ho gayaa, kya karun", language=None)
+        st.code("abhi time kya ho raha hai", language=None)
+
+        st.code("mere rupay card se kare last 5 transactions ki detail do", language=None)
+
+        st.code("mobikwik ki financial metrics batao", language=None)
+
+        st.code("paytm ke revenue metrics ke baare men bataao", language=None)
+        st.code("paytm ke mtu kitne hai", language=None)
+        st.code("paytm ke paas monetization ke kya vikalp hei", language=None)
         st.code("paytm ke context mein payment aggregator license samajhao", language=None)
-        st.code("paytm ke mtu ki story batao", language=None)
 
         native_voice_mode = st.checkbox("Native voice Mode")
+
     st.title(":robot_face: _:orange[FinGenie] - voicebot for Fintech_")
     st.markdown("<h6 style='color: gray;'>Powered by Amazon Nova Sonic & Amazon Polly</h6>", unsafe_allow_html=True)
     st.markdown("""
@@ -746,14 +767,13 @@ if __name__ == "__main__":
         </style>
     """, unsafe_allow_html=True)
 
-    #col1, col2, col3 = st.columns(3)
-    col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2, col3 = st.columns(3)
 
     with col2:
         img = Image.open("nova-sonic.png")
         st.image(img, width=200)
 
-    chat_box = st.container(height=700)  # fixed height, scrollable
+    chat_box = st.container(height=750)  # fixed height, scrollable
 
     if "input_waveform" not in st.session_state:
         st.session_state.input_waveform = st.empty()
@@ -772,8 +792,6 @@ if __name__ == "__main__":
             with chat_box:
                 st.session_state["messages"] = [{"role": "assistant", "content": "Help chahiye?"}]
 
-                # Optional: scroll chat box to bottom automatically (works best with `height` set above)
-                #st.markdown("""<script>const chatBox = parent.document.querySelector('section[data-testid="stVerticalBlock"] div[data-testid="stContainer"]'); if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;</script>""", unsafe_allow_html=True)
 
                 for msg in st.session_state.messages:
                     if msg["role"] == "user":
@@ -787,11 +805,15 @@ if __name__ == "__main__":
                 st.session_state.streamlit_session_active = True
                 st.session_state.first_run = False
                 asyncio.run(main())
+
+                st.markdown("""
+                    <script>
+                    const chatBox = parent.document.querySelector('section.main div[data-testid="stVerticalBlock"]');
+                    if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+                    </script>
+                """, unsafe_allow_html=True)
         else:
             with chat_box:
-
-                # Optional: scroll chat box to bottom automatically (works best with `height` set above)
-                #st.markdown("""<script>const chatBox = parent.document.querySelector('section[data-testid="stVerticalBlock"] div[data-testid="stContainer"]'); if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;</script>""",unsafe_allow_html=True)
 
                 print("\nnot first run")
                 st.session_state.streamlit_session_active = False
@@ -810,3 +832,10 @@ if __name__ == "__main__":
                             f"""<div class="bot-message"><div class="message">{msg["content"]}</div><div class="avatar">🤖</div></div>""",
                             unsafe_allow_html=True)
                 asyncio.run(main())
+
+                st.markdown("""
+                    <script>
+                    const chatBox = parent.document.querySelector('section.main div[data-testid="stVerticalBlock"]');
+                    if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+                    </script>
+                """, unsafe_allow_html=True)
