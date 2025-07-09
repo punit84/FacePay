@@ -22,11 +22,27 @@
                 <spring-boot.version>3.0.0</spring-boot.version>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-                <aws.sdk.version>2.31.38</aws.sdk.version>
+                <aws.sdk.version>2.31.61</aws.sdk.version>
                 <jetty.version>11.0.25</jetty.version>
                 <maven.compiler.source>17</maven.compiler.source>
                 <maven.compiler.target>17</maven.compiler.target>
+                <lombok.version>1.18.38</lombok.version>
+
         </properties>
+
+        <repositories>
+                <repository>
+                        <id>github</id>
+                        <name>GitHub haumacher/mjSIP Apache Maven Packages</name>
+                        <url>https://maven.pkg.github.com/haumacher/mjSIP</url>
+                        <releases>
+                                <enabled>true</enabled>
+                        </releases>
+                        <snapshots>
+                                <enabled>false</enabled>
+                        </snapshots>
+                </repository>
+        </repositories>
 
         <dependencyManagement>
                 <dependencies>
@@ -40,7 +56,7 @@
                         <dependency>
                                 <groupId>com.fasterxml.jackson</groupId>
                                 <artifactId>jackson-bom</artifactId>
-                                <version>2.15.2</version>
+                                <version>2.18.3</version>
                                 <type>pom</type>
                                 <scope>import</scope>
                         </dependency>
@@ -54,11 +70,21 @@
                         <artifactId>httpclient</artifactId>
                         <version>4.5.14</version> <!-- Latest stable 4.x version as of now -->
                 </dependency>
+                <dependency>
+                        <groupId>org.mjsip</groupId>
+                        <artifactId>mjsip-ua</artifactId>
+                        <version>2.0.5</version>
+                </dependency>
 
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>
                         <artifactId>bedrockruntime</artifactId>
-                        <version>2.31.38</version> <!-- Replace with latest version if needed -->
+                        <version>2.31.61</version> <!-- Replace with latest version if needed -->
+                </dependency>
+                <dependency>
+                        <groupId>software.amazon.awssdk</groupId>
+                        <artifactId>bedrockagentruntime</artifactId>
+                        <version>2.31.61</version>
                 </dependency>
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>
@@ -71,6 +97,7 @@
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>
                         <artifactId>polly</artifactId>
+                        <version>2.31.19</version>
                 </dependency>
                 <dependency>
                         <groupId>software.amazon.awssdk</groupId>
@@ -194,8 +221,9 @@
                 <dependency>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
-                        <optional>true</optional>
+                        <version>${lombok.version}</version>
                 </dependency>
+
                 <dependency>
                         <groupId>jakarta.servlet</groupId>
                         <artifactId>jakarta.servlet-api</artifactId>
@@ -219,6 +247,16 @@
                 <dependency>
                         <groupId>com.fasterxml.jackson.core</groupId>
                         <artifactId>jackson-annotations</artifactId>
+                </dependency>
+                <dependency>
+                        <groupId>io.reactivex.rxjava3</groupId>
+                        <artifactId>rxjava</artifactId>
+                        <version>3.1.8</version>
+                </dependency>
+                <dependency>
+                        <groupId>io.projectreactor</groupId>
+                        <artifactId>reactor-core</artifactId>
+                        <version>3.6.2</version>
                 </dependency>
                 <dependency>
                         <groupId>org.mockito</groupId>
@@ -247,6 +285,13 @@
                                 <configuration>
                                         <source>${java.version}</source>
                                         <target>${java.version}</target>
+                                        <annotationProcessorPaths>
+                                                <path>
+                                                        <groupId>org.projectlombok</groupId>
+                                                        <artifactId>lombok</artifactId>
+                                                        <version>${lombok.version}</version>
+                                                </path>
+                                        </annotationProcessorPaths>
                                 </configuration>
                         </plugin>
                         <plugin>
