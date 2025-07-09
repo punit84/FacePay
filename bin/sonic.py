@@ -403,8 +403,8 @@ async def main():
 
 if __name__ == "__main__":
     # Set AWS credentials if not using environment variables
-    os.environ['AWS_ACCESS_KEY_ID'] = "AKIARLWNZHAZT7D7IR6W"
-    os.environ['AWS_SECRET_ACCESS_KEY'] = "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"
+    os.environ['AWS_ACCESS_KEY_ID'] = ""
+    os.environ['AWS_SECRET_ACCESS_KEY'] = ""
     os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
 
     asyncio.run(main())
