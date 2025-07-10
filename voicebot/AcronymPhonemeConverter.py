@@ -18,8 +18,11 @@ class AcronymPhonemeConverter:
             "mutabik": "muːˈt̪aː.bɪk",
             "QoQ": "ˌkjuː.əʊˈkjuː",
             "MoM": "ˌɛm.əʊˈɛm",
-            "YoY": "ˌwaɪ.əʊˈwaɪ"
-
+            "YoY": "ˌwaɪ.əʊˈwaɪ",
+            "ID": "ˌaɪˈdiː",
+            "sakti": "səˈk.t̪i",
+            "janakar": "ˈd͡ʒaː.nə.kər",
+            "tariikh": "t̪aːˈriːx"
         }
 
         # Precompile regex pattern

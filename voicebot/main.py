@@ -683,17 +683,14 @@ if __name__ == "__main__":
         "[Sample code](https://github.com/aws-samples/amazon-nova-samples/tree/main/speech-to-speech)"
         st.write("FAQs:")
         st.code("haan ji aap meree keisee saahataa kar sakte ho", language=None)
+        st.code("devnagri script mein hello likhe dikhaao", language=None)
         st.code("mujhe upi ke baare mein bataao", language=None)
         st.code("kyaa upi reliable hei", language=None)
         st.code("upi ke top apps kaun hai", language=None)
-
         st.code("meraa payment fail ho gayaa, kya karun", language=None)
         st.code("abhi time kya ho raha hai", language=None)
-
         st.code("mere rupay card se kare last 5 transactions ki detail do", language=None)
-
         st.code("mobikwik ki financial metrics batao", language=None)
-
         st.code("paytm ke revenue metrics ke baare men bataao", language=None)
         st.code("paytm ke mtu kitne hai", language=None)
         st.code("paytm ke paas monetization ke kya vikalp hei", language=None)
@@ -701,8 +698,8 @@ if __name__ == "__main__":
 
         native_voice_mode = st.checkbox("Native voice Mode")
 
-    st.title(":robot_face: _:orange[FinGenie] - voicebot for Fintech_")
-    st.markdown("<h6 style='color: gray;'>Powered by Amazon Nova Sonic & Amazon Polly</h6>", unsafe_allow_html=True)
+    st.title("_:orange[FINGenie] - voicebot for Fintech_")
+    #st.markdown("<h6 style='color: gray;'>Powered by Amazon Nova Sonic & Amazon Polly</h6>", unsafe_allow_html=True)
     st.markdown("""
         <style>
             .user-message {
