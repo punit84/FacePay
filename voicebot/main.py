@@ -698,7 +698,7 @@ if __name__ == "__main__":
 
         native_voice_mode = st.checkbox("Native voice Mode")
 
-    st.title("_:orange[FINGenie] - voicebot for Fintech_")
+    st.title(":blue[Paytm -Merchant HelpDesk]")
     #st.markdown("<h6 style='color: gray;'>Powered by Amazon Nova Sonic & Amazon Polly</h6>", unsafe_allow_html=True)
     st.markdown("""
         <style>
