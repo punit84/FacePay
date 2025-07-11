@@ -174,7 +174,7 @@ def start_prompt(self):
                     "sampleRateHertz": 24000,
                     "sampleSizeBits": 16,
                     "channelCount": 1,
-                    "voiceId": "tiffany",
+                    "voiceId": "amy",
                     "encoding": "base64",
                     "audioType": "SPEECH"
                 },
