@@ -3,6 +3,7 @@
     import com.punit.sts.nova.event.*;
     import com.punit.sts.nova.event.*;
     import com.punit.sts.nova.io.QueuedUlawInputStream;
+    import org.springframework.beans.factory.annotation.Value;
     import com.punit.sts.nova.observer.InteractObserver;
     import com.fasterxml.jackson.databind.JsonNode;
     import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +44,9 @@
         private String promptName;
         private boolean debugAudioOutput;
         private boolean playedErrorSound = false;
-        private boolean polly = false;  // Always use Polly for voice responses
+        @Value("${nova.polly:false}")
+        private boolean polly = false;  //Always use Polly for voice responses  
+        @Value("${nova.sarvam:false}")
         private boolean sarvam = false;  // Always use sarvam for voice responses
 
         // Polly configuration with default values
@@ -91,7 +94,7 @@
             String role = node.get("role").asText();
 
             if (polly){
-                System.out.println("Running polly output " +  polly);
+                System.out.println("POLLY:Running polly output " +  polly);
 
                 try {
                     // Create the speech synthesis request using Polly
@@ -112,15 +115,15 @@
                     audioStream.append(audioData);
 
                 } catch (Exception e) {
-                    log.error("Failed to synthesize speech using Amazon Polly", e);
+                    log.error("POLLY:Failed to synthesize speech using Amazon Polly", e);
                     onError(e);
                 }
                 if (debugAudioOutput) {
-                    log.info("Received audio output {} from {}", content, role);
+                    log.info("POLLY:Received audio output {} from {}", content, role);
                 }
 
             } else if (sarvam) {
-                System.out.println("Running sarvam output " +  sarvam);
+                System.out.println("SARVAM:Running sarvam output " +  sarvam);
 
                 try {
                     // Send content chunk to Sarvam TTS
@@ -136,12 +139,12 @@
                     }
 
                 } catch (Exception e) {
-                    log.error("Failed to synthesize speech using Sarvam TTS", e);
+                    log.error("SARVAM: Failed to synthesize speech using Sarvam TTS", e);
                     onError(e);
                 }
 
                 if (debugAudioOutput) {
-                    log.info("Received Sarvam audio output '{}' from {}", content, role);
+                    log.info("SARVAM:Received Sarvam audio output '{}' from {}", content, role);
                 }
 
             }else {

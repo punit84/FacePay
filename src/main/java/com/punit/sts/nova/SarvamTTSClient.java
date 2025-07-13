@@ -41,8 +41,8 @@ public class SarvamTTSClient {
                 "speaker": "anushka",
                 "output_audio_codec": "mp3",
                 "min_buffer_size": 50,
-                "max_chunk_length": 300,
-                "speech_sample_rate": 8000
+                "max_chunk_length": 160,
+                "speech_sample_rate": 16000
               }
             }
             """;

@@ -12,6 +12,12 @@ import java.util.Properties;
 @Component
 @PropertySource("classpath:nova.properties")
 public class NovaMediaConfig extends MediaConfig {
+
+    @Value("${nova.polly:false}")
+     private boolean polly  = false;  //Always use Polly for voice responses
+    @Value("${nova.sarvam:false}")
+     private boolean sarvam = false;  // Always use sarvam for voice responses load these two configs
+
     @Value("${nova.voice.id:en_gb_amy}")
     private String novaVoiceId;
 
@@ -91,7 +97,8 @@ public class NovaMediaConfig extends MediaConfig {
             this.novaMaxTokens = Integer.parseInt(props.getProperty("nova.model.max-tokens", "1024"));
             this.novaTopP = Float.parseFloat(props.getProperty("nova.model.top-p", "0.9"));
             this.novaTemperature = Float.parseFloat(props.getProperty("nova.model.temperature", "0.9"));
-
+            this.polly = Boolean.parseBoolean(props.getProperty("nova.polly", "FALSE"));
+            this.sarvam = Boolean.parseBoolean(props.getProperty("nova.sarvam", "FALSE"));
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to load nova.properties", e);
