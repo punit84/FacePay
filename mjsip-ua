@@ -25,11 +25,13 @@ sip-user=punit84
 # If 'registrar' is not defined, the 'proxy' value is used in its place.
 # If 'proxy' is not defined, the 'registrar' value is used in its place.
 registrar=sip:punit84@sip2sip.info
+#registrar=sip:punit84@212.95.45.157:5060
 
 # Contact URL.
 # If not defined (default), it is formed as sip:user@via-addr:host-port.
 # Normally you can leave it undefined.
 #contact-url=sip:alice@192.168.0.55:5070
+#contact-url=sip:punit84@212.95.45.157:5060
 
 # User's name used for server authentication.
 auth_user=punit84

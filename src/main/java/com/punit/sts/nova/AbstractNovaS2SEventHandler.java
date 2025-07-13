@@ -43,14 +43,15 @@
         private String promptName;
         private boolean debugAudioOutput;
         private boolean playedErrorSound = false;
-        private boolean polly = true;  // Always use Polly for voice responses
+        private boolean polly = false;  // Always use Polly for voice responses
+        private boolean sarvam = false;  // Always use Polly for voice responses
 
         // Polly configuration with default values
         private final String voiceId = System.getenv().getOrDefault("POLLY_VOICE_ID", "Kajal");
         private final String engineType = System.getenv().getOrDefault("POLLY_ENGINE", "neural");
         private final String languageCode = System.getenv().getOrDefault("POLLY_LANGUAGE_CODE", "hi-IN");
         private final String sampleRate = System.getenv().getOrDefault("POLLY_SAMPLE_RATE", SAMPLE_RATE_STR);
-
+        SarvamTTSClient sarvamClient;
         public AbstractNovaS2SEventHandler() {
             this(null);
         }
@@ -60,7 +61,10 @@
             debugAudioOutput = "true".equalsIgnoreCase(System.getenv().getOrDefault("DEBUG_AUDIO_OUTPUT", "false"));
 
             this.pollyClient = PollyClient.builder().region(Region.US_EAST_1).build();
+            this.sarvamClient = sarvam ? new SarvamTTSClient(System.getenv("SARVAM_API_KEY")) : null;
+
         }
+
 
         @Override
         public void handleCompletionStart(JsonNode node) {
@@ -86,39 +90,69 @@
             String content = node.get("content").asText();
             String role = node.get("role").asText();
 
-//            try {
-//                // Create the speech synthesis request using Polly
-//                SynthesizeSpeechRequest synthesizeSpeechRequest = SynthesizeSpeechRequest.builder()
-//                        .text(content)
-//                        .voiceId(voiceId)
-//                        .engine(engineType.equalsIgnoreCase("neural") ? Engine.NEURAL : Engine.STANDARD)
-//                        .languageCode(languageCode)
-//                        .outputFormat(OutputFormat.PCM)
-//                        .sampleRate(sampleRate)
-//                        .build();
-//
-//                //Call Amazon Polly to synthesize the text
-//                ResponseInputStream<SynthesizeSpeechResponse> synthesisResponse = pollyClient.synthesizeSpeech(synthesizeSpeechRequest);
-//
-//                // Get the audio stream and append to our stream
-//                byte[] audioData = synthesisResponse.readAllBytes();
-//                audioStream.append(audioData);
-//
-//            } catch (Exception e) {
-//                log.error("Failed to synthesize speech using Amazon Polly", e);
-//                onError(e);
-//            }
-//            if (debugAudioOutput) {
-//                log.info("Received audio output {} from {}", content, role);
-//}
-            try {
-                byte[] data=decoder.decode(content);
-                audioStream.append(data);
+            if (polly){
+                try {
+                    // Create the speech synthesis request using Polly
+                    SynthesizeSpeechRequest synthesizeSpeechRequest = SynthesizeSpeechRequest.builder()
+                            .text(content)
+                            .voiceId(voiceId)
+                            .engine(engineType.equalsIgnoreCase("neural") ? Engine.NEURAL : Engine.STANDARD)
+                            .languageCode(languageCode)
+                            .outputFormat(OutputFormat.PCM)
+                            .sampleRate(sampleRate)
+                            .build();
 
-            } catch (Exception e) {
-                log.error("Failed to synthesize speech using Amazon Polly", e);
-                onError(e);
+                    //Call Amazon Polly to synthesize the text
+                    ResponseInputStream<SynthesizeSpeechResponse> synthesisResponse = pollyClient.synthesizeSpeech(synthesizeSpeechRequest);
+
+                    // Get the audio stream and append to our stream
+                    byte[] audioData = synthesisResponse.readAllBytes();
+                    audioStream.append(audioData);
+
+                } catch (Exception e) {
+                    log.error("Failed to synthesize speech using Amazon Polly", e);
+                    onError(e);
+                }
+                if (debugAudioOutput) {
+                    log.info("Received audio output {} from {}", content, role);
+                }
+
+            } else if (sarvam) {
+                try {
+                    // Send content chunk to Sarvam TTS
+                    sarvamClient.sendTextChunk(content);
+
+                    // Optional flush to indicate end of text chunk
+                    sarvamClient.flush();
+
+                    // Receive streamed audio from Sarvam and append to audio stream
+                    byte[] audio = sarvamClient.getAudioBytesAndReset();
+                    if (audio.length > 0) {
+                        audioStream.append(audio);
+                    }
+
+                } catch (Exception e) {
+                    log.error("Failed to synthesize speech using Sarvam TTS", e);
+                    onError(e);
+                }
+
+                if (debugAudioOutput) {
+                    log.info("Received Sarvam audio output '{}' from {}", content, role);
+                }
+
+            }else {
+
+                try {
+                    byte[] data=decoder.decode(content);
+                    audioStream.append(data);
+
+                } catch (Exception e) {
+                    log.error("Failed to synthesize speech using Amazon Polly", e);
+                    onError(e);
+                }
             }
+
+
         }
 
         @Override
