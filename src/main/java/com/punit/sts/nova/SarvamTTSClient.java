@@ -22,7 +22,7 @@ public class SarvamTTSClient {
     private static final String OUTPUT_PATH = "output.wav";
 
     private final HttpClient httpClient;
-    private final String apiKey = "" ;
+    private final String apiKey = "sk_tvpazss0_rMRYAq079wYMTHCyYycqebQy" ;
     private final ObjectMapper objectMapper;
 
     public SarvamTTSClient() {
@@ -32,6 +32,7 @@ public class SarvamTTSClient {
 
     public byte[] synthesize(String text, String languageCode) {
         try {
+            System.out.println("TExt length is " + text.length());
             ByteArrayOutputStream finalAudio = new ByteArrayOutputStream();
             int chunkSize = 160;
             int len = text.length();
