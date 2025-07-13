@@ -86,4 +86,5 @@ public class SarvamTTSClient {
             log.error("Error calling Sarvam TTS API", e);
             throw new RuntimeException("Failed to call Sarvam TTS API", e);
         }
+    }
 }
