@@ -6,3 +6,4 @@ aws-sdk-bedrock-runtime
 smithy-aws-core
 pytz
 requests
+sarvamai

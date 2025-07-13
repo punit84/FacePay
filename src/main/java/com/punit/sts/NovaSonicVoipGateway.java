@@ -122,12 +122,14 @@ public class NovaSonicVoipGateway extends RegisteringMultipleUAS {
         SchedulerConfig schedulerConfig = new SchedulerConfig();
         PortConfig portConfig = new PortConfig();
         ServiceConfig serviceConfig = new ServiceConfig();
-        NovaMediaConfig mediaConfig = new NovaMediaConfig();
+        NovaMediaConfig mediaConfig = new NovaMediaConfig("nova.properties");
         Map<String, String> environ = System.getenv();
         mediaConfig.setNovaVoiceId(environ.getOrDefault("NOVA_VOICE_ID", "amy")); //en_gb_amy
         if (isConfigured(environ.get("NOVA_PROMPT"))) {
             mediaConfig.setNovaPrompt(environ.get("NOVA_PROMPT"));
         }
+
+        System.out.println(mediaConfig.toString());
 
         if (isConfigured(environ.get("SIP_SERVER"))) {
             configureFromEnvironment(environ, uaConfig, mediaConfig, portConfig, sipConfig);
