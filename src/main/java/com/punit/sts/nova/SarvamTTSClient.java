@@ -1,5 +1,6 @@
 package com.punit.sts.nova;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -32,54 +33,57 @@ public class SarvamTTSClient {
 
     public byte[] synthesize(String text, String languageCode) {
         try {
-            Map<String, Object> payload = Map.of(
-                    "inputs", Collections.singletonList(text),
-                    "target_language_code", languageCode != null ? languageCode : "en-IN",
-                    "speaker", "amartya",
-                    "pitch", 0,
-                    "pace", 1.0,
-                    "loudness", 1.2,
-                    "speech_sample_rate", 22050,
-                    "enable_preprocessing", true,
-                    "model", "bulbul:v1"
-            );
+            ByteArrayOutputStream finalAudio = new ByteArrayOutputStream();
+            int chunkSize = 160;
+            int len = text.length();
 
-            String requestBody = objectMapper.writeValueAsString(payload);
+            for (int start = 0; start < len; start += chunkSize) {
+                int end = Math.min(start + chunkSize, len);
+                String chunk = text.substring(start, end);
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(SARVAM_TTS_URL))
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .header("api-subscription-key", apiKey)
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                    .build();
+                Map<String, Object> payload = Map.of(
+                        "inputs", Collections.singletonList(chunk),
+                        "target_language_code", languageCode != null ? languageCode : "en-IN",
+                        "speaker", "amartya",
+                        "pitch", 0,
+                        "pace", 1.0,
+                        "loudness", 1.2,
+                        "speech_sample_rate", 16000,
+                        "enable_preprocessing", true,
+                        "model", "bulbul:v1"
+                );
 
-            log.info("Sending request to Sarvam TTS API...");
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("Sarvam API Status Code: {}", response.statusCode());
+                String requestBody = objectMapper.writeValueAsString(payload);
 
-            if (response.statusCode() != 200) {
-                throw new RuntimeException("Sarvam TTS API failed: " + response.body());
-            }
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(SARVAM_TTS_URL))
+                        .header("Accept", "application/json")
+                        .header("Content-Type", "application/json")
+                        .header("api-subscription-key", apiKey)
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
 
-            Map<String, Object> responseBody = objectMapper.readValue(response.body(), Map.class);
-            if (responseBody.containsKey("audios")) {
-                String base64Audio = ((java.util.List<String>) responseBody.get("audios")).get(0);
-                byte[] audioBytes = Base64.getDecoder().decode(base64Audio);
+                log.info("Sending request to Sarvam TTS API for chunk: {}–{}", start, end);
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                log.info("Sarvam API Status Code: {}", response.statusCode());
 
-                // Optional: write to file for debugging
-                try (OutputStream os = new FileOutputStream(new File(OUTPUT_PATH))) {
-                    os.write(audioBytes);
+                if (response.statusCode() != 200) {
+                    throw new RuntimeException("Sarvam TTS API failed: " + response.body());
                 }
 
-                return audioBytes;
-            } else {
-                throw new RuntimeException("No audio found in Sarvam response.");
+                Map<String, Object> responseBody = objectMapper.readValue(response.body(), Map.class);
+                if (responseBody.containsKey("audios")) {
+                    String base64Audio = ((java.util.List<String>) responseBody.get("audios")).get(0);
+                    byte[] audioBytes = Base64.getDecoder().decode(base64Audio);
+                    finalAudio.write(audioBytes);
+                } else {
+                    throw new RuntimeException("No audio found in Sarvam response for chunk: " + chunk);
+                }
             }
 
+            return finalAudio.toByteArray();
         } catch (Exception e) {
             log.error("Error calling Sarvam TTS API", e);
             throw new RuntimeException("Failed to call Sarvam TTS API", e);
         }
-    }
 }
