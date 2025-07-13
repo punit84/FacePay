@@ -1,126 +1,85 @@
 package com.punit.sts.nova;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.WebSocket;
-import java.net.http.WebSocket.Listener;
-import java.nio.ByteBuffer;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
 public class SarvamTTSClient {
     private static final Logger log = LoggerFactory.getLogger(SarvamTTSClient.class);
+    private static final String SARVAM_TTS_URL = "https://api.sarvam.ai/text-to-speech";
+    private static final String OUTPUT_PATH = "output.wav";
 
-    private final WebSocket webSocket;
-    private final ByteBuffer audioBuffer = ByteBuffer.allocate(10_000_000);  // 10MB buffer
+    private final HttpClient httpClient;
+    private final String apiKey;
+    private final ObjectMapper objectMapper;
 
     public SarvamTTSClient(String apiKey) {
+        this.apiKey = apiKey;
+        this.httpClient = HttpClient.newHttpClient();
+        this.objectMapper = new ObjectMapper();
+    }
+
+    public byte[] synthesize(String text, String languageCode) {
         try {
-            this.webSocket = HttpClient.newHttpClient()
-                    .newWebSocketBuilder()
-                    .header("Authorization", "Bearer " + apiKey)
-                    .buildAsync(URI.create("wss://api.sarvam.ai/v1/tts/stream"), new SarvamListener(audioBuffer))
-                    .join();
+            Map<String, Object> payload = Map.of(
+                    "inputs", Collections.singletonList(text),
+                    "target_language_code", languageCode != null ? languageCode : "en-IN",
+                    "speaker", "amartya",
+                    "pitch", 0,
+                    "pace", 1.0,
+                    "loudness", 1.2,
+                    "speech_sample_rate", 22050,
+                    "enable_preprocessing", true,
+                    "model", "bulbul:v1"
+            );
 
-            sendConfig();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize Sarvam TTS Client", e);
-        }
-    }
+            String requestBody = objectMapper.writeValueAsString(payload);
 
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(SARVAM_TTS_URL))
+                    .header("Accept", "application/json")
+                    .header("Content-Type", "application/json")
+                    .header("api-subscription-key", apiKey)
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
 
-    private void sendConfig() {
-        String configJson = """
-            {
-              "type": "config",
-              "data": {
-                "model": "bulbul:v2",
-                "target_language_code": "en-IN",
-                "speaker": "anushka",
-                "output_audio_codec": "mp3",
-                "min_buffer_size": 50,
-                "max_chunk_length": 160,
-                "speech_sample_rate": 16000
-              }
+            log.info("Sending request to Sarvam TTS API...");
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            log.info("Sarvam API Status Code: {}", response.statusCode());
+
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("Sarvam TTS API failed: " + response.body());
             }
-            """;
-        webSocket.sendText(configJson, true);
-    }
 
-    public void sendTextChunk(String text) {
-        String payload = String.format("""
-            {
-              "type": "text",
-              "data": {
-                "text": "%s"
-              }
-            }
-            """, escapeJson(text));
-        webSocket.sendText(payload, true);
-    }
+            Map<String, Object> responseBody = objectMapper.readValue(response.body(), Map.class);
+            if (responseBody.containsKey("audios")) {
+                String base64Audio = ((java.util.List<String>) responseBody.get("audios")).get(0);
+                byte[] audioBytes = Base64.getDecoder().decode(base64Audio);
 
-    public void flush() {
-        webSocket.sendText("{\"type\": \"flush\"}", true);
-    }
+                // Optional: write to file for debugging
+                try (OutputStream os = new FileOutputStream(new File(OUTPUT_PATH))) {
+                    os.write(audioBytes);
+                }
 
-    public void close() {
-        webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "complete").join();
-        log.info("Sarvam WebSocket closed");
-    }
-
-    public byte[] getAudioBytesAndReset() {
-        audioBuffer.flip();
-        byte[] audio = new byte[audioBuffer.remaining()];
-        audioBuffer.get(audio);
-        audioBuffer.clear();
-        return audio;
-    }
-
-    private static String escapeJson(String input) {
-        return input.replace("\"", "\\\"")
-                .replace("\n", " ")
-                .replace("\r", "");
-    }
-
-    // make the listener class static and pass audioBuffer explicitly
-    private static class SarvamListener implements WebSocket.Listener {
-        private final ByteBuffer audioBuffer;
-
-        public SarvamListener(ByteBuffer audioBuffer) {
-            this.audioBuffer = audioBuffer;
-        }
-
-        @Override
-        public CompletionStage<?> onBinary(WebSocket ws, ByteBuffer data, boolean last) {
-            byte[] chunk = new byte[data.remaining()];
-            data.get(chunk);
-            if (audioBuffer.remaining() >= chunk.length) {
-                audioBuffer.put(chunk);
+                return audioBytes;
             } else {
-                LoggerFactory.getLogger(SarvamListener.class).warn("Buffer overflow, dropping audio chunk.");
+                throw new RuntimeException("No audio found in Sarvam response.");
             }
-            return Listener.super.onBinary(ws, data, last);
-        }
 
-        @Override public void onOpen(WebSocket ws) {
-            LoggerFactory.getLogger(SarvamListener.class).info("WebSocket connection opened.");
-        }
-
-        @Override public CompletionStage<?> onClose(WebSocket ws, int statusCode, String reason) {
-            LoggerFactory.getLogger(SarvamListener.class).info("WebSocket closed: {} - {}", statusCode, reason);
-            return Listener.super.onClose(ws, statusCode, reason);
-        }
-
-        @Override public void onError(WebSocket ws, Throwable error) {
-            LoggerFactory.getLogger(SarvamListener.class).error("WebSocket error", error);
-        }
-
-        @Override public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
-            LoggerFactory.getLogger(SarvamListener.class).debug("Received text: {}", data);
-            return Listener.super.onText(ws, data, last);
+        } catch (Exception e) {
+            log.error("Error calling Sarvam TTS API", e);
+            throw new RuntimeException("Failed to call Sarvam TTS API", e);
         }
     }
-
 }

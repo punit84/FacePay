@@ -125,14 +125,10 @@
                 System.out.println("SARVAM:Running sarvam output " +  sarvam);
 
                 try {
-                    // Send content chunk to Sarvam TTS
-                    sarvamClient.sendTextChunk(content);
+                    // Call Sarvam REST API and get audio bytes
+                    byte[] audio = sarvamClient.synthesize(content, "en-IN");  // You can make language configurable if needed
 
-                    // Optional flush to indicate end of text chunk
-                    sarvamClient.flush();
-
-                    // Receive streamed audio from Sarvam and append to audio stream
-                    byte[] audio = sarvamClient.getAudioBytesAndReset();
+                    // Append audio to stream
                     if (audio.length > 0) {
                         audioStream.append(audio);
                     }
