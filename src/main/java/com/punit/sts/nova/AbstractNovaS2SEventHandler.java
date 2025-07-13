@@ -67,7 +67,6 @@
             this.sarvamClient = sarvam ? new SarvamTTSClient(System.getenv("SARVAM_API_KEY")) : null;
         }
 
-
         @Override
         public void handleCompletionStart(JsonNode node) {
             log.info("Completion started for node: {}", node);
@@ -84,16 +83,9 @@
         @Override
         public void handleTextOutput(JsonNode node) {
             String content = node.get("content").asText();
-            System.out.println("TextOutput" +   node.get("content"));
-            }
-
-        @Override
-        public void handleAudioOutput(JsonNode node) {
-            String content = node.get("content").asText();
-            String role = node.get("role").asText();
-
-            if (polly){
-                System.out.println("POLLY:Running polly output " +  polly);
+            System.out.println("TextOutput" + node.get("content"));
+            if (polly) {
+                System.out.println("POLLY:Running polly output " + polly);
 
                 try {
                     // Create the speech synthesis request using Polly
@@ -117,12 +109,9 @@
                     log.error("POLLY:Failed to synthesize speech using Amazon Polly", e);
                     onError(e);
                 }
-                if (debugAudioOutput) {
-                    log.info("POLLY:Received audio output {} from {}", content, role);
-                }
 
             } else if (sarvam) {
-                System.out.println("SARVAM:Running sarvam output " +  sarvam);
+                System.out.println("SARVAM:Running sarvam output " + sarvam);
 
                 try {
                     // Call Sarvam REST API and get audio bytes
@@ -137,12 +126,14 @@
                     log.error("SARVAM: Failed to synthesize speech using Sarvam TTS", e);
                     onError(e);
                 }
+            }
+        }
+        @Override
+        public void handleAudioOutput(JsonNode node) {
+            String content = node.get("content").asText();
+            String role = node.get("role").asText();
 
-                if (debugAudioOutput) {
-                    log.info("SARVAM:Received Sarvam audio output '{}' from {}", content, role);
-                }
-
-            }else {
+          if (!(polly || sarvam)){
 
                 System.out.println("Running Nova output ");
 
