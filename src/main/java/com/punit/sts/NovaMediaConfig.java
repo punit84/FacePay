@@ -69,6 +69,12 @@ public class NovaMediaConfig extends MediaConfig {
 
     public NovaMediaConfig(String novaconfig) {
         loadFromPropertiesFile(novaconfig);
+        //print all properties
+        System.out.println("nova.voice.id: " + novaVoiceId);
+        System.out.println("nova.voice.novaPrompt: " + novaPrompt);
+        System.out.println("nova.voice.novaMaxTokens: " + novaMaxTokens);
+        System.out.println("nova.voice.novaTopP: " + novaTopP);
+        System.out.println("nova.voice.novaTemperature: " + novaTemperature);
     }
 
     private void loadFromPropertiesFile(String file) {
@@ -85,6 +91,7 @@ public class NovaMediaConfig extends MediaConfig {
             this.novaMaxTokens = Integer.parseInt(props.getProperty("nova.model.max-tokens", "1024"));
             this.novaTopP = Float.parseFloat(props.getProperty("nova.model.top-p", "0.9"));
             this.novaTemperature = Float.parseFloat(props.getProperty("nova.model.temperature", "0.9"));
+
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to load nova.properties", e);

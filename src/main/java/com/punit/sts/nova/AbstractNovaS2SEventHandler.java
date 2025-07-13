@@ -44,7 +44,7 @@
         private boolean debugAudioOutput;
         private boolean playedErrorSound = false;
         private boolean polly = false;  // Always use Polly for voice responses
-        private boolean sarvam = false;  // Always use Polly for voice responses
+        private boolean sarvam = false;  // Always use sarvam for voice responses
 
         // Polly configuration with default values
         private final String voiceId = System.getenv().getOrDefault("POLLY_VOICE_ID", "Kajal");
@@ -91,6 +91,8 @@
             String role = node.get("role").asText();
 
             if (polly){
+                System.out.println("Running polly output " +  polly);
+
                 try {
                     // Create the speech synthesis request using Polly
                     SynthesizeSpeechRequest synthesizeSpeechRequest = SynthesizeSpeechRequest.builder()
@@ -118,6 +120,8 @@
                 }
 
             } else if (sarvam) {
+                System.out.println("Running sarvam output " +  sarvam);
+
                 try {
                     // Send content chunk to Sarvam TTS
                     sarvamClient.sendTextChunk(content);
@@ -141,6 +145,8 @@
                 }
 
             }else {
+
+                System.out.println("Running Nova output ");
 
                 try {
                     byte[] data=decoder.decode(content);
