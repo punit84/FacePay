@@ -45,9 +45,9 @@
         private boolean debugAudioOutput;
         private boolean playedErrorSound = false;
         @Value("${nova.polly:false}")
-        private boolean polly = false;  //Always use Polly for voice responses  
+        private boolean polly = true;  //Always use Polly for voice responses
         @Value("${nova.sarvam:false}")
-        private boolean sarvam = true;  // Always use sarvam for voice responses
+        private boolean sarvam = false;  // Always use sarvam for voice responses
 
         // Polly configuration with default values
         private final String voiceId = System.getenv().getOrDefault("POLLY_VOICE_ID", "Kajal");
@@ -64,7 +64,7 @@
             debugAudioOutput = "true".equalsIgnoreCase(System.getenv().getOrDefault("DEBUG_AUDIO_OUTPUT", "false"));
 
             this.pollyClient = PollyClient.builder().region(Region.US_EAST_1).build();
-            this.sarvamClient = sarvam ? new SarvamTTSClient(System.getenv("SARVAM_API_KEY")) : null;
+            this.sarvamClient = sarvam ? new SarvamTTSClient() : null;
         }
 
         @Override
@@ -76,7 +76,14 @@
 
         @Override
         public void handleContentStart(JsonNode node) {
-            System.out.println("TextOutput" +   node.get("content"));
+            System.out.println("TextOutput-handleContentStart" +   node.get("content"));
+            // Check for speculative content
+//            if 'additionalModelFields' in content_start:
+//            additional_fields = json.loads(content_start['additionalModelFields'])
+//            if additional_fields.get('generationStage') == 'SPECULATIVE':
+//            self.display_assistant_text = True
+//                                        else:
+//            self.display_assistant_text = False
 
         }
 
@@ -84,6 +91,12 @@
         public void handleTextOutput(JsonNode node) {
             String content = node.get("content").asText();
             System.out.println("TextOutput" + node.get("content"));
+            String role = node.get("role").asText();
+            System.out.println("handleTextOutput:role " +role);
+
+            if (role == "ASSISTANT" ) {
+
+
             if (polly) {
                 System.out.println("POLLY:Running polly output " + polly);
 
@@ -127,11 +140,13 @@
                     onError(e);
                 }
             }
+            }
         }
         @Override
         public void handleAudioOutput(JsonNode node) {
             String content = node.get("content").asText();
             String role = node.get("role").asText();
+
 
           if (!(polly || sarvam)){
 

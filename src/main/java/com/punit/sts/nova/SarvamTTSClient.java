@@ -22,11 +22,10 @@ public class SarvamTTSClient {
     private static final String OUTPUT_PATH = "output.wav";
 
     private final HttpClient httpClient;
-    private final String apiKey;
+    private final String apiKey = "" ;
     private final ObjectMapper objectMapper;
 
-    public SarvamTTSClient(String apiKey) {
-        this.apiKey = apiKey;
+    public SarvamTTSClient() {
         this.httpClient = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
     }
