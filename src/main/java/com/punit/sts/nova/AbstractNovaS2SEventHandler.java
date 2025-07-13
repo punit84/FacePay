@@ -45,9 +45,9 @@
         private boolean debugAudioOutput;
         private boolean playedErrorSound = false;
         @Value("${nova.polly:false}")
-        private boolean polly = true;  //Always use Polly for voice responses
+        private boolean polly = false;  //Always use Polly for voice responses
         @Value("${nova.sarvam:false}")
-        private boolean sarvam = false;  // Always use sarvam for voice responses
+        private boolean sarvam = true;  // Always use sarvam for voice responses
 
         // Polly configuration with default values
         private final String voiceId = System.getenv().getOrDefault("POLLY_VOICE_ID", "Kajal");
