@@ -43,8 +43,8 @@ public class SarvamTTSClient {
 
                 Map<String, Object> payload = Map.of(
                         "inputs", Collections.singletonList(chunk),
-                        "target_language_code", languageCode != null ? languageCode : "hi-IN",
-                        "speaker", "anushka",
+                        "target_language_code", languageCode != null ? languageCode : "en-IN",
+                        "speaker", "amartya",
                         "pitch", 0,
                         "pace", 1.0,
                         "loudness", 1.0,

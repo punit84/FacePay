@@ -128,7 +128,7 @@
 
                 try {
                     // Call Sarvam REST API and get audio bytes
-                    byte[] audio = sarvamClient.synthesize(content, "hi-IN");  // You can make language configurable if needed
+                    byte[] audio = sarvamClient.synthesize(content, "en-IN");  // You can make language configurable if needed
 
                     // Append audio to stream
                     if (audio.length > 0) {
