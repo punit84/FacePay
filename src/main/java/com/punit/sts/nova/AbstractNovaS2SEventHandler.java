@@ -48,7 +48,7 @@
         private boolean polly = false;  //Always use Polly for voice responses
         @Value("${nova.sarvam:false}")
         private boolean sarvam = true;  // Always use sarvam for voice responses
-
+        private boolean displayAssistantText = false;
         // Polly configuration with default values
         private final String voiceId = System.getenv().getOrDefault("POLLY_VOICE_ID", "Kajal");
         private final String engineType = System.getenv().getOrDefault("POLLY_ENGINE", "neural");
@@ -76,26 +76,54 @@
 
         @Override
         public void handleContentStart(JsonNode node) {
+
             System.out.println("TextOutput-handleContentStart" +   node.get("content"));
-            // Check for speculative content
-//            if 'additionalModelFields' in content_start:
-//            additional_fields = json.loads(content_start['additionalModelFields'])
-//            if additional_fields.get('generationStage') == 'SPECULATIVE':
-//            self.display_assistant_text = True
-//                                        else:
-//            self.display_assistant_text = False
+            JsonNode contentStart = node.get("content");
+            this.displayAssistantText = false;
+
+            if (contentStart != null && contentStart.has("additionalModelFields")) {
+                try {
+                    String additionalFieldsStr = contentStart.get("additionalModelFields").asText();
+                    System.out.println("Additional model fields: " + additionalFieldsStr);
+
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode additionalFields = mapper.readTree(additionalFieldsStr);
+
+                    if (additionalFields.has("generationStage") &&
+                            "SPECULATIVE".equalsIgnoreCase(additionalFields.get("generationStage").asText())) {
+                        this.displayAssistantText = true;
+                        System.out.println("Received speculative content"+contentStart.toPrettyString());
+                    }else {
+                        System.out.println("Received Final content"+contentStart.toPrettyString());
+
+                    }
+
+                } catch (Exception e) {
+                    System.err.println("Error parsing additionalModelFields: " + e.getMessage());
+                }
+            }
+
 
         }
 
         @Override
         public void handleTextOutput(JsonNode node) {
-            String content = node.get("content").asText();
-            System.out.println("TextOutput" + node.get("content"));
-            String role = node.get("role").asText();
-            System.out.println("handleTextOutput:role " +role);
 
-            if (role.contains( "ASSISTANT") ) {
+            JsonNode contentNode = node.get("content");
+            JsonNode roleNode = node.get("role");
 
+            if (roleNode == null || contentNode == null) {
+                System.err.println("handleTextOutput: Missing role or content");
+            }
+
+            String content = contentNode.asText();
+            String role = roleNode.asText();
+
+            System.out.println("TextOutput: " + content);
+            System.out.println("handleTextOutput: role = " + role);
+
+
+            if ("USER".equalsIgnoreCase(role) || ("ASSISTANT".equalsIgnoreCase(role) && this.displayAssistantText)) {
 
             if (polly) {
                 System.out.println("POLLY:Running polly output " + polly);
