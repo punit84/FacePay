@@ -6,8 +6,8 @@ package com.punit.sts.constants;
  */
 public interface SonicAudioConfig {
     short SAMPLE_SIZE = (short) 16;
-    int SAMPLE_RATE = 16000;
-    String SAMPLE_RATE_STR  = "16000";
+    int SAMPLE_RATE = 8000;
+    String SAMPLE_RATE_STR  = "8000";
     short CHANNEL_COUNT = (short) 1;
     String ENCODING_BASE64 = "base64";
 }
