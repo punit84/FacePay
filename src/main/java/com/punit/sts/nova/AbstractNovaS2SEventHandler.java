@@ -80,6 +80,8 @@
             System.out.println("TextOutput-handleContentStart" +   node.get("content"));
             JsonNode contentStart = node.get("content");
             this.displayAssistantText = false;
+            log.info("displayAssistantText :", displayAssistantText);
+
 
             if (contentStart != null && contentStart.has("additionalModelFields")) {
                 try {
@@ -88,13 +90,12 @@
 
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode additionalFields = mapper.readTree(additionalFieldsStr);
-
                     if (additionalFields.has("generationStage") &&
-                            "SPECULATIVE".equalsIgnoreCase(additionalFields.get("generationStage").asText())) {
+                            "FINAL".equalsIgnoreCase(additionalFields.get("generationStage").asText())) {
                         this.displayAssistantText = true;
-                        System.out.println("Received speculative content"+contentStart.toPrettyString());
-                    }else {
                         System.out.println("Received Final content"+contentStart.toPrettyString());
+                    }else {
+                        System.out.println("Received speculative content"+contentStart.toPrettyString());
 
                     }
 
@@ -102,6 +103,7 @@
                     System.err.println("Error parsing additionalModelFields: " + e.getMessage());
                 }
             }
+            log.info("displayAssistantText :", displayAssistantText);
 
 
         }
@@ -122,8 +124,8 @@
             System.out.println("TextOutput: " + content);
             System.out.println("handleTextOutput: role = " + role);
 
-
-            if ("USER".equalsIgnoreCase(role) || ("ASSISTANT".equalsIgnoreCase(role) && this.displayAssistantText)) {
+//"USER".equalsIgnoreCase(role) ||
+            if ( ("ASSISTANT".equalsIgnoreCase(role) && this.displayAssistantText)) {
 
             if (polly) {
                 System.out.println("POLLY:Running polly output " + polly);
