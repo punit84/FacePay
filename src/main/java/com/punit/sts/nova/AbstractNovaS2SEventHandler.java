@@ -46,9 +46,9 @@
         private boolean playedErrorSound = false;
         @Value("${nova.polly:false}")
         private boolean polly = false;  //Always use Polly for voice responses
-        @Value("${nova.sarvam:false}")
-        private boolean sarvam = false;  // Always use sarvam for voice responses
-        private boolean displayAssistantText = false;
+        @Value("${nova.sarvam:true}")
+        private boolean sarvam = true;  // Always use sarvam for voice responses
+        private boolean displayAssistantText = true;
         // Polly configuration with default values
         private final String voiceId = System.getenv().getOrDefault("POLLY_VOICE_ID", "Kajal");
         private final String engineType = System.getenv().getOrDefault("POLLY_ENGINE", "neural");
@@ -80,7 +80,7 @@
             System.out.println("TextOutput-handleContentStart" +   node.get("content"));
             JsonNode contentStart = node.get("content");
             this.displayAssistantText = false;
-            log.info("displayAssistantText :", displayAssistantText);
+            log.info("displayAssistantText :"+ this.displayAssistantText);
 
             if (contentStart != null && contentStart.has("additionalModelFields")) {
                 try {
@@ -102,7 +102,7 @@
                     System.err.println("Error parsing additionalModelFields: " + e.getMessage());
                 }
             }
-            log.info("displayAssistantText :", displayAssistantText);
+            log.info("displayAssistantText :"+ this.displayAssistantText);
 
 
         }
