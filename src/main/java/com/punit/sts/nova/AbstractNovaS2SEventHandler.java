@@ -47,7 +47,7 @@
         @Value("${nova.polly:false}")
         private boolean polly = false;  //Always use Polly for voice responses
         @Value("${nova.sarvam:false}")
-        private boolean sarvam = true;  // Always use sarvam for voice responses
+        private boolean sarvam = false;  // Always use sarvam for voice responses
         private boolean displayAssistantText = false;
         // Polly configuration with default values
         private final String voiceId = System.getenv().getOrDefault("POLLY_VOICE_ID", "Kajal");
@@ -81,7 +81,6 @@
             JsonNode contentStart = node.get("content");
             this.displayAssistantText = false;
             log.info("displayAssistantText :", displayAssistantText);
-
 
             if (contentStart != null && contentStart.has("additionalModelFields")) {
                 try {
