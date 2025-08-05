@@ -18,7 +18,7 @@ public class NovaMediaConfig extends MediaConfig {
     @Value("${nova.sarvam:false}")
      private boolean sarvam = false;  // Always use sarvam for voice responses load these two configs
 
-    @Value("${nova.voice.id:en_gb_amy}")
+    @Value("${nova.voice.id:us_matthew}")
     private String novaVoiceId;
 
     @Value("${nova.prompt.default}")

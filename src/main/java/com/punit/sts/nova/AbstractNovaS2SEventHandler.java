@@ -47,7 +47,7 @@
         @Value("${nova.polly:false}")
         private boolean polly = false;  //Always use Polly for voice responses
         @Value("${nova.sarvam:true}")
-        private boolean sarvam = true;  // Always use sarvam for voice responses
+        private boolean sarvam = false;  // Always use sarvam for voice responses
         private boolean displayAssistantText = true;
         // Polly configuration with default values
         private final String voiceId = System.getenv().getOrDefault("POLLY_VOICE_ID", "Kajal");
@@ -176,9 +176,7 @@
             String content = node.get("content").asText();
             String role = node.get("role").asText();
 
-
-          if (!(polly || sarvam)){
-
+        //  if (!(polly || sarvam)){
                 System.out.println("Running Nova output ");
 
                 try {
@@ -189,7 +187,7 @@
                     log.error("Failed to synthesize speech using Amazon Polly", e);
                     onError(e);
                 }
-            }
+           // }
 
 
         }
