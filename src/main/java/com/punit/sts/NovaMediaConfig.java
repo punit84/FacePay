@@ -92,7 +92,7 @@ public class NovaMediaConfig extends MediaConfig {
             }
             props.load(input);
 
-            this.novaVoiceId = props.getProperty("nova.voice.id", "en_gb_amy");
+            this.novaVoiceId = props.getProperty("nova.voice.id", "us_matthew");
             this.novaPrompt = props.getProperty("nova.prompt.default", "Hello, how can I help you?");
             this.novaMaxTokens = Integer.parseInt(props.getProperty("nova.model.max-tokens", "1024"));
             this.novaTopP = Float.parseFloat(props.getProperty("nova.model.top-p", "0.9"));
